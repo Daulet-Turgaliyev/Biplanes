@@ -9,6 +9,7 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
+/[Ll]ocal/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -29,19 +30,33 @@
 ExportedObj/
 .consulo/
 *.csproj
+*.csproj.meta
 *.unityproj
+*.unityproj.meta
 *.sln
+*.sln.meta
 *.suo
+*.suo.meta
 *.tmp
+*.tmp.meta
 *.user
+*.user.meta
 *.userprefs
+*.userprefs.meta
 *.pidb
+*.pidb.meta
 *.booproj
+*.booproj.meta
 *.svd
+*.svd.meta
 *.pdb
+*.pdb.meta
 *.mdb
+*.mdb.meta
 *.opendb
+*.opendb.meta
 *.VC.db
+*.VC.db.meta
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -51,10 +66,15 @@ ExportedObj/
 # Unity3D generated file on crash reports
 sysinfo.txt
 
-# Builds
-*.apk
-*.unitypackage
-
 # Crashlytics generated file
-crashlytics-build.properties
+crashlytics-build.properties*
 
+remote_config_data
+Assets/GeneratedLocalRepo
+google-services-desktop.json.meta
+Assets/ExternalDependencyManager/Editor/*.xml.meta
+Assets/ExternalDependencyManager/Editor/*.md.meta
+Assets/ExternalDependencyManager/Editor/LICENSE.meta
+GeneratedLocalRepo.meta
+.DS_Store
+.idea/
