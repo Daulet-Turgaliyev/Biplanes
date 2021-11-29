@@ -49,7 +49,8 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
                 Debug.Log("It's impossible to set speed HIGHER than MaxSpeed");
                 return;
             }
-
+            
+            Debug.Log($"New Speed {_speed}");
             _speed = newSpeed;
         }
     }

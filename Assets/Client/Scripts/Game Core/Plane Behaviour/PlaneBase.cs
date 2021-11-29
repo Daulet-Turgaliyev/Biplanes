@@ -12,11 +12,24 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
 
         [SerializeField]
         private PlaneData planeData;
-        
+
+        public Action<float> onSpeedUpdated;
+            
         private void Awake()
         {
             PlaneBaseInit();
             PlaneElementsInit();
+        }
+
+        private void OnEnable()
+        {
+                if (planeEngine != null)
+                    onSpeedUpdated += planeEngine.ChangeSpeed;
+        }
+
+        private void OnDisable()
+        {
+            onSpeedUpdated = null;
         }
 
         private void FixedUpdate()
