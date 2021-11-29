@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using AcinusProject.Game_Core.Plane_Behaviour;
+using Client.Scripts.Game_Core.UI_Mechanics;
+using Client.Scripts.Game_Core.UI_Mechanics.Controllers;
+using UnityEngine;
 using Zenject;
 
 namespace Client.Scripts.Level_Manager
@@ -7,10 +11,29 @@ namespace Client.Scripts.Level_Manager
     {
         [Inject] 
         private WindowsManager _windowsManager;
-    
-        public void Start()
+
+        [Inject] 
+        private UserInterfaceHandler userInterfaceHandler;
+        
+        [SerializeField] 
+        private PlaneData planeData;
+
+        private void Awake()
         {
-            _windowsManager.OpenWindow<PlaneControllerWindow>();
+            OpenPlayerControllerWindow();
+            PlayerInstantiate();
+        }
+
+        private void OpenPlayerControllerWindow()
+        {
+            var planeControllerWindow = _windowsManager.OpenWindow<PlaneControllerWindow>();
+            userInterfaceHandler.SwitchController(new PlaneController(planeControllerWindow.Joystick, planeControllerWindow.speedSlider));
+        }
+
+        private void PlayerInstantiate()
+        {
+            PlaneBase planeBase = Instantiate(planeData.PlanePrefab); 
+            planeBase.GlobalInit(userInterfaceHandler);
         }
     }
 }

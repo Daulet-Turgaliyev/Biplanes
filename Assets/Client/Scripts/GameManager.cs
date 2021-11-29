@@ -1,9 +1,3 @@
 using UnityEngine;
 
-public class GameManager: MonoBehaviour
-{
-	private void Start()
-	{
-		
-	}
-}
+public class GameManager: MonoBehaviour { }

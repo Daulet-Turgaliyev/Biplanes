@@ -12,7 +12,7 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         private readonly Rigidbody2D _rigidbody2D;
         private readonly PlaneEngineSettings _planeEngineSettings;
         
-        public PlaneEngine(PlaneEngineSettings planeEngineSettings, Rigidbody2D rigidbody2D)
+        public PlaneEngine(PlaneEngineSettings planeEngineSettings, ref Rigidbody2D rigidbody2D)
         {
             _rigidbody2D = rigidbody2D;
             _planeEngineSettings = planeEngineSettings;
