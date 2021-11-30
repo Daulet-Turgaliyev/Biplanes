@@ -1,5 +1,7 @@
 ﻿using System;
+using Client.Scripts.Game_Core.UI_Mechanics.Controllers;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace AcinusProject.Game_Core.Plane_Behaviour
@@ -38,13 +40,13 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
 
         public void ChangeSpeed(float newSpeed)
         {
-            if (_planeEngineSettings.MinSpeed < newSpeed)
+            if (_planeEngineSettings.MinSpeed > newSpeed)
             {
                 Debug.Log("It's impossible to set speed LESS than MinSpeed");
                 return;
             }
             
-            if (_planeEngineSettings.MaxSpeed > newSpeed)
+            if (_planeEngineSettings.MaxSpeed < newSpeed)
             {
                 Debug.Log("It's impossible to set speed HIGHER than MaxSpeed");
                 return;
@@ -60,10 +62,13 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         public float MinSpeed { get; }
         public float MaxSpeed { get; }
 
-        public PlaneEngineSettings(float minSpeed, float maxSpeed)
+        public PlaneEngineSettings(float minSpeed, float maxSpeed,  Slider planeController)
         {
             MinSpeed = minSpeed;
             MaxSpeed = maxSpeed;
+
+            planeController.minValue = MinSpeed;
+            planeController.maxValue = MaxSpeed;
         }
     }
 }

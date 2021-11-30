@@ -13,31 +13,19 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         private Rigidbody2D _rigidbody2D;
 
         private PlaneEngine planeEngine;
-
+        private PlaneController planeController;
+        
         private UserInterfaceHandler _userInterfaceHandler;
         
         [SerializeField] 
         private PlaneData planeData;
-
-        public UnityEvent<float> onSpeedUpdated;
-
+        
         public void GlobalInit(UserInterfaceHandler userInterfaceHandler)
         {
             _userInterfaceHandler = userInterfaceHandler;
             
             PlaneBaseInit();
             PlaneElementsInit();
-        }
-
-        private void OnEnable()
-        {
-            if (planeEngine != null)
-                onSpeedUpdated.AddListener(planeEngine.ChangeSpeed);
-        }
-
-        private void OnDisable()
-        {
-            onSpeedUpdated.AddListener(planeEngine.ChangeSpeed);
         }
 
         private void FixedUpdate()
@@ -52,15 +40,16 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
 
         private void PlaneElementsInit()
         {
-            PlaneEngineInit();
-            PlaneController planeController = _userInterfaceHandler.currentController as PlaneController;
-            if (ReferenceEquals(planeController, null) == false) 
-                onSpeedUpdated.Invoke(planeController.GetSlider.value);
+            PlaneEngineInit(); 
+            planeController = _userInterfaceHandler.planeController;
+            if (ReferenceEquals(planeController, null) == false)  
+                planeController.onSpeedUpdated += planeEngine.ChangeSpeed;
         }
 
         private void PlaneEngineInit()
         {
-            var planeEngineSettings = new PlaneEngineSettings(planeData.MinSpeed, planeData.MaxSpeed);
+            var speedSlider = _userInterfaceHandler.planeController.GetSlider;
+            var planeEngineSettings = new PlaneEngineSettings(planeData.MinSpeed, planeData.MaxSpeed,  speedSlider);
             planeEngine = new PlaneEngine(planeEngineSettings, ref _rigidbody2D);
         }
     }

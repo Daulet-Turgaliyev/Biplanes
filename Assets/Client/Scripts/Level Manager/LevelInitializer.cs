@@ -27,7 +27,8 @@ namespace Client.Scripts.Level_Manager
         private void OpenPlayerControllerWindow()
         {
             var planeControllerWindow = _windowsManager.OpenWindow<PlaneControllerWindow>();
-            userInterfaceHandler.SwitchController(new PlaneController(planeControllerWindow.Joystick, planeControllerWindow.speedSlider));
+            userInterfaceHandler.SetPlaneController(
+                new PlaneController(planeControllerWindow.Joystick, planeControllerWindow.speedSlider));
         }
 
         private void PlayerInstantiate()
