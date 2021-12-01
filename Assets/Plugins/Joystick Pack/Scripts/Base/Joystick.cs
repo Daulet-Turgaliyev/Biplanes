@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -38,6 +39,8 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     private Canvas canvas;
     private Camera cam;
 
+    public Action<Vector2> OnDragAction = delegate {  };
+
     private Vector2 input = Vector2.zero;
 
     protected virtual void Start()
@@ -67,11 +70,11 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         cam = null;
         if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
             cam = canvas.worldCamera;
-
         Vector2 position = RectTransformUtility.WorldToScreenPoint(cam, background.position);
         Vector2 radius = background.sizeDelta / 2;
         input = (eventData.position - position) / (radius * canvas.scaleFactor);
         FormatInput();
+        OnDragAction?.Invoke(input);
         HandleInput(input.magnitude, input.normalized, radius, cam);
         handle.anchoredPosition = input * radius * handleRange;
     }

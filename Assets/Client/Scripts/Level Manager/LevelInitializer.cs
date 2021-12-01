@@ -27,8 +27,10 @@ namespace Client.Scripts.Level_Manager
         private void OpenPlayerControllerWindow()
         {
             var planeControllerWindow = _windowsManager.OpenWindow<PlaneControllerWindow>();
+            var joystick = planeControllerWindow.Joystick;
+            
             userInterfaceHandler.SetPlaneController(
-                new PlaneController(planeControllerWindow.Joystick, planeControllerWindow.speedSlider));
+                new PlaneController(ref joystick, planeControllerWindow.speedSlider));
         }
 
         private void PlayerInstantiate()

@@ -1,4 +1,5 @@
 ﻿using System;
+using AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings;
 using Client.Scripts.Game_Core.UI_Mechanics.Controllers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,9 +15,9 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         private readonly Rigidbody2D _rigidbody2D;
         private readonly PlaneEngineSettings _planeEngineSettings;
         
-        public PlaneEngine(PlaneEngineSettings planeEngineSettings, ref Rigidbody2D rigidbody2D)
+        public PlaneEngine(PlaneEngineSettings planeEngineSettings)
         {
-            _rigidbody2D = rigidbody2D;
+            _rigidbody2D = planeEngineSettings.Rigidbody;
             _planeEngineSettings = planeEngineSettings;
             _planeTransform = _rigidbody2D.transform;
         }
@@ -52,23 +53,7 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
                 return;
             }
             
-            Debug.Log($"New Speed {_speed}");
             _speed = newSpeed;
-        }
-    }
-
-    public readonly struct PlaneEngineSettings
-    {
-        public float MinSpeed { get; }
-        public float MaxSpeed { get; }
-
-        public PlaneEngineSettings(float minSpeed, float maxSpeed,  Slider planeController)
-        {
-            MinSpeed = minSpeed;
-            MaxSpeed = maxSpeed;
-
-            planeController.minValue = MinSpeed;
-            planeController.maxValue = MaxSpeed;
         }
     }
 }

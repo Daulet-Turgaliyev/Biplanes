@@ -1,7 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Client.Scripts.Game_Core.UI_Mechanics.Controllers
@@ -14,13 +12,19 @@ namespace Client.Scripts.Game_Core.UI_Mechanics.Controllers
         [field:SerializeField]
         public Slider GetSlider {  get; }
         
+        public Action<Vector2> onPositionUpdated;
         public Action<float> onSpeedUpdated;
 
        
-        public PlaneController(Joystick joystick, Slider slider)
+        public PlaneController(ref Joystick joystick, Slider slider)
         {
             GetJoystick = joystick;
             GetSlider = slider;
+
+            GetJoystick.OnDragAction += delegate(Vector2 newJoystickPosition)
+            {
+                onPositionUpdated?.Invoke(newJoystickPosition);
+            };
             
             GetSlider.onValueChanged.AddListener(delegate(float newSpeed)
             {
@@ -28,9 +32,10 @@ namespace Client.Scripts.Game_Core.UI_Mechanics.Controllers
             });
         }
 
-        public float GetJoystickVerticalPosition()
+        ~PlaneController()
         {
-            return GetJoystick.Vertical;
+            onSpeedUpdated = null;
+            onPositionUpdated = null;
         }
     }
 }

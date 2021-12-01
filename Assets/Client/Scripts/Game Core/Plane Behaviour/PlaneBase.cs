@@ -1,4 +1,5 @@
 ﻿using System;
+using AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings;
 using Client.Scripts.Game_Core.UI_Mechanics;
 using Client.Scripts.Game_Core.UI_Mechanics.Controllers;
 using UnityEngine;
@@ -13,6 +14,8 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         private Rigidbody2D _rigidbody2D;
 
         private PlaneEngine planeEngine;
+        private PlaneElevator planeElevator;
+        
         private PlaneController planeController;
         
         private UserInterfaceHandler _userInterfaceHandler;
@@ -31,6 +34,7 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         private void FixedUpdate()
         {
             planeEngine.WorkingEngine();
+            planeElevator.RotationPlane();
         }
 
         private void PlaneBaseInit()
@@ -40,17 +44,27 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
 
         private void PlaneElementsInit()
         {
-            PlaneEngineInit(); 
+            PlaneEngineInit();
+            PlaneElevatorInit();
             planeController = _userInterfaceHandler.planeController;
-            if (ReferenceEquals(planeController, null) == false)  
+            if (ReferenceEquals(planeController, null) == false)
+            {
                 planeController.onSpeedUpdated += planeEngine.ChangeSpeed;
+            }
         }
 
         private void PlaneEngineInit()
         {
             var speedSlider = _userInterfaceHandler.planeController.GetSlider;
-            var planeEngineSettings = new PlaneEngineSettings(planeData.MinSpeed, planeData.MaxSpeed,  speedSlider);
-            planeEngine = new PlaneEngine(planeEngineSettings, ref _rigidbody2D);
+            var planeEngineSettings = new PlaneEngineSettings(planeData,  ref speedSlider, ref _rigidbody2D);
+            planeEngine = new PlaneEngine(planeEngineSettings);
+        }
+        
+        private void PlaneElevatorInit()
+        {
+            var planeElevatorSettings = new PlaneElevatorSettings(_rigidbody2D, planeData.SpeedRotation);
+            var controller = _userInterfaceHandler.planeController;
+            planeElevator = new PlaneElevator(ref planeElevatorSettings, ref controller);
         }
     }
 }
