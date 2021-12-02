@@ -1,4 +1,5 @@
 ﻿using AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace AcinusProject.Game_Core.Plane_Behaviour
@@ -49,5 +50,6 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
             var planeElevatorSettings = new PlaneElevatorSettings(false, planeData.SpeedRotation);
             PlaneElevator = new PlaneElevator(planeElevatorSettings, ref _rigidbody2D);
         }
+
     }
 }
