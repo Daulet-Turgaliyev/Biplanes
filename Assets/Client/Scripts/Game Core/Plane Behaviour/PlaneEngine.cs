@@ -1,8 +1,5 @@
-﻿using System;
-using AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings;
-using Client.Scripts.Game_Core.UI_Mechanics.Controllers;
+﻿using AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 namespace AcinusProject.Game_Core.Plane_Behaviour
@@ -11,13 +8,14 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
     {
         private float _speed;
         private Vector2 _velocity;
+        
         private readonly Transform _planeTransform;
         private readonly Rigidbody2D _rigidbody2D;
         private readonly PlaneEngineSettings _planeEngineSettings;
         
-        public PlaneEngine(PlaneEngineSettings planeEngineSettings)
+        public PlaneEngine(PlaneEngineSettings planeEngineSettings, ref Rigidbody2D rigidbody)
         {
-            _rigidbody2D = planeEngineSettings.Rigidbody;
+            _rigidbody2D = rigidbody;
             _planeEngineSettings = planeEngineSettings;
             _planeTransform = _rigidbody2D.transform;
         }
@@ -41,19 +39,8 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
 
         public void ChangeSpeed(float newSpeed)
         {
-            if (_planeEngineSettings.MinSpeed > newSpeed)
-            {
-                Debug.Log("It's impossible to set speed LESS than MinSpeed");
-                return;
-            }
-            
-            if (_planeEngineSettings.MaxSpeed < newSpeed)
-            {
-                Debug.Log("It's impossible to set speed HIGHER than MaxSpeed");
-                return;
-            }
-            
-            _speed = newSpeed;
+            _speed = Mathf.Clamp(newSpeed, 
+                _planeEngineSettings.MinSpeed, _planeEngineSettings.MaxSpeed);
         }
     }
 }

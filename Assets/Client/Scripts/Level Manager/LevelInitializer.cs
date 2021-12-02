@@ -12,31 +12,33 @@ namespace Client.Scripts.Level_Manager
         [Inject] 
         private WindowsManager _windowsManager;
 
-        [Inject] 
-        private UserInterfaceHandler userInterfaceHandler;
-        
         [SerializeField] 
         private PlaneData planeData;
 
         private void Awake()
         {
             OpenPlayerControllerWindow();
-            PlayerInstantiate();
         }
 
         private void OpenPlayerControllerWindow()
         {
-            var planeControllerWindow = _windowsManager.OpenWindow<PlaneControllerWindow>();
-            var joystick = planeControllerWindow.Joystick;
-            
-            userInterfaceHandler.SetPlaneController(
-                new PlaneController(ref joystick, planeControllerWindow.speedSlider));
+            var planeControllerWindow = OpenPlaneControllerWindow();
+            var player = PlayerInstantiate();
+            player.GlobalInit();
+
+            var planeController = new PlaneController(ref planeControllerWindow, ref player, planeData);
         }
 
-        private void PlayerInstantiate()
+        
+        private PlaneBase PlayerInstantiate()
         {
-            PlaneBase planeBase = Instantiate(planeData.PlanePrefab); 
-            planeBase.GlobalInit(userInterfaceHandler);
+            PlaneBase planeBase = Instantiate(planeData.PlanePrefab);
+            return planeBase;
+        }
+
+        private PlaneControllerWindow OpenPlaneControllerWindow()
+        {
+           return _windowsManager.OpenWindow<PlaneControllerWindow>();
         }
     }
 }

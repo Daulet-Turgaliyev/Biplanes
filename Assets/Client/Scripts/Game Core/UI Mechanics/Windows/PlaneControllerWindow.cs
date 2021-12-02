@@ -8,5 +8,5 @@ public class PlaneControllerWindow : BaseWindow
     public Joystick Joystick { get; private set; }
     
     [field:SerializeField] 
-    public Slider speedSlider { get; private set; }
+    public Slider SpeedSlider { get; private set; }
 }

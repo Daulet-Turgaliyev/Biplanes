@@ -2,6 +2,7 @@
 using Client.Scripts.Game_Core.UI_Mechanics;
 using Client.Scripts.Game_Core.UI_Mechanics.Controllers;
 using UnityEngine;
+using Zenject;
 
 namespace AcinusProject.Game_Core.Plane_Behaviour
 {
@@ -13,33 +14,30 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         private readonly Transform _transformPlane;
         private readonly Rigidbody2D _rigidbody2D;
 
-        private Vector2 joystickVector;
+        private Vector3 joystickVector;
         
-        public PlaneElevator(ref PlaneElevatorSettings planeElevatorSettings, ref PlaneController planeController)
+        public PlaneElevator(PlaneElevatorSettings planeElevatorSettings, ref Rigidbody2D rigidbody2D)
         {
+            _rigidbody2D = rigidbody2D;
+            _speedRotation = planeElevatorSettings.SpeedRotation;
             _flip = planeElevatorSettings.Flip;
-            _rigidbody2D = planeElevatorSettings.Rigidbody;
-            _speedRotation = planeElevatorSettings.RotationSpeed;
             _transformPlane = _rigidbody2D.transform;
-
-            planeController.onPositionUpdated += SetJoystickVector;
         }
 
 
         public void RotationPlane()
         {
-            float Dir = Vector2.Dot(_rigidbody2D.velocity, _rigidbody2D.GetRelativeVector(Vector2.right));
-            if (Dir > 0)
+            float dir = Vector2.Dot(_rigidbody2D.velocity, _rigidbody2D.GetRelativeVector(Vector2.right));
+            if (dir > 0)
             {
-                _rigidbody2D.rotation +=  joystickVector.y *  _speedRotation;
+                _rigidbody2D.rotation += joystickVector.y *  _speedRotation;
                 _rigidbody2D.angularVelocity = 0;
                 TurnChecker();
             }
         }
 
-        private void SetJoystickVector(Vector2 newJoystickVector) => joystickVector = newJoystickVector;
- 
-        
+        public void ChangeJoystickVector(Vector2 newJoystickVector) => joystickVector = newJoystickVector;
+
         private void TurnChecker()
         {
             var rotation = _transformPlane.rotation;
