@@ -1,36 +1,39 @@
 ﻿using System;
+using AcinusProject.Game_Core.Plane_Behaviour;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Client.Scripts.Game_Core.UI_Mechanics.Controllers
 {
     public class PlaneController: AController
     {
-        [field:SerializeField]
-        public Joystick GetJoystick {  get; }
-        
-        [field:SerializeField]
-        public Slider GetSlider {  get; }
-        
+        public Action<Vector2> onPositionUpdated;
         public Action<float> onSpeedUpdated;
 
        
-        public PlaneController(Joystick joystick, Slider slider)
+        public PlaneController(ref PlaneControllerWindow planeControllerWindow, ref PlaneBase planeBase, PlaneData planeData)
         {
-            GetJoystick = joystick;
-            GetSlider = slider;
+            planeControllerWindow.SpeedSlider.minValue = planeData.MinSpeed;
+            planeControllerWindow.SpeedSlider.maxValue = planeData.MaxSpeed;
             
-            GetSlider.onValueChanged.AddListener(delegate(float newSpeed)
+            planeControllerWindow.Joystick.OnDragAction += delegate(Vector2 newJoystickPosition)
+            {
+                onPositionUpdated?.Invoke(newJoystickPosition);
+            };
+            
+            planeControllerWindow.SpeedSlider.onValueChanged.AddListener(delegate(float newSpeed)
             {
                 onSpeedUpdated?.Invoke(newSpeed);
             });
+            
+            onSpeedUpdated += planeBase.PlaneEngine.ChangeSpeed;
+            onPositionUpdated += planeBase.PlaneElevator.ChangeJoystickVector;
         }
 
-        public float GetJoystickVerticalPosition()
+        ~PlaneController()
         {
-            return GetJoystick.Vertical;
+            onSpeedUpdated = null;
+            onPositionUpdated = null;
         }
     }
 }

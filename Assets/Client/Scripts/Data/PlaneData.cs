@@ -12,6 +12,9 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         public PlaneBase PlanePrefab { get; private set; }
 
         [field: SerializeField] 
+        public float SpeedRotation { get; private set; }
+        
+        [field: SerializeField] 
         public float MinSpeed { get; private set; }
         
         [field: SerializeField] 
@@ -25,6 +28,12 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
             if (ReferenceEquals(PlanePrefab, null) == true)
                 Debug.LogError($"Plane Prefab is null in {nameof(PlaneData)}");
 
+            if (SpeedRotation < 0)
+            {
+                Debug.LogError($"SpeedRotation is less than zero");
+                SpeedRotation = 0;
+            }
+            
             if (MaxSpeed < 0)
             {
                 Debug.LogError($"Speed is less than zero");

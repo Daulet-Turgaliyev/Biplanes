@@ -12,29 +12,37 @@ namespace Client.Scripts.Level_Manager
         [Inject] 
         private WindowsManager _windowsManager;
 
-        [Inject] 
-        private UserInterfaceHandler userInterfaceHandler;
+        [SerializeField] 
+        private LevelData levelData;
         
         [SerializeField] 
         private PlaneData planeData;
 
         private void Awake()
         {
-            OpenPlayerControllerWindow();
-            PlayerInstantiate();
+            LocalPlayerInit();
         }
 
-        private void OpenPlayerControllerWindow()
+        private void LocalPlayerInit()
         {
-            var planeControllerWindow = _windowsManager.OpenWindow<PlaneControllerWindow>();
-            userInterfaceHandler.SetPlaneController(
-                new PlaneController(planeControllerWindow.Joystick, planeControllerWindow.speedSlider));
+            var planeControllerWindow = OpenPlaneControllerWindow();
+            var player = PlayerInstantiate(levelData.SpawnPoints[0]);
+            player.GlobalInit();
+
+            var planeController = new PlaneController(ref planeControllerWindow, ref player, planeData);
         }
 
-        private void PlayerInstantiate()
+        
+        private PlaneBase PlayerInstantiate(Vector2 spawnPosition)
         {
-            PlaneBase planeBase = Instantiate(planeData.PlanePrefab); 
-            planeBase.GlobalInit(userInterfaceHandler);
+            var planeBase = Instantiate(planeData.PlanePrefab);
+            planeBase.transform.position = spawnPosition;
+            return planeBase;
+        }
+
+        private PlaneControllerWindow OpenPlaneControllerWindow()
+        {
+           return _windowsManager.OpenWindow<PlaneControllerWindow>();
         }
     }
 }
