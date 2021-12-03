@@ -7,6 +7,9 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlaneBase : MonoBehaviour
     {
+        [SerializeField] 
+        private SpriteRenderer spriteRenderer;
+        
         private Rigidbody2D _rigidbody2D;
 
         public PlaneEngine PlaneEngine { get; private set; }
@@ -47,8 +50,8 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         
         private void PlaneElevatorInit()
         {
-            var planeElevatorSettings = new PlaneElevatorSettings(false, planeData.SpeedRotation);
-            PlaneElevator = new PlaneElevator(planeElevatorSettings, ref _rigidbody2D);
+            var planeElevatorSettings = new PlaneElevatorSettings(planeData.SpeedRotation);
+            PlaneElevator = new PlaneElevator(planeElevatorSettings);
         }
 
     }

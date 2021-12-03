@@ -13,26 +13,30 @@ namespace Client.Scripts.Level_Manager
         private WindowsManager _windowsManager;
 
         [SerializeField] 
+        private LevelData levelData;
+        
+        [SerializeField] 
         private PlaneData planeData;
 
         private void Awake()
         {
-            OpenPlayerControllerWindow();
+            LocalPlayerInit();
         }
 
-        private void OpenPlayerControllerWindow()
+        private void LocalPlayerInit()
         {
             var planeControllerWindow = OpenPlaneControllerWindow();
-            var player = PlayerInstantiate();
+            var player = PlayerInstantiate(levelData.SpawnPoints[0]);
             player.GlobalInit();
 
             var planeController = new PlaneController(ref planeControllerWindow, ref player, planeData);
         }
 
         
-        private PlaneBase PlayerInstantiate()
+        private PlaneBase PlayerInstantiate(Vector2 spawnPosition)
         {
-            PlaneBase planeBase = Instantiate(planeData.PlanePrefab);
+            var planeBase = Instantiate(planeData.PlanePrefab);
+            planeBase.transform.position = spawnPosition;
             return planeBase;
         }
 

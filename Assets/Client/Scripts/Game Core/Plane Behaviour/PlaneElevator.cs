@@ -9,19 +9,24 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
     public class PlaneElevator
     {
         private float _speedRotation;
-        private bool _flip;
+        
+        [Inject]
+        private SpriteRenderer _planeSkin;
 
         private readonly Transform _transformPlane;
+        
+        [Inject]
+        private readonly Transform collidersPlane;
+        
+        [Inject]
         private readonly Rigidbody2D _rigidbody2D;
 
         private Vector3 joystickVector;
         
-        public PlaneElevator(PlaneElevatorSettings planeElevatorSettings, ref Rigidbody2D rigidbody2D)
+        public PlaneElevator(PlaneElevatorSettings planeElevatorSettings)
         {
-            _rigidbody2D = rigidbody2D;
             _speedRotation = planeElevatorSettings.SpeedRotation;
-            _flip = planeElevatorSettings.Flip;
-            _transformPlane = _rigidbody2D.transform;
+           // _transformPlane = _rigidbody2D.transform;
         }
 
 
@@ -40,8 +45,19 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
 
         private void TurnChecker()
         {
+            // Времнная затычка, нужно будет пересмотреть
             var rotation = _transformPlane.rotation;
-            _flip = rotation.eulerAngles.z > 90 && rotation.eulerAngles.z < 280;
+            if (rotation.eulerAngles.z > 90 && rotation.eulerAngles.z < 280)
+            {
+                _planeSkin.flipY = true;
+                collidersPlane.rotation = Quaternion.Euler(180,0,0);
+            }
+            else
+            {
+                _planeSkin.flipY = false;
+                collidersPlane.rotation = Quaternion.identity;
+            }
+            
         }
 
     }
