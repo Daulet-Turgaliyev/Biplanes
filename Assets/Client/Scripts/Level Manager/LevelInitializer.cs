@@ -18,6 +18,9 @@ namespace Client.Scripts.Level_Manager
         [SerializeField] 
         private PlaneData planeData;
 
+        [Inject]
+        private DiContainer _diContainer;
+
         private void Awake()
         {
             LocalPlayerInit();
@@ -35,8 +38,9 @@ namespace Client.Scripts.Level_Manager
         
         private PlaneBase PlayerInstantiate(Vector2 spawnPosition)
         {
-            var planeBase = Instantiate(planeData.PlanePrefab);
-            planeBase.transform.position = spawnPosition;
+            var planeBaseGameObject = _diContainer.InstantiatePrefab(planeData.PlanePrefab);
+            planeBaseGameObject.transform.position = spawnPosition;
+            var planeBase = planeBaseGameObject.GetComponent<PlaneBase>();
             return planeBase;
         }
 
