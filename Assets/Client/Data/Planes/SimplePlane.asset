@@ -15,5 +15,5 @@ MonoBehaviour:
   <PlaneName>k__BackingField: 'Default Plane '
   <PlanePrefab>k__BackingField: {fileID: 5938949295099985352, guid: 391ad0d17f05c3c43974335d04699c5c, type: 3}
   <SpeedRotation>k__BackingField: 1.5
-  <MinSpeed>k__BackingField: 0.5
-  <MaxSpeed>k__BackingField: 10
+  <MinSpeed>k__BackingField: 1.5
+  <MaxSpeed>k__BackingField: 8
