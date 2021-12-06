@@ -1,11 +1,11 @@
 ﻿using System;
 using AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings;
-using UnityEditor.SceneManagement;
+using Photon.Pun;
 using UnityEngine;
 
 namespace AcinusProject.Game_Core.Plane_Behaviour
 {
-    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(Rigidbody2D), typeof(PhotonView))]
     public class PlaneBase : MonoBehaviour
     {
         [field:SerializeField] 
@@ -19,24 +19,33 @@ namespace AcinusProject.Game_Core.Plane_Behaviour
         public PlaneEngine PlaneEngine { get; private set; }
         public PlaneElevator PlaneElevator { get; private set; }
         
+        private PhotonView _photonView;
         
         [SerializeField] 
         private PlaneData planeData;
-        
+
+        private void Awake()
+        {
+            _photonView = GetComponent<PhotonView>();
+        }
+
         public void GlobalInit()
         {
+            if(_photonView.IsMine == false) return;
             PlaneBaseInit();
             PlaneElementsInit();
         }
 
         private void FixedUpdate()
         {
+            if(_photonView.IsMine == false) return;
             PlaneEngine.WorkingEngine();
             PlaneElevator.RotationPlane();
         }
 
         private void PlaneBaseInit()
         {
+            
             RigidbodyPlane = GetComponent<Rigidbody2D>();
         }
 

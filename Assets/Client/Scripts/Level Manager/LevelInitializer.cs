@@ -2,6 +2,7 @@
 using AcinusProject.Game_Core.Plane_Behaviour;
 using Client.Scripts.Game_Core.UI_Mechanics;
 using Client.Scripts.Game_Core.UI_Mechanics.Controllers;
+using Photon.Pun;
 using UnityEngine;
 using Zenject;
 
@@ -18,9 +19,6 @@ namespace Client.Scripts.Level_Manager
         [SerializeField] 
         private PlaneData planeData;
 
-        [Inject]
-        private DiContainer _diContainer;
-
         private void Awake()
         {
             LocalPlayerInit();
@@ -29,17 +27,26 @@ namespace Client.Scripts.Level_Manager
         private void LocalPlayerInit()
         {
             var planeControllerWindow = OpenPlaneControllerWindow();
-            var player = PlayerInstantiate(levelData.SpawnPoints[0]);
+
+            Vector2 spawnPos = PhotonNetwork.IsMasterClient ? levelData.SpawnPoints[0] : levelData.SpawnPoints[1];
+            
+            var player = PlayerInstantiate(spawnPos);
             player.GlobalInit();
 
             var planeController = new PlaneController(ref planeControllerWindow, ref player, planeData);
         }
 
+        private void GlobalPlayerInit()
+        {
+            var planeBaseGameObject = PhotonNetwork.Instantiate("SimplePlane_Global", 
+                levelData.SpawnPoints[1], Quaternion.identity, 0);
+
+        }
+
         
         private PlaneBase PlayerInstantiate(Vector2 spawnPosition)
         {
-            var planeBaseGameObject = _diContainer.InstantiatePrefab(planeData.PlanePrefab);
-            planeBaseGameObject.transform.position = spawnPosition;
+            var planeBaseGameObject = PhotonNetwork.Instantiate("SimplePlane", spawnPosition, Quaternion.identity, 0);
             var planeBase = planeBaseGameObject.GetComponent<PlaneBase>();
             return planeBase;
         }
