@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings
-{
+﻿
     public readonly struct PlaneEngineSettings
     {
         public float MinSpeed { get; }
@@ -14,4 +10,3 @@ namespace AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings
             MaxSpeed = planeData.MaxSpeed;
         }
     }
-}

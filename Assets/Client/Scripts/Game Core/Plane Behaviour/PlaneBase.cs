@@ -1,63 +1,50 @@
-﻿using System;
-using AcinusProject.Game_Core.Plane_Behaviour.PlaneComponentSettings;
-using UnityEditor.SceneManagement;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace AcinusProject.Game_Core.Plane_Behaviour
+
+public class PlaneBase
 {
-    [RequireComponent(typeof(Rigidbody2D))]
-    public class PlaneBase : MonoBehaviour
+
+    public Rigidbody2D PlaneRigidbodyPlane { get; }
+
+    public PlaneEngine PlaneEngine { get; private set; }
+    public PlaneElevator PlaneElevator { get; private set; }
+
+    private PlaneData _planeData;
+
+    public PlaneBase(ref Rigidbody2D planeRigidbody2D)
     {
-        [field:SerializeField] 
-        public SpriteRenderer SpriteRenderer { get; private set; } 
+        _planeData = Resources.Load<PlaneData>("Data/Planes/SimplePlane");
         
-        [field:SerializeField] 
-        public Transform CollidersTransform  { get; private set; }
-        
-        public Rigidbody2D RigidbodyPlane  { get; private set; }
+        PlaneRigidbodyPlane = planeRigidbody2D;
 
-        public PlaneEngine PlaneEngine { get; private set; }
-        public PlaneElevator PlaneElevator { get; private set; }
-        
-        
-        [SerializeField] 
-        private PlaneData planeData;
-        
-        public void GlobalInit()
-        {
-            PlaneBaseInit();
-            PlaneElementsInit();
-        }
 
-        private void FixedUpdate()
-        {
-            PlaneEngine.WorkingEngine();
-            PlaneElevator.RotationPlane();
-        }
+        PlaneElementsInit();
+    }
 
-        private void PlaneBaseInit()
-        {
-            RigidbodyPlane = GetComponent<Rigidbody2D>();
-        }
+    public void CustomFixedUpdate()
+    {
+        PlaneEngine.WorkingEngine();
+        PlaneElevator.RotationPlane();
+    }
 
-        private void PlaneElementsInit()
-        {
-            PlaneEngineInit();
-            PlaneElevatorInit();
-        }
 
-        private void PlaneEngineInit()
-        {
-            var planeEngineSettings = new PlaneEngineSettings(planeData);
-            var rigidBody2D = RigidbodyPlane;
-            PlaneEngine = new PlaneEngine(planeEngineSettings, ref rigidBody2D);
-        }
-        
-        private void PlaneElevatorInit()
-        {
-            var planeElevatorSettings = new PlaneElevatorSettings(planeData.SpeedRotation);
-            var planeBase = this;
-            PlaneElevator = new PlaneElevator(planeElevatorSettings, ref planeBase);
-        }
+    private void PlaneElementsInit()
+    {
+        PlaneEngineInit();
+        PlaneElevatorInit();
+    }
+
+    private void PlaneEngineInit()
+    {
+        var planeEngineSettings = new PlaneEngineSettings(_planeData);
+        var rigidBody2D = PlaneRigidbodyPlane;
+        PlaneEngine = new PlaneEngine(planeEngineSettings, ref rigidBody2D);
+    }
+
+    private void PlaneElevatorInit()
+    {
+        var planeElevatorSettings = new PlaneElevatorSettings(_planeData.SpeedRotation);
+        var planeBase = this;
+        PlaneElevator = new PlaneElevator(planeElevatorSettings, ref planeBase);
     }
 }
