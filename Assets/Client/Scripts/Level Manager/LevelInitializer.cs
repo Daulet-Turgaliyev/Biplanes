@@ -1,59 +1,44 @@
 ﻿using System;
-using AcinusProject.Game_Core.Plane_Behaviour;
-using Client.Scripts.Game_Core.UI_Mechanics;
-using Client.Scripts.Game_Core.UI_Mechanics.Controllers;
-using Photon.Pun;
+using Mirror;
 using UnityEngine;
 using Zenject;
 
-namespace Client.Scripts.Level_Manager
+
+public class LevelInitializer : MonoBehaviour
 {
-    public class LevelInitializer : MonoBehaviour
+    [Inject] 
+    private WindowsManager _windowsManager;
+
+    [field: SerializeField] 
+    public PlaneData PlaneData { get; private set; }
+    
+    private PlaneBehaviour _currentPlane;
+
+    public void LocalPlayerInit()
     {
-        [Inject] 
-        private WindowsManager _windowsManager;
-
-        [SerializeField] 
-        private LevelData levelData;
+        if(ReferenceEquals(_currentPlane, null)) return;
         
-        [SerializeField] 
-        private PlaneData planeData;
+        var planeControllerWindow = OpenPlaneControllerWindow();
 
-        private void Awake()
-        {
-            LocalPlayerInit();
-        }
+        _currentPlane.StartLocalPlayerInit();
 
-        private void LocalPlayerInit()
-        {
-            var planeControllerWindow = OpenPlaneControllerWindow();
+        var playerPlaneBase = _currentPlane.PlaneBase;
 
-            Vector2 spawnPos = PhotonNetwork.IsMasterClient ? levelData.SpawnPoints[0] : levelData.SpawnPoints[1];
-            
-            var player = PlayerInstantiate(spawnPos);
-            player.GlobalInit();
+        var planeController = new PlaneController(ref planeControllerWindow, ref playerPlaneBase, PlaneData);
+    }
 
-            var planeController = new PlaneController(ref planeControllerWindow, ref player, planeData);
-        }
 
-        private void GlobalPlayerInit()
-        {
-            var planeBaseGameObject = PhotonNetwork.Instantiate("SimplePlane_Global", 
-                levelData.SpawnPoints[1], Quaternion.identity, 0);
-
-        }
-
+    public PlaneBehaviour PlayerInstantiate(Transform playerSpawnTransform)
+    {
+        PlaneBehaviour planeBase = Instantiate(PlaneData.PlanePrefab, 
+            playerSpawnTransform.position, playerSpawnTransform.rotation);
         
-        private PlaneBase PlayerInstantiate(Vector2 spawnPosition)
-        {
-            var planeBaseGameObject = PhotonNetwork.Instantiate("SimplePlane", spawnPosition, Quaternion.identity, 0);
-            var planeBase = planeBaseGameObject.GetComponent<PlaneBase>();
-            return planeBase;
-        }
+        _currentPlane = planeBase;
+        return planeBase;
+    }
 
-        private PlaneControllerWindow OpenPlaneControllerWindow()
-        {
-           return _windowsManager.OpenWindow<PlaneControllerWindow>();
-        }
+    private PlaneControllerWindow OpenPlaneControllerWindow()
+    {
+        return _windowsManager.OpenWindow<PlaneControllerWindow>();
     }
 }

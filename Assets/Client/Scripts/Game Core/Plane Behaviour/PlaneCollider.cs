@@ -1,18 +1,15 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace AcinusProject.Game_Core.Plane_Behaviour
+
+public class PlaneCollider : MonoBehaviour
 {
-    public class PlaneCollider : MonoBehaviour
-    {
-        [SerializeField] private new Rigidbody2D rigidbody2D;
+    [SerializeField] private new Rigidbody2D rigidbody2D;
 
-        private void OnCollisionStay2D(Collision2D other)
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.transform.TryGetComponent(out UpperBorder _))
         {
-            if (other.transform.TryGetComponent(out UpperBorder _))
-            {
-                rigidbody2D.rotation += 1f;
-            }
+            rigidbody2D.rotation += 1f;
         }
     }
 }
