@@ -168,7 +168,7 @@ GameObject:
   m_Layer: 0
   m_Name: RightSpawn
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -179,13 +179,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 95527860}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 7, y: -4.4, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalPosition: {x: 6, y: -4.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1061678202}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!114 &95527862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,7 +397,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 458958816}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 8.7, z: 1}
+  m_LocalPosition: {x: 0, y: 5.2, z: 1}
   m_LocalScale: {x: 30, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 15043847}
@@ -454,7 +454,7 @@ GameObject:
   m_Layer: 0
   m_Name: LeftSpawn
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -466,7 +466,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 464018920}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7, y: -4.4, z: 0}
+  m_LocalPosition: {x: -6, y: -4.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1061678202}
@@ -646,8 +646,11 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs: []
-  leftPlaneSpawn: {fileID: 464018921}
-  rightPlaneSpawn: {fileID: 95527861}
+  spawnPosition:
+  - <position>k__BackingField: {x: 6, y: -4.3}
+    <rotation>k__BackingField: {x: 0, y: 0, z: 0, w: 0}
+  - <position>k__BackingField: {x: -6, y: -4.3}
+    <rotation>k__BackingField: {x: 0, y: 0, z: 1, w: 0}
 --- !u!114 &1064363382
 MonoBehaviour:
   m_ObjectHideFlags: 0

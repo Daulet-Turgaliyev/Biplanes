@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
 public class BorderChecker : MonoBehaviour
@@ -30,7 +31,8 @@ public class BorderChecker : MonoBehaviour
         
         Vector3 teleportToNewPosition = _currentHorizontalPosition > 0 ? new Vector2(-_currentHorizontalPosition + BORDER_OFFSET, transform.position.y) : 
                                                                          new Vector2(Mathf.Abs(_currentHorizontalPosition) - BORDER_OFFSET, transform.position.y);
-
+        
+        
         transform.position = teleportToNewPosition;
     }
 

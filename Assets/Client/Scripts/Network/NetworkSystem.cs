@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Mirror;
 using UnityEngine;
 using Zenject;
@@ -7,32 +8,51 @@ using Zenject;
 [AddComponentMenu("")]
 public class NetworkSystem : NetworkManager
 {
-    [field: SerializeField] 
-    private Transform leftPlaneSpawn;
-
-    [field: SerializeField] 
-    private Transform rightPlaneSpawn;
-
+    [SerializeField]
+    private SpawnPlanePoint[] spawnPosition;
+    
     [Inject]
     private LevelInitializer _levelInitializer;
 
+    [Inject]
+    private WindowsManager _windowsManager;
+    
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        Transform startTransform = numPlayers == 0 ? leftPlaneSpawn : rightPlaneSpawn;
-        PlaneBehaviour playerBase = _levelInitializer.PlayerInstantiate(startTransform);
-        NetworkServer.AddPlayerForConnection(conn, playerBase.gameObject);
+        var num = numPlayers;
+        PlaneBehaviour playerBase = _levelInitializer.
+            PlayerInstantiate(spawnPosition[num]);
         
-        _levelInitializer.LocalPlayerInit();
+        NetworkServer.AddPlayerForConnection(conn, playerBase.gameObject);
 
         if (numPlayers == 2)
         {
-            Debug.Log("Start Game");
+            StartCoroutine(StartGame());
         }
+    }
+
+    private IEnumerator StartGame()
+    {
+        yield return new WaitForSeconds(3);
+        _levelInitializer.StartLevel();
+        Debug.Log("Start Game");
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+        _windowsManager.CloseLast();
         Debug.Log($"Disconnected: {conn.identity}");
         base.OnServerDisconnect(conn);
     }
+}
+
+[Serializable]
+public struct SpawnPlanePoint
+{
+    [field:SerializeField]
+    public Vector2 position { get; private set; }
+    
+    [field:SerializeField]
+    public Quaternion rotation { get; private set; }
+
 }

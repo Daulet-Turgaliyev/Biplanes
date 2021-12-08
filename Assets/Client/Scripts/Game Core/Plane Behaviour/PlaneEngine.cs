@@ -21,7 +21,6 @@ public class PlaneEngine
     {
         _velocity = _planeTransform.right * _speed;
         _rigidbody2D.AddForce(_velocity, ForceMode2D.Impulse);
-
         float thrustForce = Vector2.Dot(_rigidbody2D.velocity, _rigidbody2D.GetRelativeVector(Vector2.down) * 50.0f);
 
         Vector2 relForce = Vector2.up * thrustForce;

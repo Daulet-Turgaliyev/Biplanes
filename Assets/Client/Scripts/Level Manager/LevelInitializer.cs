@@ -4,36 +4,44 @@ using UnityEngine;
 using Zenject;
 
 
-public class LevelInitializer : MonoBehaviour
+public class LevelInitializer : NetworkBehaviour
 {
     [Inject] 
     private WindowsManager _windowsManager;
 
     [field: SerializeField] 
     public PlaneData PlaneData { get; private set; }
+
+    public static LevelInitializer Instance;
+
+    public PlaneBase planeBase;
     
-    private PlaneBehaviour _currentPlane;
-
-    public void LocalPlayerInit()
+    private void Awake()
     {
-        if(ReferenceEquals(_currentPlane, null)) return;
-        
+        // Singlton как временное решение
+        Instance = this;
+    }
+
+    [ClientRpc]
+    public void StartLevel()
+    {
+        if (ReferenceEquals(planeBase, null) == true)
+        {
+            Debug.Log("Plane Base не найден");
+            return;
+        }
+
         var planeControllerWindow = OpenPlaneControllerWindow();
-
-        _currentPlane.StartLocalPlayerInit();
-
-        var playerPlaneBase = _currentPlane.PlaneBase;
-
-        var planeController = new PlaneController(ref planeControllerWindow, ref playerPlaneBase, PlaneData);
+        
+        var planeController = new PlaneController(ref planeControllerWindow, ref planeBase, PlaneData);
     }
 
 
-    public PlaneBehaviour PlayerInstantiate(Transform playerSpawnTransform)
+    public PlaneBehaviour PlayerInstantiate(SpawnPlanePoint playerSpawnTransform)
     {
         PlaneBehaviour planeBase = Instantiate(PlaneData.PlanePrefab, 
             playerSpawnTransform.position, playerSpawnTransform.rotation);
         
-        _currentPlane = planeBase;
         return planeBase;
     }
 

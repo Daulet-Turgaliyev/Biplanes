@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3016580985236160507}
   - component: {fileID: 2529215014090946886}
   - component: {fileID: 696974312730850841}
-  - component: {fileID: 6856785616508577588}
+  - component: {fileID: 7094672579400991580}
   m_Layer: 6
   m_Name: Colliders
   m_TagString: Untagged
@@ -99,7 +99,7 @@ CircleCollider2D:
   m_Offset: {x: 0.16, y: -0.1}
   serializedVersion: 2
   m_Radius: 0.04
---- !u!114 &6856785616508577588
+--- !u!114 &7094672579400991580
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,6 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidbody2D: {fileID: 5938949295099985353}
+  networkIdentity: {fileID: 6005099902961853298}
 --- !u!1 &5938949295099985355
 GameObject:
   m_ObjectHideFlags: 0
@@ -125,8 +126,7 @@ GameObject:
   - component: {fileID: 5755780707247120072}
   - component: {fileID: 6005099902961853298}
   - component: {fileID: 5415676556189425531}
-  - component: {fileID: 2455858635683959685}
-  - component: {fileID: 2999220466256077821}
+  - component: {fileID: 3333230984411882509}
   m_Layer: 6
   m_Name: SimplePlane
   m_TagString: Untagged
@@ -211,8 +211,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 633808504ed74f1ea4d8fc4bfceeae27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   rigidbody2D: {fileID: 5938949295099985353}
---- !u!114 &2455858635683959685
+--- !u!114 &3333230984411882509
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -227,7 +229,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 1
-  sendInterval: 0.05
+  sendInterval: 0.01
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
@@ -237,32 +239,10 @@ MonoBehaviour:
   bufferTimeMultiplier: 1
   bufferSizeLimit: 64
   catchupThreshold: 4
-  catchupMultiplier: 0.1
+  catchupMultiplier: 0.01
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
---- !u!114 &2999220466256077821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5938949295099985355}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab2cbc52526ea384ba280d13cd1a57b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.053
-  target: {fileID: 5938949295099985353}
-  clientAuthority: 1
-  syncVelocity: 1
-  clearVelocity: 0
-  velocitySensitivity: 0.1
-  syncAngularVelocity: 1
-  clearAngularVelocity: 0
-  angularVelocitySensitivity: 0.1
 --- !u!1 &5938949296050439239
 GameObject:
   m_ObjectHideFlags: 0
