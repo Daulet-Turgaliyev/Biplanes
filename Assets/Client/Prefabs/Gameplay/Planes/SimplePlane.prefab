@@ -244,9 +244,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
+  syncInterval: 0.01
   rigidbody2D: {fileID: 5938949295099985353}
   planeWeapon: {fileID: 4157940993958591829}
+  planeCollider: {fileID: 7094672579400991580}
 --- !u!114 &3333230984411882509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,8 +293,6 @@ MonoBehaviour:
   syncInterval: 0.1
   bulletPrefab: {fileID: 1750104378972803100, guid: 3d1b18c6f3c8b584589cdec786065fb7, type: 3}
   projectileMount: {fileID: 6033177967286764459}
-  _cooldown: 0
-  _bulletAcceleration: 0
 --- !u!1 &5938949296050439239
 GameObject:
   m_ObjectHideFlags: 0

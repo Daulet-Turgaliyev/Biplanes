@@ -10,11 +10,13 @@ public class PlaneCollider : MonoBehaviour
 
     [SerializeField] 
     private NetworkIdentity networkIdentity;
-    
+
+    public Action<float> OnDamage;
+
     private void Start()
     {
-        if(networkIdentity.isLocalPlayer == false)
-            Destroy(this);
+        if (networkIdentity.isLocalPlayer == false)
+            gameObject.AddComponent<GlobalPlane>();
     }
 
     private void OnCollisionStay2D(Collision2D other)
@@ -23,5 +25,10 @@ public class PlaneCollider : MonoBehaviour
         {
             rigidbody2D.rotation += 1f;
         }
+    }
+
+    private void OnDisable()
+    {
+        OnDamage = null;
     }
 }
