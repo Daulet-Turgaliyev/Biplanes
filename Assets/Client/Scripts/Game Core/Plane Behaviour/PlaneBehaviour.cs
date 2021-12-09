@@ -6,7 +6,10 @@ using UnityEngine;
     {
         [SerializeField] 
         private Rigidbody2D rigidbody2D;
-        
+
+        [SerializeField] 
+        private PlaneWeapon planeWeapon;
+
         public PlaneBase PlaneBase { get; private set; }
         
         public Action OnPlaneFixedUpdater = delegate {  };
@@ -15,7 +18,7 @@ using UnityEngine;
         {
             if (isLocalPlayer == true)
             {
-                PlaneBase = new PlaneBase(ref rigidbody2D);
+                PlaneBase = new PlaneBase(rigidbody2D, planeWeapon);
                 OnPlaneFixedUpdater += PlaneBase.CustomFixedUpdate;
                 Debug.Log("Plane Base Add " + isLocalPlayer);
                 LevelInitializer.Instance.planeBase = PlaneBase;

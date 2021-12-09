@@ -22,7 +22,7 @@ public class NetworkSystem : NetworkManager
         var num = numPlayers;
         PlaneBehaviour playerBase = _levelInitializer.
             PlayerInstantiate(spawnPosition[num]);
-        
+
         NetworkServer.AddPlayerForConnection(conn, playerBase.gameObject);
 
         if (numPlayers == 2)

@@ -9,4 +9,7 @@ public class PlaneControllerWindow : BaseWindow
     
     [field:SerializeField] 
     public Slider SpeedSlider { get; private set; }
+    
+    [field:SerializeField] 
+    public Button FireButton { get; private set; }
 }

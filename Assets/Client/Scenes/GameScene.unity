@@ -273,8 +273,8 @@ GameObject:
   - component: {fileID: 409404195}
   - component: {fileID: 409404197}
   - component: {fileID: 409404196}
-  m_Layer: 0
-  m_Name: Square
+  m_Layer: 8
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -289,7 +289,7 @@ Transform:
   m_GameObject: {fileID: 409404194}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -5.2, z: 1}
-  m_LocalScale: {x: 20, y: 1, z: 1}
+  m_LocalScale: {x: 30, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 15043847}
   m_RootOrder: 0
@@ -383,7 +383,7 @@ GameObject:
   - component: {fileID: 458958818}
   - component: {fileID: 458958819}
   m_Layer: 0
-  m_Name: Square (1)
+  m_Name: SkyBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
