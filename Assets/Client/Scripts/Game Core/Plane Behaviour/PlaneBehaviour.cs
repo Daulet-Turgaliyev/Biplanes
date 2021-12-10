@@ -53,6 +53,7 @@ using UnityEngine;
             planeCollider.OnDamage += DealDamage;
         }
         
+        
         private void DealDamage(float damage)
         {
             Debug.Log("DAMAGE");

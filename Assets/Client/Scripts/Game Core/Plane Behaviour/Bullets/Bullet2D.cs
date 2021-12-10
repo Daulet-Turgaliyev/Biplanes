@@ -1,4 +1,3 @@
-using System;
 using Mirror;
 using UnityEngine;
 
@@ -9,37 +8,16 @@ public class Bullet2D : NetworkBehaviour
     private Rigidbody2D _rigidBody2D;
 
     private float _force = 800f;
-    private readonly float _damage = 1f;
+    public readonly float Damage = 1f;
+
+    private void Awake() => _rigidBody2D = GetComponent<Rigidbody2D>();
+
+    public void Start() => _rigidBody2D.AddForce(transform.right * _force);
     
-    public override void OnStartServer()
-    {
-        Invoke(nameof(DestroySelf), _destroyAfter);
-    }
-
-    private void Awake()
-    {
-        _rigidBody2D = GetComponent<Rigidbody2D>();
-    }
-
-    public void Start()
-    {
-        Debug.Log("Instante");
-        _rigidBody2D.AddForce(transform.right * _force);
-    }
+    public override void OnStartServer() => Invoke(nameof(ServerDestroySelf), _destroyAfter);
     
     [Server]
-    private void DestroySelf()
-    {
-        NetworkServer.Destroy(gameObject);
-    }
-    
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.transform.TryGetComponent(out GlobalPlane plane))
-        {
-            plane.PlaneCollider.OnDamage(_damage);
-            NetworkServer.Destroy(gameObject);
-        }
+    private void ServerDestroySelf() =>  NetworkServer.Destroy(gameObject);
 
-    }
+    public void NetworkDestroySelf() => NetworkServer.Destroy(gameObject);
 }

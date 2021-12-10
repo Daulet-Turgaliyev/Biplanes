@@ -10,13 +10,16 @@ public class PlaneCollider : MonoBehaviour
 
     [SerializeField] 
     private NetworkIdentity networkIdentity;
-
+    
     public Action<float> OnDamage;
 
     private void Start()
     {
         if (networkIdentity.isLocalPlayer == false)
-            gameObject.AddComponent<GlobalPlane>();
+        {
+            var globalPlane = gameObject.AddComponent<GlobalPlane>();
+            globalPlane.OnDealDamage += OnDamage;
+        }
     }
 
     private void OnCollisionStay2D(Collision2D other)
