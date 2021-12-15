@@ -10,7 +10,7 @@ using UnityEngine;
 
         [SerializeField] 
         private PlaneWeapon planeWeapon;
-
+        
         [SerializeField] 
         private PlaneCollider planeCollider;
         
@@ -50,14 +50,21 @@ using UnityEngine;
         private void Subscribe()
         {
             OnPlaneFixedUpdater += PlaneBase.CustomFixedUpdate;
-            planeCollider.OnDamage += DealDamage;
+            planeCollider.OnCollision += ColiisionAction;
+        }
+
+        private void ColiisionAction(Collision2D col)
+        {
+            col.transform.TryGetComponent(out ABullet bullet);
+            
+            if(ReferenceEquals(bullet, null)) return;
+            DealDamage(bullet);
         }
         
-        
-        private void DealDamage(float damage)
+        private void DealDamage(ABullet bullet)
         {
             Debug.Log("DAMAGE");
-            _healPoint -= damage;
+            _healPoint -= bullet.Damage;
             
             if (_healPoint <= 0f)
                 OnDie?.Invoke();

@@ -33,7 +33,7 @@ public class NetworkSystem : NetworkManager
 
     private IEnumerator StartGame()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(.2f);
         _levelInitializer.StartLevel();
         Debug.Log("Start Game");
     }

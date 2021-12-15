@@ -1,5 +1,8 @@
 ﻿
-    public class SimpleBullet: Bullet2D
+    using System;
+
+    public class SimpleBullet: ABullet
     {
-        
-    }
+        private void Start() => base.OnBulletInit();
+		
+	}

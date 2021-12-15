@@ -1,37 +1,14 @@
-﻿using System;
+using System;
 using Mirror;
 using UnityEngine;
 
-
 public class PlaneCollider : MonoBehaviour
 {
-    [SerializeField] 
-    private new Rigidbody2D rigidbody2D;
+	public Action<Collision2D> OnCollision;
+	private void OnCollisionEnter2D(Collision2D other)
+	{
+		OnCollision?.Invoke(other);
+	}
 
-    [SerializeField] 
-    private NetworkIdentity networkIdentity;
-    
-    public Action<float> OnDamage;
-
-    private void Start()
-    {
-        if (networkIdentity.isLocalPlayer == false)
-        {
-            var globalPlane = gameObject.AddComponent<GlobalPlane>();
-            globalPlane.OnDealDamage += OnDamage;
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D other)
-    {
-        if (other.transform.TryGetComponent(out UpperBorder _))
-        {
-            rigidbody2D.rotation += 1f;
-        }
-    }
-
-    private void OnDisable()
-    {
-        OnDamage = null;
-    }
+	private void OnDisable() { OnCollision = null; }
 }
