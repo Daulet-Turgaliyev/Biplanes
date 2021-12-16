@@ -1,27 +1,15 @@
-﻿using System;
+using System;
 using Mirror;
 using UnityEngine;
 
-
 public class PlaneCollider : MonoBehaviour
 {
-    [SerializeField] 
-    private new Rigidbody2D rigidbody2D;
+	public Action<float> OnBulletCollision;
+	
+	public void BulletHit(float damage)
+	{
+		OnBulletCollision?.Invoke(damage);
+	}
 
-    [SerializeField] 
-    private NetworkIdentity networkIdentity;
-    
-    private void Start()
-    {
-        if(networkIdentity.isLocalPlayer == false)
-            Destroy(this);
-    }
-
-    private void OnCollisionStay2D(Collision2D other)
-    {
-        if (other.transform.TryGetComponent(out UpperBorder _))
-        {
-            rigidbody2D.rotation += 1f;
-        }
-    }
+	private void OnDisable() { OnBulletCollision = null; }
 }

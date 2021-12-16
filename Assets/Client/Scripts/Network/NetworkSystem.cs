@@ -22,10 +22,10 @@ public class NetworkSystem : NetworkManager
         var num = numPlayers;
         PlaneBehaviour playerBase = _levelInitializer.
             PlayerInstantiate(spawnPosition[num]);
-        
+
         NetworkServer.AddPlayerForConnection(conn, playerBase.gameObject);
 
-        if (numPlayers == 2)
+        if (numPlayers == 1)
         {
             StartCoroutine(StartGame());
         }
@@ -33,7 +33,7 @@ public class NetworkSystem : NetworkManager
 
     private IEnumerator StartGame()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(.2f);
         _levelInitializer.StartLevel();
         Debug.Log("Start Game");
     }

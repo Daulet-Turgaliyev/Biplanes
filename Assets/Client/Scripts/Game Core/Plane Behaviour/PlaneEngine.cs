@@ -7,29 +7,29 @@ public class PlaneEngine
     private Vector2 _velocity;
 
     private readonly Transform _planeTransform;
-    private readonly Rigidbody2D _rigidbody2D;
+    private readonly Rigidbody2D rigidbody2D;
     private readonly PlaneEngineSettings _planeEngineSettings;
 
-    public PlaneEngine(PlaneEngineSettings planeEngineSettings, ref Rigidbody2D rigidbody)
+    public PlaneEngine(PlaneEngineSettings planeEngineSettings, Rigidbody2D rigidbody2D)
     {
-        _rigidbody2D = rigidbody;
+        this.rigidbody2D = rigidbody2D;
         _planeEngineSettings = planeEngineSettings;
-        _planeTransform = _rigidbody2D.transform;
+        _planeTransform = this.rigidbody2D.transform;
     }
 
     public void WorkingEngine()
     {
         _velocity = _planeTransform.right * _speed;
-        _rigidbody2D.AddForce(_velocity, ForceMode2D.Impulse);
-        float thrustForce = Vector2.Dot(_rigidbody2D.velocity, _rigidbody2D.GetRelativeVector(Vector2.down) * 50.0f);
+        rigidbody2D.AddForce(_velocity, ForceMode2D.Impulse);
+        float thrustForce = Vector2.Dot(rigidbody2D.velocity, rigidbody2D.GetRelativeVector(Vector2.down) * 50.0f);
 
         Vector2 relForce = Vector2.up * thrustForce;
 
-        _rigidbody2D.AddForce(_rigidbody2D.GetRelativeVector(relForce));
+        rigidbody2D.AddForce(rigidbody2D.GetRelativeVector(relForce));
 
-        if (_rigidbody2D.velocity.magnitude > _speed)
+        if (rigidbody2D.velocity.magnitude > _speed)
         {
-            _rigidbody2D.velocity = _rigidbody2D.velocity.normalized * _speed;
+            rigidbody2D.velocity = rigidbody2D.velocity.normalized * _speed;
         }
     }
 

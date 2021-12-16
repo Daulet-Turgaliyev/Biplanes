@@ -33,7 +33,7 @@ public class LevelInitializer : NetworkBehaviour
 
         var planeControllerWindow = OpenPlaneControllerWindow();
         
-        var planeController = new PlaneController(ref planeControllerWindow, ref planeBase, PlaneData);
+        var planeController = new PlaneController(planeControllerWindow, planeBase, PlaneData);
     }
 
 

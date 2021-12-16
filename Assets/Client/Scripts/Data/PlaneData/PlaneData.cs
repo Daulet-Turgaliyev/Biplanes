@@ -18,6 +18,12 @@ using UnityEngine;
         
         [field: SerializeField] 
         public float MaxSpeed { get; private set; }
+        
+        [field: SerializeField] 
+        public int CoolDown { get; private set; }
+        
+        [field: SerializeField] 
+        public float BulletAcceleration { get; private set; }
 
         private void OnValidate()
         {

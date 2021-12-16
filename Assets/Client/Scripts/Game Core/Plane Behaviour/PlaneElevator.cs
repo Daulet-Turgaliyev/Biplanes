@@ -9,10 +9,10 @@ public class PlaneElevator
 
     private Vector3 joystickVector;
 
-    public PlaneElevator(PlaneElevatorSettings planeElevatorSettings, ref PlaneBase planeBase)
+    public PlaneElevator(PlaneElevatorSettings planeElevatorSettings, Rigidbody2D planeRigidbody)
     {
         _speedRotation = planeElevatorSettings.SpeedRotation;
-        _rigidbody2D = planeBase.PlaneRigidbodyPlane;
+        _rigidbody2D = planeRigidbody;
     }
 
 
