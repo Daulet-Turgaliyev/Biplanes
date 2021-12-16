@@ -14,7 +14,7 @@ public class PlaneController : AController
     private PlaneBase _planeBase;
     private PlaneData _planeData;
     
-    public PlaneController(ref PlaneControllerWindow planeControllerWindow, ref PlaneBase planeBase,
+    public PlaneController(PlaneControllerWindow planeControllerWindow, PlaneBase planeBase,
         PlaneData planeData)
     {
         _planeControllerWindow = planeControllerWindow;

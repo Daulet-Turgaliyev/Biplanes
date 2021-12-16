@@ -25,16 +25,14 @@ using UnityEngine;
         
         public void Start()
         {
-            if (isLocalPlayer == true)
-            {
-                PlaneBase = new PlaneBase(rigidbody2D, planeWeapon);
-                LevelInitializer.Instance.planeBase = PlaneBase;
-                OnDie += () => Debug.Log("Die");
-                Subscribe();
-                return;
-            }
-
-            Destroy(this);
+            GlobalSubscribe();
+            
+            if (isLocalPlayer != true) return;
+            
+            PlaneBase = new PlaneBase(rigidbody2D, planeWeapon);
+            LevelInitializer.Instance.planeBase = PlaneBase;
+            OnDie += () => Debug.Log("Die");
+            LocalSubscribe();
         }
 
         private void OnDisable()
@@ -47,24 +45,20 @@ using UnityEngine;
             OnPlaneFixedUpdater?.Invoke();
         }
 
-        private void Subscribe()
+        private void GlobalSubscribe()
         {
-            OnPlaneFixedUpdater += PlaneBase.CustomFixedUpdate;
-            planeCollider.OnCollision += ColiisionAction;
-        }
-
-        private void ColiisionAction(Collision2D col)
-        {
-            col.transform.TryGetComponent(out ABullet bullet);
-            
-            if(ReferenceEquals(bullet, null)) return;
-            DealDamage(bullet);
+            planeCollider.OnBulletCollision += DealDamage;
         }
         
-        private void DealDamage(ABullet bullet)
+        private void LocalSubscribe()
         {
-            Debug.Log("DAMAGE");
-            _healPoint -= bullet.Damage;
+            OnPlaneFixedUpdater += PlaneBase.CustomFixedUpdate;
+        }
+
+        private void DealDamage(float damage)
+        {
+            Debug.Log($"DAMAGE: {damage} Name: {gameObject.name} HP: {_healPoint} ");
+            _healPoint -= damage;
             
             if (_healPoint <= 0f)
                 OnDie?.Invoke();

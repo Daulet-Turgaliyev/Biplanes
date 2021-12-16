@@ -17,7 +17,7 @@ namespace Tools.IO
 #elif UNITY_ANDROID
 			return await LoadingRequest.LoadFileBytesAsync(path);
 #endif
-			return null;
+			return await LoadingFile.LoadFileBytesAsync(path);
 		}
 		
 		public static async Task<string> LoadFileString(string path)
@@ -29,7 +29,7 @@ namespace Tools.IO
 #elif UNITY_ANDROID
 			return await LoadingRequest.LoadFileStringAsync(path);
 #endif
-			return null;
+			return await LoadingFile.LoadFileStringAsync(path);
 		}
 	}
 }

@@ -25,7 +25,7 @@ public class NetworkSystem : NetworkManager
 
         NetworkServer.AddPlayerForConnection(conn, playerBase.gameObject);
 
-        if (numPlayers == 2)
+        if (numPlayers == 1)
         {
             StartCoroutine(StartGame());
         }

@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class PlaneCollider : MonoBehaviour
 {
-	public Action<Collision2D> OnCollision;
-	private void OnCollisionEnter2D(Collision2D other)
+	public Action<float> OnBulletCollision;
+	
+	public void BulletHit(float damage)
 	{
-		OnCollision?.Invoke(other);
+		OnBulletCollision?.Invoke(damage);
 	}
 
-	private void OnDisable() { OnCollision = null; }
+	private void OnDisable() { OnBulletCollision = null; }
 }
