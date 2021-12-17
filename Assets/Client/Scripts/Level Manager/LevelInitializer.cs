@@ -1,5 +1,4 @@
-﻿using System;
-using Mirror;
+﻿using Mirror;
 using UnityEngine;
 using Zenject;
 
@@ -15,7 +14,7 @@ public class LevelInitializer : NetworkBehaviour
     public static LevelInitializer Instance;
 
     public PlaneBase planeBase;
-    
+
     private void Awake()
     {
         // Singlton как временное решение

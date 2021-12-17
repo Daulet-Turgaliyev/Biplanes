@@ -5,33 +5,43 @@ using UnityEngine;
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlaneBehaviour : NetworkBehaviour
     {
-        [SerializeField] 
-        private new Rigidbody2D rigidbody2D;
-
-        [SerializeField] 
+        private Rigidbody2D _rigidbody2D;
+        
+        [Space(3)]
+        [Header("Plane Part"), SerializeField] 
         private PlaneWeapon planeWeapon;
         
         [SerializeField] 
         private PlaneCollider planeCollider;
-        
-        [SyncVar]
-        private float _healPoint = 4f;
-        
-        public PlaneBase PlaneBase { get; private set; }
-        
-        public Action OnPlaneFixedUpdater = delegate {  };
 
-        public Action OnDie;
+        [SerializeField] 
+        private PlaneCondition planeCondition;
+
+        [SerializeField] 
+        private PlaneSkin planeSkin;
         
+        [Space(3)]
+        [Header("Mirror")]
+        [SyncVar]
+        private int _healPoint = 4;
+
+        private PlaneBase _planeBase;
+        private Action OnPlaneFixedUpdater = delegate {  };
+
+        private void Awake()
+        {
+            _rigidbody2D = GetComponent<Rigidbody2D>();
+        }
+
         public void Start()
         {
+            planeSkin.Init(isLocalPlayer);
             GlobalSubscribe();
             
             if (isLocalPlayer != true) return;
             
-            PlaneBase = new PlaneBase(rigidbody2D, planeWeapon);
-            LevelInitializer.Instance.planeBase = PlaneBase;
-            OnDie += () => Debug.Log("Die");
+            _planeBase = new PlaneBase(_rigidbody2D, planeWeapon);
+            LevelInitializer.Instance.planeBase = _planeBase;
             LocalSubscribe();
         }
 
@@ -47,20 +57,26 @@ using UnityEngine;
 
         private void GlobalSubscribe()
         {
-            planeCollider.OnBulletCollision += DealDamage;
+            planeCollider.OnBulletCollision += RpcChangeCondition;
         }
         
         private void LocalSubscribe()
         {
-            OnPlaneFixedUpdater += PlaneBase.CustomFixedUpdate;
+            planeCondition.OnDie += DiePlane;
+            OnPlaneFixedUpdater += _planeBase.CustomFixedUpdate;
         }
 
-        private void DealDamage(float damage)
+        private void DiePlane()
+        {
+            OnPlaneFixedUpdater = null;
+        }
+
+        [ClientRpc]
+        private void RpcChangeCondition(int damage)
         {
             Debug.Log($"DAMAGE: {damage} Name: {gameObject.name} HP: {_healPoint} ");
             _healPoint -= damage;
-            
-            if (_healPoint <= 0f)
-                OnDie?.Invoke();
+
+            planeCondition.TrySetCondition(_healPoint);
         }
     }

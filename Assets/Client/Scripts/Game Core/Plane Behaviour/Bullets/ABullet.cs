@@ -4,11 +4,11 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class ABullet : NetworkBehaviour
 {
-    protected readonly float _destroyAfter = 5f;
-    protected Rigidbody2D _rigidBody2D;
+    private readonly float _destroyAfter = 5f;
+    private Rigidbody2D _rigidBody2D;
 
-    protected float _force = 800f;
-    public readonly float Damage = 1f;
+    private float _force = 800f;
+    private int _damage = 1;
 
     protected void OnBulletInit()
     {
@@ -26,9 +26,8 @@ public abstract class ABullet : NetworkBehaviour
     [ServerCallback]
     private void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log(col.collider.TryGetComponent(out PlaneCollider x));
         if (col.collider.TryGetComponent(out PlaneCollider planeCollider))
-            planeCollider.BulletHit(Damage);
+            planeCollider.BulletHit(_damage);
             
         NetworkServer.Destroy(gameObject);
     }

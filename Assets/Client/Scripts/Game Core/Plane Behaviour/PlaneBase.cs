@@ -17,7 +17,7 @@ public class PlaneBase
         
         PlaneWeapon = planeWeapon;
         
-        this.PlaneRigidbodyPlane = planeRigidbody2D;
+        PlaneRigidbodyPlane = planeRigidbody2D;
         
         PlaneElementsInit();
     }

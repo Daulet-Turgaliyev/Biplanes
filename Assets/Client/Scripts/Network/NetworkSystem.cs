@@ -2,6 +2,7 @@
 using System.Collections;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Networking.Types;
 using Zenject;
 
 
@@ -25,7 +26,7 @@ public class NetworkSystem : NetworkManager
 
         NetworkServer.AddPlayerForConnection(conn, playerBase.gameObject);
 
-        if (numPlayers == 1)
+        if (numPlayers == 2)
         {
             StartCoroutine(StartGame());
         }
@@ -40,7 +41,7 @@ public class NetworkSystem : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        _windowsManager.CloseLast();
+        _windowsManager.CloseAll();
         Debug.Log($"Disconnected: {conn.identity}");
         base.OnServerDisconnect(conn);
     }
