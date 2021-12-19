@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
 
@@ -23,7 +25,7 @@ using UnityEngine;
         [Space(3)]
         [Header("Mirror")]
         [SyncVar]
-        private int _healPoint = 4;
+        private int _healPoint = 3;
 
         private PlaneBase _planeBase;
         private Action OnPlaneFixedUpdater = delegate {  };
@@ -63,6 +65,7 @@ using UnityEngine;
         private void LocalSubscribe()
         {
             planeCondition.OnDie += DiePlane;
+            planeCondition.OnDestroy += StartDestroyPlane;
             OnPlaneFixedUpdater += _planeBase.CustomFixedUpdate;
         }
 
@@ -70,7 +73,7 @@ using UnityEngine;
         {
             OnPlaneFixedUpdater = null;
         }
-
+        
         [ClientRpc]
         private void RpcChangeCondition(int damage)
         {
@@ -78,5 +81,24 @@ using UnityEngine;
             _healPoint -= damage;
 
             planeCondition.TrySetCondition(_healPoint);
+        }
+
+        private void StartDestroyPlane()
+        {
+            if (CanSendCommand() == false) return;
+            DestroyPlane();
+        }
+        
+        [Command]
+        private void DestroyPlane()
+        {
+            LevelInitializer.Instance.ResetPlane();
+            NetworkServer.Destroy(gameObject);
+        }
+
+        private bool CanSendCommand()
+        {
+            // != false
+            return isLocalPlayer && isClient;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -7,8 +8,12 @@ using UnityEngine;
         [field:SerializeField]
         public ParticleSystem[] particleCondition { private set; get; }
 
+        [field:SerializeField]
+        public ParticleSystem particleDestroy { private set; get; }
+        
         private ParticleSystem _currentParticle;
 
+        public Action OnDestroy;
         public Action OnDie;
 
         private void Start()
@@ -18,7 +23,7 @@ using UnityEngine;
 
         public void TrySetCondition(int healthStatus)
         {
-            if (healthStatus > particleCondition.Length - 1 || healthStatus < 0)
+            if (healthStatus > particleCondition.Length - 1|| healthStatus < 0)
             {
                 Debug.LogWarning($"healthStatus: {healthStatus} not correct");
                 return;
@@ -36,7 +41,12 @@ using UnityEngine;
             _currentParticle.Play();
         }
 
-        private void DieAnimation() => particleCondition[0].Play();
+        private async void DieAnimation()
+        {
+            particleDestroy.Play();
+            await Task.Delay(2000);
+            OnDestroy?.Invoke();
+        }
         
         private void OnEnable()
         {
@@ -46,5 +56,6 @@ using UnityEngine;
         private void OnDisable()
         {
             OnDie = null;
+            OnDestroy = null;
         }
     }

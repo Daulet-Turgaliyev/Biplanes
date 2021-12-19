@@ -1288,6 +1288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   windowsManager: {fileID: 768965632}
+  networkSystem: {fileID: 1064363381}
   levelInitializer: {fileID: 285666681}
 --- !u!114 &1609963180
 MonoBehaviour:

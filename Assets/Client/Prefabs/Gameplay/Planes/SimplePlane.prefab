@@ -437,10 +437,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <particleCondition>k__BackingField:
-  - {fileID: 41259869603613930}
   - {fileID: 3383507810309561477}
   - {fileID: 3141142533565328587}
   - {fileID: 5307439616535277919}
+  <particleDestroy>k__BackingField: {fileID: 41259869603613930}
 --- !u!1001 &41259869585391338
 PrefabInstance:
   m_ObjectHideFlags: 0

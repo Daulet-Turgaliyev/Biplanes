@@ -17,12 +17,14 @@ public class NetworkSystem : NetworkManager
 
     [Inject]
     private WindowsManager _windowsManager;
+
+    private int numberPlayer;
     
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        var num = numPlayers;
-        PlaneBehaviour playerBase = _levelInitializer.
-            PlayerInstantiate(spawnPosition[num]);
+        numberPlayer = numPlayers;
+        
+        PlaneBehaviour playerBase = _levelInitializer.PlayerInstantiate(GetSpawnPosition());
 
         NetworkServer.AddPlayerForConnection(conn, playerBase.gameObject);
 
@@ -44,6 +46,11 @@ public class NetworkSystem : NetworkManager
         _windowsManager.CloseAll();
         Debug.Log($"Disconnected: {conn.identity}");
         base.OnServerDisconnect(conn);
+    }
+
+    public SpawnPlanePoint GetSpawnPosition()
+    {
+        return spawnPosition[numberPlayer];
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using System.Threading.Tasks;
+using Mirror;
 using UnityEngine;
 using Zenject;
 
@@ -8,13 +9,18 @@ public class LevelInitializer : NetworkBehaviour
     [Inject] 
     private WindowsManager _windowsManager;
 
+    [Inject] 
+    private NetworkSystem _networkSystem;
+
+    private  PlaneControllerWindow _planeControllerWindow;
+
     [field: SerializeField] 
     public PlaneData PlaneData { get; private set; }
 
     public static LevelInitializer Instance;
 
     public PlaneBase planeBase;
-
+    
     private void Awake()
     {
         // Singlton как временное решение
@@ -30,11 +36,15 @@ public class LevelInitializer : NetworkBehaviour
             return;
         }
 
-        var planeControllerWindow = OpenPlaneControllerWindow();
+        _planeControllerWindow = OpenPlaneControllerWindow();
         
-        var planeController = new PlaneController(planeControllerWindow, planeBase, PlaneData);
+        var planeController = new PlaneController(_planeControllerWindow, planeBase, PlaneData);
     }
 
+    public async void ResetPlane()
+    {
+        //restart plane
+    }
 
     public PlaneBehaviour PlayerInstantiate(SpawnPlanePoint playerSpawnTransform)
     {
