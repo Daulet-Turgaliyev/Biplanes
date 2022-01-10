@@ -182,7 +182,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 3
+  m_Constraints: 0
 --- !u!114 &6005099902961853298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,10 +214,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.01
-  planeWeapon: {fileID: 4157940993958591829}
-  planeCollider: {fileID: 1477403281436754026}
-  planeCondition: {fileID: 4484608499105626729}
-  planeSkin: {fileID: 6051254206263255500}
+  _planeWeapon: {fileID: 4157940993958591829}
+  _planeCollider: {fileID: 1477403281436754026}
+  _planeCondition: {fileID: 4484608499105626729}
+  <PlaneSkin>k__BackingField: {fileID: 6051254206263255500}
+  <PlaneData>k__BackingField: {fileID: 11400000, guid: 8886e13696e81794c931c467bb27ac8b, type: 2}
 --- !u!114 &3333230984411882509
 MonoBehaviour:
   m_ObjectHideFlags: 0

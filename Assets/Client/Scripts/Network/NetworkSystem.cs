@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
-using UnityEngine.Networking.Types;
 using Zenject;
-
 
 [AddComponentMenu("")]
 public class NetworkSystem : NetworkManager
@@ -17,40 +16,112 @@ public class NetworkSystem : NetworkManager
 
     [Inject]
     private WindowsManager _windowsManager;
-
-    private int numberPlayer;
+    
+    [field: SerializeField] 
+    public PlaneData planeData { get; private set; }
+    
+    private List<NetworkConnection> _players = new List<NetworkConnection>();
+    
+    
+    private int _spawnPoint;
+    
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        NetworkServer.RegisterHandler<PlayerData>(RegisterMessage);
+    }
     
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        numberPlayer = numPlayers;
+        base.OnServerAddPlayer(conn);
+
+        _players.Add(conn);
+
+        var playerHandler = conn.identity.GetComponent<PlayerHandler>();
+
+        if (ReferenceEquals(playerHandler, null))
+        {
+            Debug.LogError("Nor Found PlayerHandler");
+            NetworkClient.Disconnect();
+            return;
+        }
+
+        playerHandler.PlayerId = numPlayers - 1;
         
-        PlaneBehaviour playerBase = _levelInitializer.PlayerInstantiate(GetSpawnPosition());
-
-        NetworkServer.AddPlayerForConnection(conn, playerBase.gameObject);
-
         if (numPlayers == 2)
         {
-            StartCoroutine(StartGame());
+            StartGame();
         }
     }
+    
 
-    private IEnumerator StartGame()
+    public override void OnClientConnect(NetworkConnection conn)
     {
-        yield return new WaitForSeconds(.2f);
-        _levelInitializer.StartLevel();
-        Debug.Log("Start Game");
+        
+      /*  if (ReferenceEquals(conn, null))
+        {
+            Debug.LogWarning("Connection not found ");
+            return;
+        }
+        
+        conn.Send(new PlayerData { PlayerName = $"Player 00" });*/
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         _windowsManager.CloseAll();
+        _players.Remove(conn);
         Debug.Log($"Disconnected: {conn.identity}");
         base.OnServerDisconnect(conn);
     }
 
-    public SpawnPlanePoint GetSpawnPosition()
+    private async void StartGame()
     {
-        return spawnPosition[numberPlayer];
+        await Task.Delay(1000);
+
+        foreach (var connect in NetworkServer.connections.Values)
+        {
+            PlaneInstantiate(connect, planeData, GetSpawnPosition());
+        }
+        
+        Debug.Log("Start Game");
+    }
+
+    [Server]
+    private async void RespawnPlane(PlaneBehaviour planeObject)
+    {
+        var connectionToClient = planeObject.GetComponent<NetworkIdentity>().connectionToClient;
+        
+        NetworkServer.Destroy(planeObject.gameObject);
+
+        await Task.Delay(2500);
+
+        PlaneInstantiate(connectionToClient, planeData, GetSpawnPosition());
+    }
+    
+    public PlaneBehaviour PlaneInstantiate(NetworkConnection conn, PlaneData planeData, SpawnPlanePoint playerSpawnTransform)
+    {
+        PlaneBehaviour planeBehaviour = Instantiate(planeData.PlanePrefab, 
+            playerSpawnTransform.position, playerSpawnTransform.rotation);
+        NetworkServer.Spawn(planeBehaviour.gameObject, conn);
+
+        planeBehaviour.Initialize();
+        planeBehaviour.OnDestroyedPlane += RespawnPlane;
+        
+        return planeBehaviour;
+    }
+    
+    private SpawnPlanePoint GetSpawnPosition()
+    {
+        int spawnPoint = _spawnPoint == 1 ? 0 : 1;
+        _spawnPoint = spawnPoint;
+        return spawnPosition[spawnPoint];
+    }
+
+    private void RegisterMessage(NetworkConnection conn, PlayerData player)
+    {
+        var ident = conn.identity.GetComponent<PlayerHandler>();
+        PlayerHandler.Instance.PlayerName = player.PlayerName;
     }
 }
 
@@ -62,5 +133,4 @@ public struct SpawnPlanePoint
     
     [field:SerializeField]
     public Quaternion rotation { get; private set; }
-
 }

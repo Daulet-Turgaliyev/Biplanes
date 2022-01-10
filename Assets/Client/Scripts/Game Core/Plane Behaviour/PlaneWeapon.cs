@@ -5,6 +5,8 @@
 
     public class PlaneWeapon : NetworkBehaviour
     {
+        private NetworkIdentity _networkIdentity;
+        
         [SerializeField] 
         private GameObject bulletPrefab;
 
@@ -16,9 +18,9 @@
 
         public Action OnFire = delegate { };
 
-        private void Start()
+        private void Awake()
         {
-            NetworkClient.RegisterPrefab(bulletPrefab);
+            _networkIdentity = GetComponent<NetworkIdentity>();
         }
 
         public void Init(PlaneWeaponSettings settings)
@@ -34,7 +36,7 @@
 
         private void Fire()
         {
-            if (isLocalPlayer)
+            if (_networkIdentity.hasAuthority)
                 CmdFire();
         }
         

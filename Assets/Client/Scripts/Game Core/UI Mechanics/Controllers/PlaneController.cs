@@ -14,12 +14,11 @@ public class PlaneController : AController
     private PlaneBase _planeBase;
     private PlaneData _planeData;
     
-    public PlaneController(PlaneControllerWindow planeControllerWindow, PlaneBase planeBase,
-        PlaneData planeData)
+    public PlaneController(PlaneControllerWindow planeControllerWindow, PlaneBase planeBase)
     {
         _planeControllerWindow = planeControllerWindow;
         _planeBase = planeBase;
-        _planeData = planeData;
+        _planeData = planeBase.PlaneData;
 
         Initialize();
     }

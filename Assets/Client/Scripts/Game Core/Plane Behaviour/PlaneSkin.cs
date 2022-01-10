@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Mirror;
 using UnityEngine;
 
 
@@ -11,8 +11,15 @@ public class PlaneSkin : MonoBehaviour
     private Sprite[] planeSprite;
 
     private void Awake() => _spriteRenderer = GetComponent<SpriteRenderer>();
-    public void Init(bool isLocal)
+    
+    public void Initialize(bool hasAuthority)
     {
-        _spriteRenderer.sprite = isLocal ? planeSprite[1] : planeSprite[0];
+        int myId = LevelInitializer.Instance.GetSkinId();
+
+        if (hasAuthority == false)
+            myId = myId == 0 ? 1 : 0;
+        
+        Debug.Log($"Skin Id {myId}");
+        _spriteRenderer.sprite = planeSprite[myId];
     }
 }

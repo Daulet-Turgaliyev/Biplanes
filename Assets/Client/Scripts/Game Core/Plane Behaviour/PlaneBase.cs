@@ -9,11 +9,11 @@ public class PlaneBase
     public PlaneElevator PlaneElevator { get; private set; }
     public PlaneWeapon PlaneWeapon { get; }
 
-    private readonly PlaneData _planeData;
+    public PlaneData PlaneData { get; }
 
-    public PlaneBase(Rigidbody2D planeRigidbody2D, PlaneWeapon planeWeapon)
+    public PlaneBase(Rigidbody2D planeRigidbody2D, PlaneWeapon planeWeapon, PlaneData planeData)
     {
-        _planeData = Resources.Load<PlaneData>("Data/Planes/SimplePlane");
+        PlaneData = planeData;
         
         PlaneWeapon = planeWeapon;
         
@@ -38,19 +38,19 @@ public class PlaneBase
 
     private void PlaneEngineInit()
     {
-        var planeEngineSettings = new PlaneEngineSettings(_planeData);
+        var planeEngineSettings = new PlaneEngineSettings(PlaneData);
         PlaneEngine = new PlaneEngine(planeEngineSettings, PlaneRigidbodyPlane);
     }
 
     private void PlaneElevatorInit()
     {
-        var planeElevatorSettings = new PlaneElevatorSettings(_planeData.SpeedRotation);
+        var planeElevatorSettings = new PlaneElevatorSettings(PlaneData.SpeedRotation);
         PlaneElevator = new PlaneElevator(planeElevatorSettings, PlaneRigidbodyPlane);
     }
     
     private void PlaneWeaponInit()
     {
-        var planeWeaponSettings = new PlaneWeaponSettings(_planeData.CoolDown, _planeData.BulletAcceleration);
+        var planeWeaponSettings = new PlaneWeaponSettings(PlaneData.CoolDown, PlaneData.BulletAcceleration);
         PlaneWeapon.Init(planeWeaponSettings); 
     }
 }
