@@ -1,43 +1,77 @@
 ﻿using System;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-    [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D))]
     public class PlaneBehaviour : NetworkBehaviour
     {
-        [SerializeField] 
-        private new Rigidbody2D rigidbody2D;
+        private Rigidbody2D _rigidbody2D;
+        private NetworkIdentity _networkIdentity;
+        
+        [FormerlySerializedAs("PlaneWeapon")]
+        [Space(3)]
+        [Header("Plane Parts"), SerializeField] 
+        private PlaneWeapon _planeWeapon;
+        
+        [FormerlySerializedAs("PlaneCollider")] [SerializeField] 
+        private PlaneCollider _planeCollider;
 
-        [SerializeField] 
-        private PlaneWeapon planeWeapon;
+        [FormerlySerializedAs("PlaneCondition")] [SerializeField] 
+        private PlaneCondition _planeCondition;
+
+        [field: SerializeField] 
+        public PlaneSkin PlaneSkin { get; private set; }
         
-        [SerializeField] 
-        private PlaneCollider planeCollider;
+        [field:SerializeField]
+        public PlaneData PlaneData { get; private set; }
         
+        [Space(3)]
+        [Header("Mirror")]
         [SyncVar]
-        private float _healPoint = 4f;
+        private int _healPoint = 3;
         
-        public PlaneBase PlaneBase { get; private set; }
-        
-        public Action OnPlaneFixedUpdater = delegate {  };
+        public PlaneBase planeBase { get; private set; }
 
-        public Action OnDie;
-        
+        public Action<PlaneBehaviour> OnDestroyedPlane = delegate {  };
+        private Action OnPlaneFixedUpdater = delegate {  };
+
+        private void Awake()
+        {
+            _networkIdentity = GetComponent<NetworkIdentity>();
+            _rigidbody2D = GetComponent<Rigidbody2D>();
+        }
+
         public void Start()
         {
+            PlaneSkin.Initialize(hasAuthority);
             GlobalSubscribe();
+        }
+
+        [ClientRpc]
+        public void Initialize()
+        {
+            if (_networkIdentity.hasAuthority == false)
+            {
+                Debug.LogWarning("НЕТ АВТОРИЗАЦИИ");
+                return;
+            }
+            planeBase = new PlaneBase(_rigidbody2D, _planeWeapon, PlaneData);
+
+            if (ReferenceEquals(LevelInitializer.Instance, null))
+            {
+                Debug.Log("Блять где Level Init?!");
+                return;
+            }
             
-            if (isLocalPlayer != true) return;
-            
-            PlaneBase = new PlaneBase(rigidbody2D, planeWeapon);
-            LevelInitializer.Instance.planeBase = PlaneBase;
-            OnDie += () => Debug.Log("Die");
+            LevelInitializer.Instance.StartPlane(planeBase);
             LocalSubscribe();
         }
 
         private void OnDisable()
         {
             OnPlaneFixedUpdater = null;
+            OnDestroyedPlane = null;
         }
 
         private void FixedUpdate()
@@ -47,20 +81,46 @@ using UnityEngine;
 
         private void GlobalSubscribe()
         {
-            planeCollider.OnBulletCollision += DealDamage;
+            _planeCollider.OnBulletCollision += RpcChangeCondition;
         }
         
         private void LocalSubscribe()
         {
-            OnPlaneFixedUpdater += PlaneBase.CustomFixedUpdate;
+            _planeCondition.OnDie += DiePlane;
+            _planeCondition.OnDestroy += StartDestroyPlane;
+            OnPlaneFixedUpdater += planeBase.CustomFixedUpdate;
         }
 
-        private void DealDamage(float damage)
+        private void DiePlane()
+        {
+            OnPlaneFixedUpdater = null;
+        }
+
+        [ClientRpc]
+        private void RpcChangeCondition(int damage)
         {
             Debug.Log($"DAMAGE: {damage} Name: {gameObject.name} HP: {_healPoint} ");
             _healPoint -= damage;
-            
-            if (_healPoint <= 0f)
-                OnDie?.Invoke();
+
+            _planeCondition.TrySetCondition(_healPoint);
+        }
+
+        private void StartDestroyPlane()
+        {
+            if (CanSendCommand() == false) return;
+            LevelInitializer.Instance.ClosePlanePanel();
+            CmdDestroyPlane();
+        }
+        
+        [Command]
+        private void CmdDestroyPlane()
+        {
+            OnDestroyedPlane(this);
+        }
+
+        private bool CanSendCommand()
+        {
+            // != false
+            return _networkIdentity.hasAuthority && isClient;
         }
     }

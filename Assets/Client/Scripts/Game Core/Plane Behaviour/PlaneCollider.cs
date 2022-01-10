@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PlaneCollider : MonoBehaviour
 {
-	public Action<float> OnBulletCollision;
+	public Action<int> OnBulletCollision;
 	
-	public void BulletHit(float damage)
+	public void BulletHit(int damage)
 	{
 		OnBulletCollision?.Invoke(damage);
 	}

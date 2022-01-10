@@ -1,52 +1,63 @@
-﻿using System;
-using Mirror;
+﻿using Mirror;
 using UnityEngine;
 using Zenject;
 
 
 public class LevelInitializer : NetworkBehaviour
 {
+    private NetworkIdentity _networkIdentity;
+    
+    public PlayerHandler PlayerHandler;
+    
     [Inject] 
     private WindowsManager _windowsManager;
 
-    [field: SerializeField] 
-    public PlaneData PlaneData { get; private set; }
+    [Inject] 
+    private NetworkSystem _networkSystem;
 
+    private  PlaneControllerWindow _planeControllerWindow;
+
+    private PlaneController _planeController;
+    
     public static LevelInitializer Instance;
-
-    public PlaneBase planeBase;
     
     private void Awake()
     {
         // Singlton как временное решение
         Instance = this;
+        _networkIdentity = GetComponent<NetworkIdentity>();
     }
-
-    [ClientRpc]
-    public void StartLevel()
+    
+    public void SetPlayerHandler(PlayerHandler playerHandler)
     {
-        if (ReferenceEquals(planeBase, null) == true)
+        Debug.Log(playerHandler);
+        PlayerHandler = playerHandler;
+    }
+    
+    public void StartPlane(PlaneBase planeBase)
+    {
+        if(ReferenceEquals(planeBase, null) == true)
         {
-            Debug.Log("Plane Base не найден");
+            Debug.LogError("PlaneBase not found");
             return;
         }
-
-        var planeControllerWindow = OpenPlaneControllerWindow();
         
-        var planeController = new PlaneController(planeControllerWindow, planeBase, PlaneData);
+        _planeControllerWindow = GetPlaneControllerWindow();
+        _planeController = new PlaneController(_planeControllerWindow, planeBase);
     }
 
-
-    public PlaneBehaviour PlayerInstantiate(SpawnPlanePoint playerSpawnTransform)
+    public int GetSkinId()
     {
-        PlaneBehaviour planeBase = Instantiate(PlaneData.PlanePrefab, 
-            playerSpawnTransform.position, playerSpawnTransform.rotation);
-        
-        return planeBase;
+        return PlayerHandler.Instance.PlayerId;
     }
-
-    private PlaneControllerWindow OpenPlaneControllerWindow()
+    
+    private PlaneControllerWindow GetPlaneControllerWindow()
     {
         return _windowsManager.OpenWindow<PlaneControllerWindow>();
+    }
+
+    public void ClosePlanePanel()
+    {
+        _windowsManager.CloseAll();
     }
 }

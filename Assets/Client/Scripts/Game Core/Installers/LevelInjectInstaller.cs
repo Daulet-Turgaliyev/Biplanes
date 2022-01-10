@@ -7,6 +7,9 @@ public class LevelInjectInstaller : MonoInstaller
     private WindowsManager windowsManager;
     
     [SerializeField] 
+    private NetworkSystem networkSystem;
+    
+    [SerializeField] 
     private LevelInitializer levelInitializer;
     public override void InstallBindings()
     {
@@ -14,5 +17,6 @@ public class LevelInjectInstaller : MonoInstaller
         Container.Bind<BackButton>().AsSingle().Lazy();
         Container.Bind<WindowsManager>().FromInstance(windowsManager).NonLazy();
         Container.Bind<LevelInitializer>().FromInstance(levelInitializer).NonLazy();
+        Container.Bind<NetworkSystem>().FromInstance(networkSystem).NonLazy();
     }
 }
