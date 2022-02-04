@@ -63,7 +63,7 @@ using UnityEngine.Serialization;
                 Debug.Log("Блять где Level Init?!");
                 return;
             }
-            
+
             LevelInitializer.Instance.StartPlane(planeBase);
             LocalSubscribe();
         }
@@ -108,7 +108,7 @@ using UnityEngine.Serialization;
         private void StartDestroyPlane()
         {
             if (CanSendCommand() == false) return;
-            LevelInitializer.Instance.ClosePlanePanel();
+            LevelInitializer.Instance.DestroyActiveWindow();
             CmdDestroyPlane();
         }
         
@@ -122,5 +122,11 @@ using UnityEngine.Serialization;
         {
             // != false
             return _networkIdentity.hasAuthority && isClient;
+        }
+        
+        public void JumpOnPlane()
+        {
+            LevelInitializer.Instance.DestroyActiveWindow();
+        
         }
     }

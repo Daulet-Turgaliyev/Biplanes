@@ -8,6 +8,7 @@ public class PlaneController : AController
     public Action<float> OnSpeedUpdated;
     
     public Action OnShoot;
+    public Action OnJump;
     public Action<float> OnReload;
 
     private PlaneControllerWindow _planeControllerWindow;
@@ -54,6 +55,11 @@ public class PlaneController : AController
         {
             OnShoot?.Invoke();
         });
+        
+        _planeControllerWindow.JumpButton.onClick.AddListener(delegate
+        {
+            OnJump?.Invoke();
+        });
     }
 
     private void SetValuesControls()
@@ -61,17 +67,17 @@ public class PlaneController : AController
         _planeControllerWindow.SpeedSlider.minValue = _planeData.MinSpeed;
         _planeControllerWindow.SpeedSlider.maxValue = _planeData.MaxSpeed;
     }
-
     
     private async void ReloadWeapon()
     {
-        _planeControllerWindow.FireButton.interactable = false;
-        await Task.Delay(_planeData.CoolDown);
-
-        if(ReferenceEquals(_planeControllerWindow, null) == false)
+        if (_planeControllerWindow is { })
+        {
+            _planeControllerWindow.FireButton.interactable = false;
+            await Task.Delay(_planeData.CoolDown);
             _planeControllerWindow.FireButton.interactable = true;
+        }
     }
-    
+
     ~PlaneController()
     {
         OnSpeedUpdated = null;

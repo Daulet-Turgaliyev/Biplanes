@@ -16,8 +16,9 @@ public class LevelInitializer : NetworkBehaviour
     private NetworkSystem _networkSystem;
 
     private  PlaneControllerWindow _planeControllerWindow;
-
-    private PlaneController _planeController;
+    
+    
+    public PlaneController PlaneController { get; private set; }
     
     public static LevelInitializer Instance;
     
@@ -43,7 +44,7 @@ public class LevelInitializer : NetworkBehaviour
         }
         
         _planeControllerWindow = GetPlaneControllerWindow();
-        _planeController = new PlaneController(_planeControllerWindow, planeBase);
+        PlaneController = new PlaneController(_planeControllerWindow, planeBase);
     }
 
     public int GetSkinId()
@@ -56,8 +57,14 @@ public class LevelInitializer : NetworkBehaviour
         return _windowsManager.OpenWindow<PlaneControllerWindow>();
     }
 
-    public void ClosePlanePanel()
+    public void DestroyActiveWindow()
     {
-        _windowsManager.CloseAll();
+        if (ReferenceEquals(_planeControllerWindow, null) == true)
+        {
+            Debug.LogWarning("_planeControllerWindow not found");
+            return;
+        }
+        
+        Destroy(_planeControllerWindow.gameObject);
     }
 }

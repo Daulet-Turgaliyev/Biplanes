@@ -4,11 +4,10 @@
 public class PlaneBase
 {
     private Rigidbody2D PlaneRigidbodyPlane { get; }
-
     public PlaneEngine PlaneEngine { get; private set; }
     public PlaneElevator PlaneElevator { get; private set; }
     public PlaneWeapon PlaneWeapon { get; }
-
+    public PlaneCabin PlaneCabin { get; }
     public PlaneData PlaneData { get; }
 
     public PlaneBase(Rigidbody2D planeRigidbody2D, PlaneWeapon planeWeapon, PlaneData planeData)

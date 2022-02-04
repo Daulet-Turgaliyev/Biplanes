@@ -12,4 +12,7 @@ public class PlaneControllerWindow : BaseWindow
     
     [field:SerializeField] 
     public Button FireButton { get; private set; }
+    
+    [field:SerializeField] 
+    public Button JumpButton { get; private set; }
 }
