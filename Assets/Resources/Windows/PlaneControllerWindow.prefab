@@ -488,6 +488,7 @@ MonoBehaviour:
   <Joystick>k__BackingField: {fileID: 355630075297158474}
   <SpeedSlider>k__BackingField: {fileID: 9085658481892108134}
   <FireButton>k__BackingField: {fileID: 3795819018593091238}
+  <JumpButton>k__BackingField: {fileID: 5401854435825968093}
 --- !u!1 &5490943806536946870
 GameObject:
   m_ObjectHideFlags: 0

@@ -206,7 +206,7 @@ public class WindowsManager: MonoBehaviour {
         {
             windowPrefab = Resources.Load<T>("Windows/" + clearWindowName);
         }
-        Debug.Log(clearWindowName);
+        Debug.Log($"Open Window: {clearWindowName}");
         if (windowPrefab == null)
         {
             Debug.LogError($"{typeof(T)} not found in Resources");

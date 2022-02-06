@@ -9,10 +9,14 @@ using UnityEngine.Serialization;
         private Rigidbody2D _rigidbody2D;
         private NetworkIdentity _networkIdentity;
         
-        [FormerlySerializedAs("PlaneWeapon")]
         [Space(3)]
+        [FormerlySerializedAs("PlaneWeapon")]
         [Header("Plane Parts"), SerializeField] 
         private PlaneWeapon _planeWeapon;
+        
+        [FormerlySerializedAs("PlaneCabin")]
+        [Header("Plane Parts"), SerializeField] 
+        private PlaneCabin _planeCabin;
         
         [FormerlySerializedAs("PlaneCollider")] [SerializeField] 
         private PlaneCollider _planeCollider;
@@ -42,29 +46,26 @@ using UnityEngine.Serialization;
             _rigidbody2D = GetComponent<Rigidbody2D>();
         }
 
+        public override void OnStartAuthority()
+        {
+            Initialize();
+        }
+
         public void Start()
         {
             PlaneSkin.Initialize(hasAuthority);
             GlobalSubscribe();
         }
 
-        [ClientRpc]
         public void Initialize()
         {
-            if (_networkIdentity.hasAuthority == false)
-            {
-                Debug.LogWarning("НЕТ АВТОРИЗАЦИИ");
-                return;
-            }
-            planeBase = new PlaneBase(_rigidbody2D, _planeWeapon, PlaneData);
+            GameManager gameManager = GameManager.Instance;
 
-            if (ReferenceEquals(LevelInitializer.Instance, null))
-            {
-                Debug.Log("Блять где Level Init?!");
-                return;
-            }
-
-            LevelInitializer.Instance.StartPlane(planeBase);
+            planeBase = new PlaneBase(_rigidbody2D, _planeWeapon,_planeCabin, PlaneData);
+            
+            gameManager.OpenGameWindow(planeBase);
+            gameManager.SetPlaneBehaviour(this);
+            
             LocalSubscribe();
         }
 
@@ -108,7 +109,6 @@ using UnityEngine.Serialization;
         private void StartDestroyPlane()
         {
             if (CanSendCommand() == false) return;
-            LevelInitializer.Instance.DestroyActiveWindow();
             CmdDestroyPlane();
         }
         
@@ -117,16 +117,11 @@ using UnityEngine.Serialization;
         {
             OnDestroyedPlane(this);
         }
+        
 
         private bool CanSendCommand()
         {
             // != false
             return _networkIdentity.hasAuthority && isClient;
-        }
-        
-        public void JumpOnPlane()
-        {
-            LevelInitializer.Instance.DestroyActiveWindow();
-        
         }
     }

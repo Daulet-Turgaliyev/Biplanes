@@ -13,13 +13,13 @@ public class PlaneSkin : MonoBehaviour
     private void Awake() => _spriteRenderer = GetComponent<SpriteRenderer>();
     
     public void Initialize(bool hasAuthority)
-    {
+    {/*
         int myId = LevelInitializer.Instance.GetSkinId();
 
         if (hasAuthority == false)
             myId = myId == 0 ? 1 : 0;
         
         Debug.Log($"Skin Id {myId}");
-        _spriteRenderer.sprite = planeSprite[myId];
+        _spriteRenderer.sprite = planeSprite[myId];*/
     }
 }

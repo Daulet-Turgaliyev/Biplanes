@@ -16,6 +16,9 @@ public class NetworkSystem : NetworkManager
 
     [Inject]
     private WindowsManager _windowsManager;
+
+    [Inject]
+    private GameManager _gameManager;
     
     [field: SerializeField] 
     public PlaneData planeData { get; private set; }
@@ -81,7 +84,8 @@ public class NetworkSystem : NetworkManager
 
         foreach (var connect in NetworkServer.connections.Values)
         {
-            PlaneInstantiate(connect, planeData, GetSpawnPosition());
+            var newPlaneBehaviour = PlaneInstantiate(connect, planeData, GetSpawnPosition());
+            newPlaneBehaviour.OnDestroyedPlane += RespawnPlane;
         }
         
         Debug.Log("Start Game");
@@ -96,17 +100,16 @@ public class NetworkSystem : NetworkManager
 
         await Task.Delay(2500);
 
-        PlaneInstantiate(connectionToClient, planeData, GetSpawnPosition());
+        var newPlaneBehaviour = PlaneInstantiate(connectionToClient, planeData, GetSpawnPosition());
+        newPlaneBehaviour.OnDestroyedPlane += RespawnPlane;
     }
     
     public PlaneBehaviour PlaneInstantiate(NetworkConnection conn, PlaneData planeData, SpawnPlanePoint playerSpawnTransform)
     {
         PlaneBehaviour planeBehaviour = Instantiate(planeData.PlanePrefab, 
             playerSpawnTransform.position, playerSpawnTransform.rotation);
+        
         NetworkServer.Spawn(planeBehaviour.gameObject, conn);
-
-        planeBehaviour.Initialize();
-        planeBehaviour.OnDestroyedPlane += RespawnPlane;
         
         return planeBehaviour;
     }

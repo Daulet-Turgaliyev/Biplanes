@@ -285,7 +285,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  PlayerHandler: {fileID: 0}
 --- !u!114 &285666682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -732,6 +731,50 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &974490049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 974490051}
+  - component: {fileID: 974490050}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &974490050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974490049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3daad1a40571f4d31ac6573cdeb2dc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <LocalPlaneBehaviour>k__BackingField: {fileID: 0}
+--- !u!4 &974490051
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974490049}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1609963181}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1064363378
 GameObject:
   m_ObjectHideFlags: 0
@@ -820,6 +863,7 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 5938949295099985355, guid: 391ad0d17f05c3c43974335d04699c5c, type: 3}
   - {fileID: 1750104378972803100, guid: 3d1b18c6f3c8b584589cdec786065fb7, type: 3}
+  - {fileID: 86360786915502496, guid: 5422e63ae2874b34db66560865f0cdb2, type: 3}
   spawnPosition:
   - <position>k__BackingField: {x: 6, y: -4.3}
     <rotation>k__BackingField: {x: 0, y: 0, z: 0, w: 0}
@@ -1367,8 +1411,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7e34b7a69d2f554b969f6e5f2140a2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  windowsManager: {fileID: 768965632}
-  networkSystem: {fileID: 1064363381}
+  _windowsManager: {fileID: 768965632}
+  _networkSystem: {fileID: 1064363381}
+  _gameManager: {fileID: 974490050}
   levelInitializer: {fileID: 285666681}
 --- !u!114 &1609963180
 MonoBehaviour:
@@ -1416,6 +1461,7 @@ Transform:
   - {fileID: 1064363379}
   - {fileID: 768965633}
   - {fileID: 285666680}
+  - {fileID: 974490051}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
 
 
-public class PlaneBase
+public class PlaneBase: IBaseObject
 {
     private Rigidbody2D PlaneRigidbodyPlane { get; }
     public PlaneEngine PlaneEngine { get; private set; }
     public PlaneElevator PlaneElevator { get; private set; }
     public PlaneWeapon PlaneWeapon { get; }
+    
     public PlaneCabin PlaneCabin { get; }
     public PlaneData PlaneData { get; }
 
-    public PlaneBase(Rigidbody2D planeRigidbody2D, PlaneWeapon planeWeapon, PlaneData planeData)
+    public PlaneBase(Rigidbody2D planeRigidbody2D, PlaneWeapon planeWeapon, PlaneCabin planeCabin, PlaneData planeData)
     {
         PlaneData = planeData;
         
         PlaneWeapon = planeWeapon;
+        
+        PlaneCabin = planeCabin;
         
         PlaneRigidbodyPlane = planeRigidbody2D;
         

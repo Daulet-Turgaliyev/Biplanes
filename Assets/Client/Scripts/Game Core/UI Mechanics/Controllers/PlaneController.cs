@@ -4,22 +4,23 @@ using UnityEngine;
 
 public class PlaneController : AController
 {
-    public Action<Vector2> OnPositionUpdated;
-    public Action<float> OnSpeedUpdated;
+    private Action<Vector2> OnPositionUpdated;
+    private Action<float> OnSpeedUpdated;
     
-    public Action OnShoot;
-    public Action OnJump;
+    private Action OnShoot;
+    private Action OnJump;
     public Action<float> OnReload;
 
-    private PlaneControllerWindow _planeControllerWindow;
-    private PlaneBase _planeBase;
-    private PlaneData _planeData;
+    private readonly PlaneControllerWindow _planeControllerWindow;
+    private readonly PlaneBase _planeBase;
+    private readonly PlaneData _planeData;
     
     public PlaneController(PlaneControllerWindow planeControllerWindow, PlaneBase planeBase)
     {
         _planeControllerWindow = planeControllerWindow;
         _planeBase = planeBase;
         _planeData = planeBase.PlaneData;
+        PlaneControllerWindowGameObject = planeControllerWindow.gameObject;
 
         Initialize();
     }
@@ -33,8 +34,10 @@ public class PlaneController : AController
     
     private void SubscriptionToAction()
     {
+        OnJump += GameManager.Instance.CloseCurrentWindow;
         OnSpeedUpdated += _planeBase.PlaneEngine.ChangeSpeed;
         OnPositionUpdated += _planeBase.PlaneElevator.ChangeJoystickVector;
+        OnJump += _planeBase.PlaneCabin.OnJumpUp;
         OnShoot += _planeBase.PlaneWeapon.OnFire;
         OnShoot += ReloadWeapon;
     }
@@ -83,5 +86,6 @@ public class PlaneController : AController
         OnSpeedUpdated = null;
         OnPositionUpdated = null;
         OnShoot = null;
+        OnJump = null;
     }
 }

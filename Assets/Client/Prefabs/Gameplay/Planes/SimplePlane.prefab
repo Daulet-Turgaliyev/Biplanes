@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 3333230984411882509}
   - component: {fileID: 4157940993958591829}
   - component: {fileID: 7939774130177334645}
+  - component: {fileID: 6922046985358519778}
   m_Layer: 3
   m_Name: SimplePlane
   m_TagString: Untagged
@@ -215,6 +216,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.01
   _planeWeapon: {fileID: 4157940993958591829}
+  _planeCabin: {fileID: 6922046985358519778}
   _planeCollider: {fileID: 1477403281436754026}
   _planeCondition: {fileID: 4484608499105626729}
   <PlaneSkin>k__BackingField: {fileID: 6051254206263255500}
@@ -276,6 +278,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b537eec05e68174cbe4edeefef960d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6922046985358519778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5938949295099985355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a4c64121842464988b96647ae26e679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  pilotPrefab: {fileID: 86360786915502496, guid: 5422e63ae2874b34db66560865f0cdb2, type: 3}
 --- !u!1 &5938949296050439239
 GameObject:
   m_ObjectHideFlags: 0
