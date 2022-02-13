@@ -38,7 +38,7 @@
 		[Command]
 		private void CmdJumpOutPlane()
 		{
-			GameObject pilot = Instantiate(pilotPrefab, transform.position, transform.rotation);
+			GameObject pilot = Instantiate(pilotPrefab, transform.position, Quaternion.identity);
 			NetworkServer.Spawn(pilot, _networkIdentity.connectionToClient);
 		}
 		

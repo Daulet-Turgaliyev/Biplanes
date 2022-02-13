@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5332569055017833722}
   - component: {fileID: 8827050264987288529}
   - component: {fileID: 1218187245128477496}
+  - component: {fileID: 4627550246137586210}
   m_Layer: 6
   m_Name: Human
   m_TagString: Untagged
@@ -48,10 +49,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1.5
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
-  m_GravityScale: 3
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -118,6 +119,19 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _pilotData: {fileID: 11400000, guid: 0316b15bc426d9e4d8932420ef61ff5e, type: 2}
+  _parachuteSprite: {fileID: 86360787199279927}
+--- !u!114 &4627550246137586210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86360786915502496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b537eec05e68174cbe4edeefef960d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &86360787199279929
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,7 +148,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &86360787199279928
 Transform:
   m_ObjectHideFlags: 0
@@ -156,7 +170,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 86360787199279929}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

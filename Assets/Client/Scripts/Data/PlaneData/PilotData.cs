@@ -1,4 +1,5 @@
 ﻿
+    using System;
     using UnityEngine;
 
     [CreateAssetMenu(menuName = "Gameplay/Content/Create a new pilot")]
@@ -11,8 +12,10 @@
         public PilotBehaviour PilotBehaviour { get; private set; }
 
         [field: SerializeField] 
-        public float Speed { get; private set; }
+        public float SpeedRun { get; private set; }
 
+        [field: SerializeField] 
+        public float SpeedFly { get; private set; }
 
         private void OnValidate()
         {
@@ -20,14 +23,19 @@
                 PilotName = "Default Pilot Name";
 
             if (ReferenceEquals(PilotBehaviour, null) == true)
-                Debug.LogError($"Pilot Prefab is null in {nameof(PilotData)}");
+                throw new NullReferenceException($"Pilot Prefab is null in {nameof(PilotData)}");
 
-            if (Speed < 0)
+            if (SpeedRun < 0)
             {
-                Debug.LogError($"Speed is less than zero");
-                Speed = 0;
+                SpeedRun = 0;
+                throw new ArgumentOutOfRangeException($"{SpeedRun} less zero");
             }
             
+            if (SpeedFly < 0)
+            {
+                SpeedFly = 0;
+                throw new ArgumentOutOfRangeException($"{SpeedRun} less zero");
+            }
         }
     }
 

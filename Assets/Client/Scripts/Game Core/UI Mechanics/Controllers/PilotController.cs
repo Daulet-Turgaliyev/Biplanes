@@ -5,7 +5,7 @@
     public class PilotController: AController
     {
         private Action<Vector2> OnPositionUpdated;
-        private Action OnOpenParachute;
+        private Action OnOpenParachute = () => {};
 
         private readonly PilotControllerWindow _pilotControllerWindow;
         private readonly PilotBase _pilotBase;
@@ -15,6 +15,7 @@
         {
             _pilotControllerWindow = pilotControllerWindow;
             _pilotBase = pilotBase;
+
             PlaneControllerWindowGameObject = pilotControllerWindow.gameObject;
             Initialize();
         }
@@ -28,6 +29,13 @@
         private void Initialize()
         {
             SubscriptionToControls();
+            SubscriptionToAction();
+        }
+        
+        private void SubscriptionToAction()
+        {
+            OnPositionUpdated += _pilotBase.PilotMovement.ChangeJoystickVector; 
+            OnOpenParachute += _pilotBase.PilotParachute.OpenParachute;
         }
         
         private void SubscriptionToControls()
