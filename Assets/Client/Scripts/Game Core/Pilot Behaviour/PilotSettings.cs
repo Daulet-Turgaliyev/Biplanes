@@ -1,5 +1,5 @@
 ﻿
-    public class PilotSettings
+    public sealed class PilotSettings
     {
         public float SpeedRun { get; }
         public float SpeedFly { get; }

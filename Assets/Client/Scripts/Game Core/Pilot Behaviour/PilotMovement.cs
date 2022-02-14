@@ -1,7 +1,7 @@
 ﻿
     using UnityEngine;
 
-    public class PilotMovement : IJoystickVector
+    public sealed class PilotMovement : IJoystickVector
     {
         private Vector2 _joystickVector;
 

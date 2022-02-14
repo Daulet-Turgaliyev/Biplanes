@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-    public class PlaneCondition : MonoBehaviour
+    public sealed class PlaneCondition : MonoBehaviour
     {
         [field:SerializeField]
         public ParticleSystem[] particleCondition { private set; get; }

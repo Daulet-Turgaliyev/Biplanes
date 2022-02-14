@@ -3,7 +3,7 @@
 	using Mirror;
 	using UnityEngine;
 
-	public class PlaneCabin: NetworkBehaviour
+	public sealed class PlaneCabin: NetworkBehaviour
 	{
 		[SerializeField] 
 		private GameObject pilotPrefab;

@@ -6,7 +6,7 @@
     {
         private Action<Vector2> OnPositionUpdated;
         private Action OnOpenParachute = () => {};
-
+        
         private readonly PilotControllerWindow _pilotControllerWindow;
         private readonly PilotBase _pilotBase;
 
@@ -28,13 +28,13 @@
         
         private void Initialize()
         {
-            SubscriptionToControls();
             SubscriptionToAction();
+            SubscriptionToControls();
         }
         
         private void SubscriptionToAction()
         {
-            OnPositionUpdated += _pilotBase.PilotMovement.ChangeJoystickVector; 
+            OnPositionUpdated += _pilotBase.PilotMovement.ChangeJoystickVector;
             OnOpenParachute += _pilotBase.PilotParachute.OpenParachute;
         }
         
@@ -47,8 +47,8 @@
             
             _pilotControllerWindow.OpenParachuteButton.onClick.AddListener(delegate
             {
+                _pilotControllerWindow.OpenParachuteButton.interactable = false;
                 OnOpenParachute?.Invoke();
             });
         }
-        
     }

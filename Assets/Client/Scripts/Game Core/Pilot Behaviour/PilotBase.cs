@@ -2,21 +2,27 @@
     using System;
     using UnityEngine;
 
-    public class PilotBase: IBaseObject
+    public sealed class PilotBase: IBaseObject
     {
         private Rigidbody2D PlaneRigidbodyPlane { get; }
-        private SpriteRenderer SpriteParashute { get; }
         public PilotData PilotData { get; }
 
         public PilotMovement PilotMovement { get; private set; }
         public PilotParachute PilotParachute { get; private set; }
 
-        public PilotBase(Rigidbody2D planeRigidbody2D, PilotData pilotData, SpriteRenderer spriteParashute)
+        public Action OnCloseParachute = () => {};
+
+        public PilotBase(Rigidbody2D planeRigidbody2D, PilotData pilotData, PilotParachute pilotParachute)
         {
             PlaneRigidbodyPlane = planeRigidbody2D;
             PilotData = pilotData;
-            SpriteParashute = spriteParashute;
+            PilotParachute = pilotParachute;
             Initialize();
+        }
+
+        ~PilotBase()
+        {
+            OnCloseParachute = null;
         }
         
         public void CustomFixedUpdate()
@@ -24,24 +30,16 @@
             PilotMovement.Movement();
         }
 
-        private void Initialize()
+        public void Initialize()
         {
             PilotMovementInit();
-            PilotParachuteInit();
         }
-        
+        //TODO: Возможна ошибка последовательности подключени с Pilot Controller
         private void PilotMovementInit()
         {
             var pilotSettings = new PilotSettings(PilotData);
             PilotMovement = new PilotMovement(pilotSettings, PlaneRigidbodyPlane);
+            OnCloseParachute += PilotParachute.CloseParachute;
             GameManager.Instance.OpenGameWindow(this);
-        }
-        
-        private void PilotParachuteInit()
-        {
-            if(ReferenceEquals(SpriteParashute, null) == true)
-                throw new NullReferenceException($"{nameof(SpriteParashute)} is null");
-            
-            PilotParachute = new PilotParachute(PlaneRigidbodyPlane, SpriteParashute);
         }
     }

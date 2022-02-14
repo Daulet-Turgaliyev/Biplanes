@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-public class PlaneElevator: IJoystickVector
+public sealed class PlaneElevator: IJoystickVector
 {
     private float _speedRotation;
 

@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-public class UpperBorder : MonoBehaviour
+public sealed class UpperBorder : MonoBehaviour
 {
     // Флаг границы
 }

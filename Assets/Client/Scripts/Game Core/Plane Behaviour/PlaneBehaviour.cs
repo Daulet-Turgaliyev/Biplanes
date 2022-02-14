@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody2D))]
-    public class PlaneBehaviour : NetworkBehaviour
+    public sealed class PlaneBehaviour : NetworkBehaviour
     {
         private Rigidbody2D _rigidbody2D;
         private NetworkIdentity _networkIdentity;
@@ -123,5 +123,19 @@ using UnityEngine.Serialization;
         {
             // != false
             return _networkIdentity.hasAuthority && isClient;
+        }
+
+        [ClientCallback]
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            if (other.collider.GetComponent<Ground>())
+            {
+                if(ReferenceEquals(planeBase.VelocityLimitChecker, null)) return;
+                
+                if (planeBase.VelocityLimitChecker.CheckLimit())
+                {
+                    RpcChangeCondition(3);
+                }
+            }
         }
     }

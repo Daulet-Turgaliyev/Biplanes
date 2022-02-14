@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 [RequireComponent(typeof(SpriteRenderer))]
-public class PlaneSkin : MonoBehaviour
+public sealed class PlaneSkin : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
 

@@ -3,6 +3,6 @@
 
 using Mirror;
 
-public class LevelInitializer : NetworkBehaviour
+public sealed class LevelInitializer : NetworkBehaviour
 {
 }

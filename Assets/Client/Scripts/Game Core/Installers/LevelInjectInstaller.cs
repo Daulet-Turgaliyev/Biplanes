@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
 
-public class LevelInjectInstaller : MonoInstaller
+public sealed class LevelInjectInstaller : MonoInstaller
 {
     [FormerlySerializedAs("WindowsManager"),SerializeField] 
     private WindowsManager _windowsManager;

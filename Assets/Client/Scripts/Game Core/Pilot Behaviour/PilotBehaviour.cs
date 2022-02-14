@@ -3,13 +3,13 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class PilotBehaviour : NetworkBehaviour
+[RequireComponent(typeof(PilotParachute), typeof(Rigidbody2D))]
+public sealed class PilotBehaviour : NetworkBehaviour
 {
     [SerializeField, FormerlySerializedAs("Pilot Data")]
     private PilotData _pilotData;
-
-    [SerializeField, FormerlySerializedAs("Parachute Sprite")]
-    private SpriteRenderer _parachuteSprite;
+    
+    private PilotParachute _pilotParachute;
     
     private Rigidbody2D _rigidbody2D;
     private NetworkIdentity _networkIdentity;
@@ -22,18 +22,20 @@ public class PilotBehaviour : NetworkBehaviour
     private void Awake()
     {
         _networkIdentity = GetComponent<NetworkIdentity>();
+        _pilotParachute = GetComponent<PilotParachute>();
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     public override void OnStartAuthority()
     {
         Initialize();
-        LocalSubscribe();
     }
 
-    private void Initialize()
+    public void Initialize()
     {
-        _pilotBase = new PilotBase(_rigidbody2D, _pilotData, _parachuteSprite);
+        _pilotBase = new PilotBase(_rigidbody2D, _pilotData, _pilotParachute);
+        
+        LocalSubscribe();
     }
 
     private void FixedUpdate()
@@ -58,11 +60,16 @@ public class PilotBehaviour : NetworkBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.collider.GetComponent<Ground>()) OnGround(true);
+        if (other.collider.GetComponent<Ground>())
+        {
+            _pilotBase?.OnCloseParachute();
+            OnGround(true);
+        }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
         if (other.collider.GetComponent<Ground>()) OnGround(false);
+        
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 using Zenject;
 
 [AddComponentMenu("")]
-public class NetworkSystem : NetworkManager
+public sealed class NetworkSystem : NetworkManager
 {
     [SerializeField]
     private SpawnPlanePoint[] spawnPosition;

@@ -1,10 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Mirror;
 using UnityEngine;
 
-public class BorderChecker : MonoBehaviour
+public sealed class BorderChecker : MonoBehaviour
 {
     private float _xBorder;
     private float _currentHorizontalPosition;

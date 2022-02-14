@@ -2,7 +2,7 @@ using System;
 using Mirror;
 using UnityEngine;
 
-public class PlaneCollider : MonoBehaviour
+public sealed class PlaneCollider : MonoBehaviour
 {
 	public Action<int> OnBulletCollision;
 	

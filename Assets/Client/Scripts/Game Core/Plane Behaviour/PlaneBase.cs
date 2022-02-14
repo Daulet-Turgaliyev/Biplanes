@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 
 
-public class PlaneBase: IBaseObject
+public sealed class PlaneBase: IBaseObject
 {
     private Rigidbody2D PlaneRigidbodyPlane { get; }
     public PlaneEngine PlaneEngine { get; private set; }
     public PlaneElevator PlaneElevator { get; private set; }
     public PlaneWeapon PlaneWeapon { get; }
+    
+    public VelocityLimitChecker VelocityLimitChecker { get; private set; }
     
     public PlaneCabin PlaneCabin { get; }
     public PlaneData PlaneData { get; }
@@ -36,6 +38,7 @@ public class PlaneBase: IBaseObject
         PlaneEngineInit();
         PlaneElevatorInit();
         PlaneWeaponInit();
+        PlaneVelocityLimiter();
     }
 
     private void PlaneEngineInit()
@@ -54,5 +57,10 @@ public class PlaneBase: IBaseObject
     {
         var planeWeaponSettings = new PlaneWeaponSettings(PlaneData.CoolDown, PlaneData.BulletAcceleration);
         PlaneWeapon.Init(planeWeaponSettings); 
+    }
+
+    private void PlaneVelocityLimiter()
+    {
+        VelocityLimitChecker = new VelocityLimitChecker(PlaneRigidbodyPlane, PlaneData.VelocityLimit);
     }
 }

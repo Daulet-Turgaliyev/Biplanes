@@ -1,7 +1,7 @@
 ﻿
     using System;
 
-    public class SimpleBullet: ABullet
+    public sealed class SimpleBullet: ABullet
     {
         private void Start() => base.OnBulletInit();
 		

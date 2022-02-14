@@ -2,7 +2,7 @@
     using UnityEngine;
     using UnityEngine.UI;
 
-    public class PilotControllerWindow : BaseWindow
+    public sealed class PilotControllerWindow : BaseWindow
     {
         [field:SerializeField] 
         public Joystick Joystick { get; private set; }
