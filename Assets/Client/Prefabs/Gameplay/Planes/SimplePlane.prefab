@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7290940497328471042}
   - component: {fileID: 1402372830016863456}
-  - component: {fileID: 3895938331247048809}
   - component: {fileID: 1477403281436754026}
   m_Layer: 3
   m_Name: Colliders
@@ -65,22 +64,6 @@ PolygonCollider2D:
       - {x: 0, y: -0.04}
       - {x: 0.2, y: -0.05}
       - {x: 0.27, y: -0.03}
---- !u!58 &3895938331247048809
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 430218815517873776}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.16, y: -0.1}
-  serializedVersion: 2
-  m_Radius: 0.03
 --- !u!114 &1477403281436754026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,7 +166,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 3
 --- !u!114 &6005099902961853298
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using Mirror;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class ABullet : NetworkBehaviour
@@ -8,7 +9,7 @@ public abstract class ABullet : NetworkBehaviour
     private Rigidbody2D _rigidBody2D;
 
     private float _force = 800f;
-    private int _damage = 1;
+    public int Damage = 1;
 
     protected void OnBulletInit()
     {
@@ -26,9 +27,9 @@ public abstract class ABullet : NetworkBehaviour
     [ServerCallback]
     private void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.collider.TryGetComponent(out PlaneCollider planeCollider))
-            planeCollider.BulletHit(_damage);
-            
+      /*  if (col.collider.TryGetComponent(out PlaneBehaviour planeBehaviour))
+            planeBehaviour.RpcChangeCondition(Damage);
+*/
         NetworkServer.Destroy(gameObject);
     }
 }

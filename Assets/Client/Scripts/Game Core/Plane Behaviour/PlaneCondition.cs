@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Mirror;
 using UnityEngine;
 
 
@@ -20,19 +21,23 @@ using UnityEngine;
         {
             _currentParticle = particleCondition[0];
         }
-
-        public void TrySetCondition(int healthStatus)
+        
+        public void TrySetCondition(int healthStatus, bool hasAuthority)
         {
             if (healthStatus > particleCondition.Length - 1|| healthStatus < 0)
             {
-                Debug.LogWarning($"healthStatus: {healthStatus} not correct");
-                return;
+                Debug.LogWarning($"healthStatus: {healthStatus}");
+                healthStatus = 0;
             }
             
             if (healthStatus == 0)
             {
                 OnDie?.Invoke();
                 _currentParticle.Stop();
+                
+                if(hasAuthority)
+                    GameManager.Instance.CloseCurrentWindow();
+                
                 return;
             }
             

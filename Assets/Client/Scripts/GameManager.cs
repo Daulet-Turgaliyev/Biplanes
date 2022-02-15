@@ -58,9 +58,12 @@ public class GameManager : MonoBehaviour
 
     public void CloseCurrentWindow()
     {
-        Debug.Log("Try Close Window");
-        if(ReferenceEquals(CurrentController, null) == true)
-            throw new NullReferenceException($"{nameof(CurrentController)} not found");
-        Destroy(CurrentController.PlaneControllerWindowGameObject);
+        if (ReferenceEquals(CurrentController, null) == true)
+        {
+            Debug.LogWarning($"{nameof(CurrentController)} not found");
+            return;
+        }
+           // throw new NullReferenceException($"{nameof(CurrentController)} not found");
+        Destroy(CurrentController.PlaneControllerWindowGameObject.gameObject);
     }
 }
