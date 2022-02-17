@@ -19,7 +19,6 @@ public sealed class PilotBehaviour : NetworkBehaviour
     private Action OnPlaneFixedUpdater = delegate { };
     
     private Action OnDie = delegate { };
-    public Action<PilotBehaviour> OnDestroyedPilot = delegate {};
 
     private Action<bool> OnGround = b => { };
 
@@ -67,18 +66,30 @@ public sealed class PilotBehaviour : NetworkBehaviour
         // != false
         return _networkIdentity.hasAuthority && isClient;
     }
+
+    [Command]
+    private void CmdDestroyPlane() { GameManager.Instance.DestroyPilot(this); }
+
+
+    private void RespawnMyPlane()
+    {
+        CmdRespawnMyPlane();
+    }
     
     [Command]
-    private void CmdDestroyPlane() { OnDestroyedPilot(this); }
+    private void CmdRespawnMyPlane()
+    {
+        GameManager.Instance.RespawnPlaneFromHuman(_networkIdentity.connectionToClient);
+    }
     
     private void LocalSubscribe()
     {
         OnPlaneFixedUpdater += _pilotBase.CustomFixedUpdate;
         OnGround += _pilotBase.PilotMovement.ChangeGroundState;
         OnDie += StartDestroyPilot;
-        OnDestroyedPilot += GameManager.Instance.DestroyPilot;
     }
     
+    [ClientCallback]
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.collider.GetComponent<Ground>())
@@ -87,10 +98,13 @@ public sealed class PilotBehaviour : NetworkBehaviour
             OnGround(true);
         }
 
-        if (other.collider.GetComponent<RespawnPoint>())
+        if (other.collider.TryGetComponent(out RespawnPoint respawnPoint))
         {
+            if (CanSendCommand() == true)
+            {
+                RespawnMyPlane();
+            }
             OnDie();
-            GameManager.Instance.RespawnPlaneFromHuman(_networkIdentity.connectionToClient);
         }
     }
 

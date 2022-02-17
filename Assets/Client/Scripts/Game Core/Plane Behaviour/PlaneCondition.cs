@@ -15,7 +15,7 @@ using UnityEngine;
         private ParticleSystem _currentParticle;
 
         public Action OnDestroy;
-        
+        public Action OnRespawnPlane;
         public Action OnDie;
 
         private void Start()
@@ -33,18 +33,26 @@ using UnityEngine;
             
             if (healthStatus == 0)
             {
-                OnDie?.Invoke();
-                _currentParticle.Stop();
-                
-                if(hasAuthority)
-                    GameManager.Instance.CloseCurrentWindow();
-                
+                DiePlane(hasAuthority);
                 return;
             }
             
             _currentParticle.Stop();
             _currentParticle = particleCondition[healthStatus];
             _currentParticle.Play();
+        }
+
+        public void DiePlane(bool hasAuthority, bool isSystemDestroy = false)
+        {
+            OnDie?.Invoke();
+            _currentParticle.Stop();
+                
+            if(hasAuthority)
+                GameManager.Instance.CloseCurrentWindow();
+
+            if (isSystemDestroy == false)
+                OnRespawnPlane?.Invoke();
+
         }
 
         private async void DieAnimation()

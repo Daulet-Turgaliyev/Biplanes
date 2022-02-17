@@ -117,7 +117,7 @@ public sealed class NetworkSystem : NetworkManager
     [Server]
     public static void DestroyPilot(PilotBehaviour pilotObject)
     {
-        
+        Debug.Log(pilotObject.gameObject);
         NetworkServer.Destroy(pilotObject.gameObject);
     }
     
@@ -126,8 +126,8 @@ public sealed class NetworkSystem : NetworkManager
     {
         NetworkServer.Destroy(planeObject.gameObject);
     }
-    
-    public PlaneBehaviour PlaneInstantiate(NetworkConnection conn, PlaneData planeData, SpawnPlanePoint playerSpawnTransform)
+
+    private PlaneBehaviour PlaneInstantiate(NetworkConnection conn, PlaneData planeData, SpawnPlanePoint playerSpawnTransform)
     {
         PlaneBehaviour planeBehaviour = Instantiate(planeData.PlanePrefab, 
             playerSpawnTransform.position, playerSpawnTransform.rotation);

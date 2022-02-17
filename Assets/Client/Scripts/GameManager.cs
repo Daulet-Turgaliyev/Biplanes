@@ -58,9 +58,9 @@ public class GameManager : MonoBehaviour
     public void CloseCurrentWindow() => _windowsManager.CloseLast();
 
 
-    public void DestroyPilot(PilotBehaviour pilotBehavioursss)
+    public void DestroyPilot(PilotBehaviour pilotBehaviour)
     {
-        NetworkSystem.DestroyPilot(pilotBehavioursss);
+        NetworkSystem.DestroyPilot(pilotBehaviour);
     }
 
     public void RespawnPlaneFromHuman(NetworkConnection networkConnection)

@@ -11,13 +11,9 @@
 		public Action OnJumpUp = () => { };
 
 		private NetworkIdentity _networkIdentity;
-		
-		[field:SyncVar]
-		public bool HasPilot { get; private set; }
 
 		private void Awake()
 		{
-			HasPilot = true;
 			_networkIdentity = GetComponent<NetworkIdentity>();
 		}
 
@@ -38,8 +34,6 @@
 		[Command]
 		private void CmdJumpOutPlane()
 		{
-			HasPilot = false;
-			Debug.Log(HasPilot);
 			PilotBehaviour pilot = Instantiate(pilotPrefab, transform.position, Quaternion.identity);
 			var conn = _networkIdentity.connectionToClient;
 			NetworkServer.Spawn(pilot.gameObject, conn);

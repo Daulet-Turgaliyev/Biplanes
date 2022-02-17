@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -72,31 +73,32 @@ public sealed class PlaneBehaviour: NetworkBehaviour
         _planeCondition.OnDestroy += StartDestroyPlane;
         OnPlaneFixedUpdater += planeBase.CustomFixedUpdate;
         planeBase.OnFastDestroyPlane += FastDestroyPlane;
+        _planeCondition.OnRespawnPlane += StartRespawnPlane;
     }
     
     private void OnDestroy() { OnPlaneFixedUpdater = null; }
-    
-    public void FastDestroyPlane()
+
+    private void FastDestroyPlane()
     {
         if (CanSendCommand() == false) return;
         CmdFastDestroyPlane();
     }
     
     [Command]
-    public void CmdFastDestroyPlane()
+    private void CmdFastDestroyPlane()
     {
         RpcFastDestroyPlane();
     }
     
     [ClientRpc]
-    public void RpcFastDestroyPlane()
+    private void RpcFastDestroyPlane()
     {
         _healPoint = 0;
-        _planeCondition.TrySetCondition(_healPoint, _networkIdentity.hasAuthority);
+        _planeCondition.DiePlane(_networkIdentity.hasAuthority, true);
     }
 
     [ClientRpc]
-    public void RpcChangeCondition(int damage)
+    private void RpcChangeCondition(int damage)
     {
         Debug.Log($"DAMAGE: {damage} Name: {gameObject.name} HP: {_healPoint} ");
         _healPoint -= damage;
@@ -104,16 +106,27 @@ public sealed class PlaneBehaviour: NetworkBehaviour
         _planeCondition.TrySetCondition(_healPoint, _networkIdentity.hasAuthority);
     }
 
-    public void StartDestroyPlane()
+    private void StartDestroyPlane()
     {
         if (CanSendCommand() == false) return;
         CmdDestroyPlane();
     }
-     
-
+    
     [Command]
     private void CmdDestroyPlane() { OnDestroyPlane(this); }
 
+    private async void StartRespawnPlane()
+    {
+        if (CanSendCommand() == false) return;
+
+        await Task.Delay(3000);
+        
+        CmdRespawnPlane();
+    }
+    
+    [Command]
+    private void CmdRespawnPlane() { GameManager.Instance.RespawnPlaneFromHuman(_networkIdentity.connectionToClient); }
+    
     private bool CanSendCommand()
     {
         // != false
