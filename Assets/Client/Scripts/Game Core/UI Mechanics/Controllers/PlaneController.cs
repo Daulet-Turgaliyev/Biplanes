@@ -20,7 +20,6 @@ public class PlaneController : AController
         _planeControllerWindow = planeControllerWindow;
         _planeBase = planeBase;
         _planeData = planeBase.PlaneData;
-        PlaneControllerWindowGameObject = planeControllerWindow.gameObject;
 
         Initialize();
     }
@@ -59,8 +58,8 @@ public class PlaneController : AController
             OnShoot?.Invoke();
         });
         
-        _planeControllerWindow.JumpButton.onClick.AddListener(delegate
-        {
+        _planeControllerWindow.JumpButton.onClick.AddListener(delegate {
+            _planeBase?.OnFastDestroyPlane();
             OnJump?.Invoke();
         });
     }

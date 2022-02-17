@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 
 public sealed class PlaneBase: IBaseObject
@@ -13,6 +14,8 @@ public sealed class PlaneBase: IBaseObject
     public PlaneCabin PlaneCabin { get; }
     public PlaneData PlaneData { get; }
 
+    public Action OnFastDestroyPlane = () => {};
+    
     public PlaneBase(Rigidbody2D planeRigidbody2D, PlaneWeapon planeWeapon, PlaneCabin planeCabin, PlaneData planeData)
     {
         PlaneData = planeData;
@@ -24,6 +27,11 @@ public sealed class PlaneBase: IBaseObject
         PlaneRigidbodyPlane = planeRigidbody2D;
         
         PlaneElementsInit();
+    }
+
+    ~PlaneBase()
+    {
+        OnFastDestroyPlane = null;
     }
 
     public void CustomFixedUpdate()

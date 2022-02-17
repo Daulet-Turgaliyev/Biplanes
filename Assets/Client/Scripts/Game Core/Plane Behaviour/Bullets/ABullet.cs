@@ -1,6 +1,5 @@
 using Mirror;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class ABullet : NetworkBehaviour
@@ -10,7 +9,10 @@ public abstract class ABullet : NetworkBehaviour
 
     private float _force = 800f;
     public int Damage = 1;
-
+    
+    [SyncVar]
+    public int ownerId;
+    
     protected void OnBulletInit()
     {
         _rigidBody2D = GetComponent<Rigidbody2D>();

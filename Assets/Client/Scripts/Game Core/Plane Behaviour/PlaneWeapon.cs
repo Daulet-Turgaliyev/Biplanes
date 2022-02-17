@@ -8,7 +8,7 @@
         private NetworkIdentity _networkIdentity;
         
         [SerializeField] 
-        private GameObject bulletPrefab;
+        private ABullet bulletPrefab;
 
         [SerializeField] 
         private Transform projectileMount;
@@ -43,7 +43,8 @@
         [Command]
         private void CmdFire()
         {
-            GameObject projectile = Instantiate(bulletPrefab, projectileMount.position, transform.rotation);
-            NetworkServer.Spawn(projectile);
+            ABullet projectile = Instantiate(bulletPrefab, projectileMount.position, transform.rotation);
+            projectile.ownerId = _networkIdentity.connectionToClient.connectionId;
+            NetworkServer.Spawn(projectile.gameObject);
         }
     }

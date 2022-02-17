@@ -30,7 +30,7 @@ public sealed class PlaneBehaviour: NetworkBehaviour
 
     public PlaneBase planeBase { get; private set; }
 
-    public Action<PlaneBehaviour> OnDestroyedPlane = delegate {};
+    public Action<PlaneBehaviour> OnDestroyPlane = delegate {};
 
     private Action OnPlaneFixedUpdater = delegate { };
 
@@ -44,8 +44,7 @@ public sealed class PlaneBehaviour: NetworkBehaviour
 
     public void Start()
     {
-        PlaneSkin.Initialize(hasAuthority); 
-        PlaneColliderInit();
+        PlaneSkin.Initialize(hasAuthority);
     }
 
     public void Initialize()
@@ -63,24 +62,38 @@ public sealed class PlaneBehaviour: NetworkBehaviour
     private void OnDisable()
     {
         OnPlaneFixedUpdater = null;
-        OnDestroyedPlane = null;
+        OnDestroyPlane = null;
     }
 
     private void FixedUpdate() { OnPlaneFixedUpdater?.Invoke(); }
 
     private void LocalSubscribe()
     {
-        _planeCondition.OnDie += DiePlane;
         _planeCondition.OnDestroy += StartDestroyPlane;
         OnPlaneFixedUpdater += planeBase.CustomFixedUpdate;
+        planeBase.OnFastDestroyPlane += FastDestroyPlane;
     }
-
-    private void PlaneColliderInit()
+    
+    private void OnDestroy() { OnPlaneFixedUpdater = null; }
+    
+    public void FastDestroyPlane()
     {
-        _planeCollider.OnBulletCollision += RpcChangeCondition;
+        if (CanSendCommand() == false) return;
+        CmdFastDestroyPlane();
     }
-
-    private void DiePlane() { OnPlaneFixedUpdater = null; }
+    
+    [Command]
+    public void CmdFastDestroyPlane()
+    {
+        RpcFastDestroyPlane();
+    }
+    
+    [ClientRpc]
+    public void RpcFastDestroyPlane()
+    {
+        _healPoint = 0;
+        _planeCondition.TrySetCondition(_healPoint, _networkIdentity.hasAuthority);
+    }
 
     [ClientRpc]
     public void RpcChangeCondition(int damage)
@@ -91,15 +104,15 @@ public sealed class PlaneBehaviour: NetworkBehaviour
         _planeCondition.TrySetCondition(_healPoint, _networkIdentity.hasAuthority);
     }
 
-    private void StartDestroyPlane()
+    public void StartDestroyPlane()
     {
         if (CanSendCommand() == false) return;
         CmdDestroyPlane();
     }
-    
+     
 
     [Command]
-    private void CmdDestroyPlane() { OnDestroyedPlane(this); }
+    private void CmdDestroyPlane() { OnDestroyPlane(this); }
 
     private bool CanSendCommand()
     {
@@ -111,11 +124,12 @@ public sealed class PlaneBehaviour: NetworkBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.collider.GetComponent<Building>())
-            RpcChangeCondition(10);
+            FastDestroyPlane();
 
         if (other.collider.TryGetComponent(out ABullet bullet))
         {
-            RpcChangeCondition(bullet.Damage);
+            if(_networkIdentity.connectionToClient.connectionId != bullet.ownerId)
+                RpcChangeCondition(bullet.Damage);
         }
         
         if (other.collider.GetComponent<Ground>())

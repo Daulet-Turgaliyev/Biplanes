@@ -85,10 +85,20 @@ public sealed class NetworkSystem : NetworkManager
         foreach (var connect in NetworkServer.connections.Values)
         {
             var newPlaneBehaviour = PlaneInstantiate(connect, planeData, GetSpawnPosition());
-            newPlaneBehaviour.OnDestroyedPlane += RespawnPlane;
+             newPlaneBehaviour.OnDestroyPlane += DestroyPlane;
         }
         
         Debug.Log("Start Game");
+    }
+    
+    [Server]
+    public async void RespawnPlane(NetworkConnection connectionToClient)
+    {
+        var newPlaneBehaviour = PlaneInstantiate(connectionToClient, planeData, GetSpawnPosition());
+
+        await Task.Delay(2500);
+
+        newPlaneBehaviour.OnDestroyPlane += DestroyPlane;
     }
 
     [Server]
@@ -96,12 +106,25 @@ public sealed class NetworkSystem : NetworkManager
     {
         var connectionToClient = planeObject.GetComponent<NetworkIdentity>().connectionToClient;
         
-        NetworkServer.Destroy(planeObject.gameObject);
+        DestroyPlane(planeObject);
 
         await Task.Delay(2500);
 
         var newPlaneBehaviour = PlaneInstantiate(connectionToClient, planeData, GetSpawnPosition());
-        newPlaneBehaviour.OnDestroyedPlane += RespawnPlane;
+        newPlaneBehaviour.OnDestroyPlane += DestroyPlane;
+    }
+
+    [Server]
+    public static void DestroyPilot(PilotBehaviour pilotObject)
+    {
+        
+        NetworkServer.Destroy(pilotObject.gameObject);
+    }
+    
+    [Server]
+    private void DestroyPlane(PlaneBehaviour planeObject)
+    {
+        NetworkServer.Destroy(planeObject.gameObject);
     }
     
     public PlaneBehaviour PlaneInstantiate(NetworkConnection conn, PlaneData planeData, SpawnPlanePoint playerSpawnTransform)
@@ -110,7 +133,6 @@ public sealed class NetworkSystem : NetworkManager
             playerSpawnTransform.position, playerSpawnTransform.rotation);
         
         NetworkServer.Spawn(planeBehaviour.gameObject, conn);
-        
         return planeBehaviour;
     }
     

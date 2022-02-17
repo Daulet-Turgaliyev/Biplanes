@@ -10,13 +10,10 @@
         private readonly PilotControllerWindow _pilotControllerWindow;
         private readonly PilotBase _pilotBase;
 
-
         public PilotController(PilotControllerWindow pilotControllerWindow, PilotBase pilotBase)
         {
             _pilotControllerWindow = pilotControllerWindow;
             _pilotBase = pilotBase;
-
-            PlaneControllerWindowGameObject = pilotControllerWindow.gameObject;
             Initialize();
         }
 
@@ -50,5 +47,9 @@
                 _pilotControllerWindow.OpenParachuteButton.interactable = false;
                 OnOpenParachute?.Invoke();
             });
+
+            _pilotBase.OnCloseParachute += () => {
+                _pilotControllerWindow.OpenParachuteButton.interactable = false;
+            };
         }
     }

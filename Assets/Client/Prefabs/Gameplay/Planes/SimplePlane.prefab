@@ -100,7 +100,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5671295279350831936}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 0}
+  m_LocalPosition: {x: 0.65, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5938949295099985366}
@@ -247,7 +247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  bulletPrefab: {fileID: 1750104378972803100, guid: 3d1b18c6f3c8b584589cdec786065fb7, type: 3}
+  bulletPrefab: {fileID: 3758719588796351749, guid: 3d1b18c6f3c8b584589cdec786065fb7, type: 3}
   projectileMount: {fileID: 6033177967286764459}
 --- !u!114 &7939774130177334645
 MonoBehaviour:
@@ -275,7 +275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  pilotPrefab: {fileID: 86360786915502496, guid: 5422e63ae2874b34db66560865f0cdb2, type: 3}
+  pilotPrefab: {fileID: 1218187245128477496, guid: 5422e63ae2874b34db66560865f0cdb2, type: 3}
 --- !u!1 &5938949296050439239
 GameObject:
   m_ObjectHideFlags: 0

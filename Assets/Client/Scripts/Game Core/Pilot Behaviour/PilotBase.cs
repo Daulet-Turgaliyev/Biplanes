@@ -9,7 +9,7 @@
 
         public PilotMovement PilotMovement { get; private set; }
         public PilotParachute PilotParachute { get; private set; }
-
+        
         public Action OnCloseParachute = () => {};
 
         public PilotBase(Rigidbody2D planeRigidbody2D, PilotData pilotData, PilotParachute pilotParachute)

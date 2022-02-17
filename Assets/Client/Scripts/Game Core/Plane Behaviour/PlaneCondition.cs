@@ -15,6 +15,7 @@ using UnityEngine;
         private ParticleSystem _currentParticle;
 
         public Action OnDestroy;
+        
         public Action OnDie;
 
         private void Start()

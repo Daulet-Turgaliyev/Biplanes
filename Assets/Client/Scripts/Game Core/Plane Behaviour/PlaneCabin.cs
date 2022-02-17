@@ -6,19 +6,19 @@
 	public sealed class PlaneCabin: NetworkBehaviour
 	{
 		[SerializeField] 
-		private GameObject pilotPrefab;
+		private PilotBehaviour pilotPrefab;
 		
 		public Action OnJumpUp = () => { };
 
 		private NetworkIdentity _networkIdentity;
+		
+		[field:SyncVar]
+		public bool HasPilot { get; private set; }
+
 		private void Awake()
 		{
+			HasPilot = true;
 			_networkIdentity = GetComponent<NetworkIdentity>();
-		}
-		
-		public void Init()
-		{
-
 		}
 
 		private void OnEnable()
@@ -34,12 +34,15 @@
 				CmdJumpOutPlane();
 		}
 		
-
+		//TODO: Let's see it again it's so bad
 		[Command]
 		private void CmdJumpOutPlane()
 		{
-			GameObject pilot = Instantiate(pilotPrefab, transform.position, Quaternion.identity);
-			NetworkServer.Spawn(pilot, _networkIdentity.connectionToClient);
+			HasPilot = false;
+			Debug.Log(HasPilot);
+			PilotBehaviour pilot = Instantiate(pilotPrefab, transform.position, Quaternion.identity);
+			var conn = _networkIdentity.connectionToClient;
+			NetworkServer.Spawn(pilot.gameObject, conn);
 		}
 		
 	}
