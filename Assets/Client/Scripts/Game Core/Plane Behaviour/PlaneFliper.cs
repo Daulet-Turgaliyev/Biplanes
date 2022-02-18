@@ -2,7 +2,7 @@
 
 
     [RequireComponent(typeof(SpriteRenderer))]
-    public class PlaneFliper : MonoBehaviour
+    public sealed class PlaneFliper : MonoBehaviour
     {
         [SerializeField]
         private Transform targetTransform;

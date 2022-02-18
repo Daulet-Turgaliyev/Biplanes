@@ -1,25 +1,37 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 
-public class PlaneBase
+public sealed class PlaneBase: IBaseObject
 {
     private Rigidbody2D PlaneRigidbodyPlane { get; }
-
     public PlaneEngine PlaneEngine { get; private set; }
     public PlaneElevator PlaneElevator { get; private set; }
     public PlaneWeapon PlaneWeapon { get; }
-
+    
+    public VelocityLimitChecker VelocityLimitChecker { get; private set; }
+    
+    public PlaneCabin PlaneCabin { get; }
     public PlaneData PlaneData { get; }
 
-    public PlaneBase(Rigidbody2D planeRigidbody2D, PlaneWeapon planeWeapon, PlaneData planeData)
+    public Action OnFastDestroyPlane = () => {};
+    
+    public PlaneBase(Rigidbody2D planeRigidbody2D, PlaneWeapon planeWeapon, PlaneCabin planeCabin, PlaneData planeData)
     {
         PlaneData = planeData;
         
         PlaneWeapon = planeWeapon;
         
+        PlaneCabin = planeCabin;
+        
         PlaneRigidbodyPlane = planeRigidbody2D;
         
         PlaneElementsInit();
+    }
+
+    ~PlaneBase()
+    {
+        OnFastDestroyPlane = null;
     }
 
     public void CustomFixedUpdate()
@@ -34,6 +46,7 @@ public class PlaneBase
         PlaneEngineInit();
         PlaneElevatorInit();
         PlaneWeaponInit();
+        PlaneVelocityLimiter();
     }
 
     private void PlaneEngineInit()
@@ -52,5 +65,10 @@ public class PlaneBase
     {
         var planeWeaponSettings = new PlaneWeaponSettings(PlaneData.CoolDown, PlaneData.BulletAcceleration);
         PlaneWeapon.Init(planeWeaponSettings); 
+    }
+
+    private void PlaneVelocityLimiter()
+    {
+        VelocityLimitChecker = new VelocityLimitChecker(PlaneRigidbodyPlane, PlaneData.VelocityLimit);
     }
 }

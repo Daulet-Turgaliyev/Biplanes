@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <PlaneName>k__BackingField: 'Default Plane '
   <PlanePrefab>k__BackingField: {fileID: 5415676556189425531, guid: 391ad0d17f05c3c43974335d04699c5c, type: 3}
-  <SpeedRotation>k__BackingField: 1.5
+  <SpeedRotation>k__BackingField: 4
   <MinSpeed>k__BackingField: 1.5
   <MaxSpeed>k__BackingField: 8
+  <VelocityLimit>k__BackingField: 5
   <CoolDown>k__BackingField: 2000
   <BulletAcceleration>k__BackingField: 600

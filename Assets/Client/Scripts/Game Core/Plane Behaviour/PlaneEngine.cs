@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-public class PlaneEngine
+public sealed class PlaneEngine
 {
     private float _speed;
     private Vector2 _velocity;

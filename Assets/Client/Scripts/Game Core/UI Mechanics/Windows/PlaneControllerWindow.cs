@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 
 
-public class PlaneControllerWindow : BaseWindow
+public sealed class PlaneControllerWindow : BaseWindow
 {
     [field:SerializeField] 
     public Joystick Joystick { get; private set; }
@@ -12,4 +12,7 @@ public class PlaneControllerWindow : BaseWindow
     
     [field:SerializeField] 
     public Button FireButton { get; private set; }
+    
+    [field:SerializeField] 
+    public Button JumpButton { get; private set; }
 }

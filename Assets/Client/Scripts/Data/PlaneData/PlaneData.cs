@@ -20,6 +20,9 @@ using UnityEngine;
         public float MaxSpeed { get; private set; }
         
         [field: SerializeField] 
+        public float VelocityLimit { get; private set; }
+        
+        [field: SerializeField] 
         public int CoolDown { get; private set; }
         
         [field: SerializeField] 
@@ -48,6 +51,12 @@ using UnityEngine;
             if (MinSpeed < 0)
             {
                 Debug.LogError($"Speed is less than zero");
+                MinSpeed = 0;
+            }
+            
+            if (VelocityLimit < 0)
+            {
+                Debug.LogError($"VelocityLimit is less than zero");
                 MinSpeed = 0;
             }
 

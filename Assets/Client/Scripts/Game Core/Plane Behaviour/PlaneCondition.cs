@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Mirror;
 using UnityEngine;
 
 
-    public class PlaneCondition : MonoBehaviour
+    public sealed class PlaneCondition : MonoBehaviour
     {
         [field:SerializeField]
         public ParticleSystem[] particleCondition { private set; get; }
@@ -14,31 +15,44 @@ using UnityEngine;
         private ParticleSystem _currentParticle;
 
         public Action OnDestroy;
+        public Action OnRespawnPlane;
         public Action OnDie;
 
         private void Start()
         {
             _currentParticle = particleCondition[0];
         }
-
-        public void TrySetCondition(int healthStatus)
+        
+        public void TrySetCondition(int healthStatus, bool hasAuthority)
         {
             if (healthStatus > particleCondition.Length - 1|| healthStatus < 0)
             {
-                Debug.LogWarning($"healthStatus: {healthStatus} not correct");
-                return;
+                Debug.LogWarning($"healthStatus: {healthStatus}");
+                healthStatus = 0;
             }
             
             if (healthStatus == 0)
             {
-                OnDie?.Invoke();
-                _currentParticle.Stop();
+                DiePlane(hasAuthority);
                 return;
             }
             
             _currentParticle.Stop();
             _currentParticle = particleCondition[healthStatus];
             _currentParticle.Play();
+        }
+
+        public void DiePlane(bool hasAuthority, bool isSystemDestroy = false)
+        {
+            OnDie?.Invoke();
+            _currentParticle.Stop();
+                
+            if(hasAuthority)
+                GameManager.Instance.CloseCurrentWindow();
+
+            if (isSystemDestroy == false)
+                OnRespawnPlane?.Invoke();
+
         }
 
         private async void DieAnimation()

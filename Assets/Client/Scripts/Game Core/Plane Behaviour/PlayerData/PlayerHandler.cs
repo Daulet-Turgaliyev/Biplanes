@@ -19,9 +19,5 @@ public class PlayerHandler : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if (hasAuthority)
-        {
-            LevelInitializer.Instance.SetPlayerHandler(this);
-        }
     }
 }
