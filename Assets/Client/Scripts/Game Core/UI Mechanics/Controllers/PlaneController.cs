@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlaneController : AController
 {
-    private Action<Vector2> OnPositionUpdated;
     private Action<float> OnSpeedUpdated;
     
     private Action OnShoot;
@@ -20,18 +19,11 @@ public class PlaneController : AController
         _planeControllerWindow = planeControllerWindow;
         _planeBase = planeBase;
         _planeData = planeBase.PlaneData;
-
-        Initialize();
+        
+        base.Initialize();
     }
 
-    private void Initialize()
-    {
-        SubscriptionToAction();
-        SubscriptionToControls();
-        SetValuesControls();
-    }
-    
-    private void SubscriptionToAction()
+    protected override void SubscriptionToAction()
     {
         OnJump += GameManager.Instance.CloseCurrentWindow;
         OnSpeedUpdated += _planeBase.PlaneEngine.ChangeSpeed;
@@ -40,8 +32,8 @@ public class PlaneController : AController
         OnShoot += _planeBase.PlaneWeapon.OnFire;
         OnShoot += ReloadWeapon;
     }
-    
-    private void SubscriptionToControls()
+
+    protected override void SubscriptionToControls()
     {
         _planeControllerWindow.Joystick.OnDragAction += delegate(Vector2 newJoystickPosition)
         {
@@ -64,7 +56,7 @@ public class PlaneController : AController
         });
     }
 
-    private void SetValuesControls()
+    protected override void SetValuesControls()
     {
         _planeControllerWindow.SpeedSlider.minValue = _planeData.MinSpeed;
         _planeControllerWindow.SpeedSlider.maxValue = _planeData.MaxSpeed;
@@ -72,12 +64,11 @@ public class PlaneController : AController
     
     private async void ReloadWeapon()
     {
-        if (_planeControllerWindow is { })
-        {
-            _planeControllerWindow.FireButton.interactable = false;
-            await Task.Delay(_planeData.CoolDown);
-            _planeControllerWindow.FireButton.interactable = true;
-        }
+        if (_planeControllerWindow is null) return;
+        
+        _planeControllerWindow.FireButton.interactable = false;
+        await Task.Delay(_planeData.CoolDown);
+        _planeControllerWindow.FireButton.interactable = true;
     }
 
     ~PlaneController()

@@ -1,8 +1,8 @@
 ﻿
     public readonly struct PlaneEngineSettings
     {
-        public float MinSpeed { get; }
-        public float MaxSpeed { get; }
+        public readonly float MinSpeed;
+        public readonly float MaxSpeed;
 
         public PlaneEngineSettings(PlaneData planeData)
         {

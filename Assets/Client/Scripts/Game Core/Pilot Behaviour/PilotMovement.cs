@@ -8,22 +8,23 @@
         private readonly Rigidbody2D _rigidbody2D;
 
         private bool _isGround;
-        private float _speedRun;
-        private float _speedFly;
-        
+
+        private readonly float _speedRun;
+        private readonly float _speedFly;
+
 
         public PilotMovement(PilotSettings pilotSettings, Rigidbody2D rigidbody2D)
         {
             _rigidbody2D = rigidbody2D;
-              _speedRun = pilotSettings.SpeedRun;
-             _speedFly = pilotSettings.SpeedFly;
+            _speedRun = pilotSettings.SpeedRun;
+            _speedFly = pilotSettings.SpeedFly;
         }
 
         public void Movement()
         {
             if (_isGround)
             {
-                _rigidbody2D.velocity = new Vector2(_joystickVector.x * _speedRun,_rigidbody2D.velocity.y);
+                _rigidbody2D.velocity = new Vector2(_joystickVector.x * _speedRun, _rigidbody2D.velocity.y);
             }
             else
             {

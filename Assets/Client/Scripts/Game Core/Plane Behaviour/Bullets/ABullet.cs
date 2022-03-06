@@ -1,3 +1,4 @@
+using System;
 using Mirror;
 using UnityEngine;
 
@@ -5,18 +6,22 @@ using UnityEngine;
 public abstract class ABullet : NetworkBehaviour
 {
     private readonly float _destroyAfter = 5f;
-    private Rigidbody2D _rigidBody2D;
+    public readonly int Damage = 1;
 
-    private float _force = 800f;
-    public int Damage = 1;
+    private Rigidbody2D _rigidBody2D;
     
-    [SyncVar]
-    public int ownerId;
+    private NetworkIdentity _networkIdentity;
+    
+    private readonly float _force = 800f;
+
+
+    public int OwnerId { get;  set; }
+    
     
     protected void OnBulletInit()
     {
         _rigidBody2D = GetComponent<Rigidbody2D>();
-
+        
         if (ReferenceEquals(_rigidBody2D, null) == false)
             _rigidBody2D.AddForce(transform.right * _force);
     }
@@ -27,11 +32,5 @@ public abstract class ABullet : NetworkBehaviour
     private void ServerDestroySelf() =>  NetworkServer.Destroy(gameObject);
     
     [ServerCallback]
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-      /*  if (col.collider.TryGetComponent(out PlaneBehaviour planeBehaviour))
-            planeBehaviour.RpcChangeCondition(Damage);
-*/
-        NetworkServer.Destroy(gameObject);
-    }
+    private void OnCollisionEnter2D(Collision2D col) => NetworkServer.Destroy(gameObject);
 }

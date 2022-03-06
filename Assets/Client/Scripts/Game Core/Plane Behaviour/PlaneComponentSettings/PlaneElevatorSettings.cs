@@ -1,7 +1,7 @@
 ﻿
     public readonly struct PlaneElevatorSettings
     {
-        public float SpeedRotation { get; }
+        public readonly float SpeedRotation;
 
         public PlaneElevatorSettings(float speedRotation)
         {

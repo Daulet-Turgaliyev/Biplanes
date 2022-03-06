@@ -44,7 +44,7 @@
         private void CmdFire()
         {
             ABullet projectile = Instantiate(bulletPrefab, projectileMount.position, transform.rotation);
-            projectile.ownerId = _networkIdentity.connectionToClient.connectionId;
+            projectile.OwnerId =  _networkIdentity.connectionToClient.connectionId;
             NetworkServer.Spawn(projectile.gameObject);
         }
     }

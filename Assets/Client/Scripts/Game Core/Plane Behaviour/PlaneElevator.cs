@@ -18,12 +18,12 @@ public sealed class PlaneElevator: IJoystickVector
 
     public void RotationPlane()
     {
-        float dir = Vector2.Dot(_rigidbody2D.velocity, _rigidbody2D.GetRelativeVector(Vector2.right));
-        if (dir > 0)
-        {
-            _rigidbody2D.rotation += _joystickVector.y * _speedRotation;
-            _rigidbody2D.angularVelocity = 0;
-        }
+        var dir = Vector2.Dot(_rigidbody2D.velocity, _rigidbody2D.GetRelativeVector(Vector2.right));
+        
+        if (dir < 0) return;
+        
+        _rigidbody2D.rotation += _joystickVector.y * _speedRotation;
+        _rigidbody2D.angularVelocity = 0;
     }
 
     public void ChangeJoystickVector(Vector2 newJoystickVector) => _joystickVector = newJoystickVector;

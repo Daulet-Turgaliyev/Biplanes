@@ -1,26 +1,25 @@
 ﻿using System;
 using Mirror;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(PilotParachute), typeof(Rigidbody2D))]
-public sealed class PilotBehaviour : NetworkBehaviour
+public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
 {
-    [SerializeField, FormerlySerializedAs("Pilot Data")]
+    private Rigidbody2D _rigidbody2D;
+    private NetworkIdentity _networkIdentity;
+    
+    [SerializeField]
     private PilotData _pilotData;
     
     private PilotParachute _pilotParachute;
-    
-    private Rigidbody2D _rigidbody2D;
-    private NetworkIdentity _networkIdentity;
 
     private PilotBase _pilotBase;
-
-    private Action OnPlaneFixedUpdater = delegate { };
     
     private Action OnDie = delegate { };
 
     private Action<bool> OnGround = b => { };
+
+    #region Unity Events
 
     private void Awake()
     {
@@ -29,66 +28,6 @@ public sealed class PilotBehaviour : NetworkBehaviour
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
-    public override void OnStartAuthority()
-    {
-        Initialize();
-    }
-
-    public void Initialize()
-    {
-        _pilotBase = new PilotBase(_rigidbody2D, _pilotData, _pilotParachute);
-        
-        LocalSubscribe();
-    }
-
-    private void FixedUpdate()
-    {
-        OnPlaneFixedUpdater?.Invoke();
-    }
-
-    private void OnDestroy()
-    {
-        OnPlaneFixedUpdater = null;
-    }
-
-    private void GlobalSubscribe()
-    {
-    }
-    
-    private void StartDestroyPilot()
-    {
-        if (CanSendCommand() == false) return;
-        CmdDestroyPlane();
-    }
-
-    private bool CanSendCommand()
-    {
-        // != false
-        return _networkIdentity.hasAuthority && isClient;
-    }
-
-    [Command]
-    private void CmdDestroyPlane() { GameManager.Instance.DestroyPilot(this); }
-
-
-    private void RespawnMyPlane()
-    {
-        CmdRespawnMyPlane();
-    }
-    
-    [Command]
-    private void CmdRespawnMyPlane()
-    {
-        GameManager.Instance.RespawnPlaneFromHuman(_networkIdentity.connectionToClient);
-    }
-    
-    private void LocalSubscribe()
-    {
-        OnPlaneFixedUpdater += _pilotBase.CustomFixedUpdate;
-        OnGround += _pilotBase.PilotMovement.ChangeGroundState;
-        OnDie += StartDestroyPilot;
-    }
-    
     [ClientCallback]
     private void OnCollisionEnter2D(Collision2D other)
     {
@@ -98,18 +37,64 @@ public sealed class PilotBehaviour : NetworkBehaviour
             OnGround(true);
         }
 
-        if (other.collider.TryGetComponent(out RespawnPoint respawnPoint))
+        if (other.collider.GetComponent<RespawnPoint>() == false) return;
+        
+        if (CanSendCommand(_networkIdentity) == true)
         {
-            if (CanSendCommand() == true)
-            {
-                RespawnMyPlane();
-            }
-            OnDie();
+            RespawnMyPlane();
         }
+        
+        OnDie();
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
         if (other.collider.GetComponent<Ground>()) OnGround(false);
     }
+    
+    #endregion
+
+    #region Methods
+
+    protected override void Initialize()
+    {
+        _pilotBase = new PilotBase(_rigidbody2D, _pilotData, _pilotParachute);
+        base.Initialize();
+    }
+    
+    
+    protected override void LocalSubscribe()
+    {
+        OnFixedUpdater += _pilotBase.CustomFixedUpdate;
+        OnGround += _pilotBase.PilotMovement.ChangeGroundState;
+        OnDie += StartDestroyPilot;
+    }
+
+    protected override void GlobalSubscribe() { }
+    
+    private void StartDestroyPilot()
+    {
+        if (CanSendCommand(_networkIdentity) == false) return;
+        CmdDestroyPlane();
+    }
+    
+    private void RespawnMyPlane()
+    {
+        CmdRespawnMyPlane();
+    }
+    
+    #endregion
+
+    #region Commands
+
+    [Command]
+    private void CmdDestroyPlane() => GameManager.Instance.DestroyPilot(this);
+
+    [Command]
+    private void CmdRespawnMyPlane() => GameManager.Instance.RespawnPlaneFromHuman(_networkIdentity.connectionToClient);
+    
+
+    #endregion
+    
+    
 }

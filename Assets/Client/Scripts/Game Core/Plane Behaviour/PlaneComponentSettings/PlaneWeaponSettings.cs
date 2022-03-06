@@ -1,8 +1,8 @@
 ﻿
     public readonly struct PlaneWeaponSettings
     {
-        public float CoolDown { get; }
-        public float BulletAcceleration { get; }
+        public readonly float CoolDown;
+        public readonly float BulletAcceleration;
 
         public PlaneWeaponSettings(float coolDown, float bulletAcceleration)
         {

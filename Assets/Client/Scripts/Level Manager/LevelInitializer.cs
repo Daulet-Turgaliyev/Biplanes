@@ -1,7 +1,4 @@
-﻿
-
-
-using Mirror;
+﻿using Mirror;
 
 public sealed class LevelInitializer : NetworkBehaviour
 {

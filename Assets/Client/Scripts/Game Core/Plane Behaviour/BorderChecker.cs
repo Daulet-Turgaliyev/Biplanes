@@ -2,6 +2,8 @@ using UnityEngine;
 
 public sealed class BorderChecker : MonoBehaviour
 {
+    private Camera _mainCamera;
+    
     private float _xBorder;
     private float _currentHorizontalPosition;
 
@@ -9,9 +11,9 @@ public sealed class BorderChecker : MonoBehaviour
     
     private void Start()
     {
-        var main = Camera.main;
-        if (main == null) return;
-        _xBorder = main.orthographicSize * main.aspect;
+        _mainCamera = Camera.main;
+        if (_mainCamera == null) return;
+        _xBorder = _mainCamera.orthographicSize * _mainCamera.aspect;
     }
 
     private void Update()

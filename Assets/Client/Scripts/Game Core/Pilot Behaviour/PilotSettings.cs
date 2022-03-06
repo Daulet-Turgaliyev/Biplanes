@@ -1,8 +1,8 @@
 ﻿
     public sealed class PilotSettings
     {
-        public float SpeedRun { get; }
-        public float SpeedFly { get; }
+        public readonly float SpeedRun;
+        public readonly float SpeedFly;
 
         public PilotSettings(PilotData planeData)
         {

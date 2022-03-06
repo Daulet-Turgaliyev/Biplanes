@@ -4,17 +4,19 @@ using Zenject;
 
 public sealed class LevelInjectInstaller : MonoInstaller
 {
-    [FormerlySerializedAs("WindowsManager"),SerializeField] 
+    [SerializeField] 
     private WindowsManager _windowsManager;
     
-    [FormerlySerializedAs("NetworkSystem"),SerializeField] 
+    [SerializeField] 
     private NetworkSystem _networkSystem;
     
-    [FormerlySerializedAs("GameManager"),SerializeField] 
+    [SerializeField] 
     private GameManager _gameManager;
     
-    [FormerlySerializedAs("LevelInitializer"),SerializeField] 
+    [SerializeField] 
     private LevelInitializer levelInitializer;
+    
+    
     public override void InstallBindings()
     {
         Container.Bind<GlobalSettings.Screen>().AsSingle().Lazy();

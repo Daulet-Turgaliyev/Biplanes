@@ -1,14 +1,13 @@
 ﻿
     using Mirror;
     using UnityEngine;
-    using UnityEngine.Serialization;
 
     [RequireComponent(typeof(Rigidbody2D))]
     public sealed class PilotParachute: NetworkBehaviour
     {
         private Rigidbody2D _rigidbody2D;
         
-        [SerializeField, FormerlySerializedAs("SpriteRenderer")]
+        [SerializeField]
         private SpriteRenderer _parachuteSprite;
 
         private NetworkIdentity _networkIdentity;
@@ -33,7 +32,7 @@
         }
 
         [Command]
-        public void CmdSetEnableParachute(bool isActive)
+        private void CmdSetEnableParachute(bool isActive)
         {
             RpcSetEnableParachute(isActive);
         }
@@ -43,8 +42,7 @@
         {
             _parachuteSprite.enabled = isActive;
         }
-
-
+        
         public void CloseParachute()
         {
             if (_networkIdentity.hasAuthority == false) return;

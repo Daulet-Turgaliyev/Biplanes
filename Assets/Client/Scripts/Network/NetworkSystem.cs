@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
@@ -10,15 +11,10 @@ public sealed class NetworkSystem : NetworkManager
 {
     [SerializeField]
     private SpawnPlanePoint[] spawnPosition;
-    
-    [Inject]
-    private LevelInitializer _levelInitializer;
 
     [Inject]
     private WindowsManager _windowsManager;
 
-    [Inject]
-    private GameManager _gameManager;
     
     [field: SerializeField] 
     public PlaneData planeData { get; private set; }
@@ -82,10 +78,10 @@ public sealed class NetworkSystem : NetworkManager
     {
         await Task.Delay(1000);
 
-        foreach (var connect in NetworkServer.connections.Values)
+        foreach (var newPlaneBehaviour in NetworkServer.connections.Values.Select(connect => 
+            PlaneInstantiate(connect, planeData, GetSpawnPosition())))
         {
-            var newPlaneBehaviour = PlaneInstantiate(connect, planeData, GetSpawnPosition());
-             newPlaneBehaviour.OnDestroyPlane += DestroyPlane;
+            newPlaneBehaviour.OnDestroyPlane += DestroyPlane;
         }
         
         Debug.Log("Start Game");
@@ -102,19 +98,6 @@ public sealed class NetworkSystem : NetworkManager
     }
 
     [Server]
-    private async void RespawnPlane(PlaneBehaviour planeObject)
-    {
-        var connectionToClient = planeObject.GetComponent<NetworkIdentity>().connectionToClient;
-        
-        DestroyPlane(planeObject);
-
-        await Task.Delay(2500);
-
-        var newPlaneBehaviour = PlaneInstantiate(connectionToClient, planeData, GetSpawnPosition());
-        newPlaneBehaviour.OnDestroyPlane += DestroyPlane;
-    }
-
-    [Server]
     public static void DestroyPilot(PilotBehaviour pilotObject)
     {
         Debug.Log(pilotObject.gameObject);
@@ -122,9 +105,10 @@ public sealed class NetworkSystem : NetworkManager
     }
     
     [Server]
-    private void DestroyPlane(PlaneBehaviour planeObject)
+    private void DestroyPlane(PlaneBehaviour planeBehaviour)
     {
-        NetworkServer.Destroy(planeObject.gameObject);
+        NetworkServer.Destroy(planeBehaviour.gameObject);
+        RespawnPlane(planeBehaviour.connectionToClient);
     }
 
     private PlaneBehaviour PlaneInstantiate(NetworkConnection conn, PlaneData planeData, SpawnPlanePoint playerSpawnTransform)

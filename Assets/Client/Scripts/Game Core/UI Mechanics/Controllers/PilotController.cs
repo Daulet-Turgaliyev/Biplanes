@@ -4,7 +4,6 @@
 
     public class PilotController: AController
     {
-        private Action<Vector2> OnPositionUpdated;
         private Action OnOpenParachute = () => {};
         
         private readonly PilotControllerWindow _pilotControllerWindow;
@@ -14,7 +13,8 @@
         {
             _pilotControllerWindow = pilotControllerWindow;
             _pilotBase = pilotBase;
-            Initialize();
+            
+            base.Initialize();
         }
 
         ~PilotController()
@@ -22,20 +22,14 @@
             OnPositionUpdated = null;
             OnOpenParachute = null;
         }
-        
-        private void Initialize()
-        {
-            SubscriptionToAction();
-            SubscriptionToControls();
-        }
-        
-        private void SubscriptionToAction()
+
+        protected override void SubscriptionToAction()
         {
             OnPositionUpdated += _pilotBase.PilotMovement.ChangeJoystickVector;
             OnOpenParachute += _pilotBase.PilotParachute.OpenParachute;
         }
-        
-        private void SubscriptionToControls()
+
+        protected override void SubscriptionToControls()
         {
             _pilotControllerWindow.Joystick.OnDragAction += delegate(Vector2 newJoystickPosition)
             {
@@ -51,5 +45,9 @@
             _pilotBase.OnCloseParachute += () => {
                 _pilotControllerWindow.OpenParachuteButton.interactable = false;
             };
+        }
+
+        protected override void SetValuesControls()
+        {
         }
     }

@@ -4,12 +4,36 @@ using UnityEngine;
 
 public sealed class PlaneBase: IBaseObject
 {
-    private Rigidbody2D PlaneRigidbodyPlane { get; }
-    public PlaneEngine PlaneEngine { get; private set; }
-    public PlaneElevator PlaneElevator { get; private set; }
-    public PlaneWeapon PlaneWeapon { get; }
+    private Rigidbody2D PlaneRigidbody { get; }
+
+    private PlaneEngine _planeEngine;
+    public PlaneEngine PlaneEngine
+    {
+        get
+        {
+            if (ReferenceEquals(_planeEngine, null))
+                throw new NullReferenceException($"{_planeEngine} is null");
+
+            return _planeEngine;
+        }
+    }
+
     
-    public VelocityLimitChecker VelocityLimitChecker { get; private set; }
+    private PlaneElevator _planeElevator;
+    public PlaneElevator PlaneElevator
+    {
+        get
+        {
+            if (ReferenceEquals(_planeElevator, null))
+                throw new NullReferenceException($"{_planeElevator} is null");
+
+            return _planeElevator;
+        }
+    }
+
+    public PlaneWeapon PlaneWeapon { get; }
+
+    private VelocityLimitChecker _velocityLimitChecker;
     
     public PlaneCabin PlaneCabin { get; }
     public PlaneData PlaneData { get; }
@@ -24,11 +48,19 @@ public sealed class PlaneBase: IBaseObject
         
         PlaneCabin = planeCabin;
         
-        PlaneRigidbodyPlane = planeRigidbody2D;
+        PlaneRigidbody = planeRigidbody2D;
         
         PlaneElementsInit();
     }
 
+    private void PlaneElementsInit()
+    {
+        PlaneEngineInit();
+        PlaneElevatorInit();
+        PlaneWeaponInit();
+        PlaneVelocityLimiterInit();
+    }
+    
     ~PlaneBase()
     {
         OnFastDestroyPlane = null;
@@ -39,26 +71,18 @@ public sealed class PlaneBase: IBaseObject
         PlaneEngine.WorkingEngine();
         PlaneElevator.RotationPlane();
     }
-
-
-    private void PlaneElementsInit()
-    {
-        PlaneEngineInit();
-        PlaneElevatorInit();
-        PlaneWeaponInit();
-        PlaneVelocityLimiter();
-    }
+    
 
     private void PlaneEngineInit()
     {
         var planeEngineSettings = new PlaneEngineSettings(PlaneData);
-        PlaneEngine = new PlaneEngine(planeEngineSettings, PlaneRigidbodyPlane);
+        _planeEngine = new PlaneEngine(planeEngineSettings, PlaneRigidbody);
     }
 
     private void PlaneElevatorInit()
     {
         var planeElevatorSettings = new PlaneElevatorSettings(PlaneData.SpeedRotation);
-        PlaneElevator = new PlaneElevator(planeElevatorSettings, PlaneRigidbodyPlane);
+        _planeElevator = new PlaneElevator(planeElevatorSettings, PlaneRigidbody);
     }
     
     private void PlaneWeaponInit()
@@ -67,8 +91,8 @@ public sealed class PlaneBase: IBaseObject
         PlaneWeapon.Init(planeWeaponSettings); 
     }
 
-    private void PlaneVelocityLimiter()
+    private void PlaneVelocityLimiterInit()
     {
-        VelocityLimitChecker = new VelocityLimitChecker(PlaneRigidbodyPlane, PlaneData.VelocityLimit);
+        _velocityLimitChecker = new VelocityLimitChecker(PlaneRigidbody, PlaneData.VelocityLimit);
     }
 }
