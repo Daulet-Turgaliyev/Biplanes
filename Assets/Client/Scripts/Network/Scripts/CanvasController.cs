@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Mirror.Examples.MultipleMatch
-{
-    public class CanvasController : MonoBehaviour
+public class CanvasController : MonoBehaviour
     {
         /// <summary>
         /// Match Controllers listen for this to terminate their match and clean up
@@ -498,6 +497,8 @@ namespace Mirror.Examples.MultipleMatch
                     player.GetComponent<NetworkMatch>().matchId = matchId;
                     NetworkServer.AddPlayerForConnection(playerConn, player);
 
+                    matchController.PlaneInstantiate(playerConn.identity);
+                    
                     if (matchController.player1 == null)
                     {
                         matchController.player1 = playerConn.identity;
@@ -512,10 +513,7 @@ namespace Mirror.Examples.MultipleMatch
                     playerInfo.ready = false;
                     playerInfos[playerConn] = playerInfo;
                 }
-
-                matchController.startingPlayer = matchController.player1;
-                matchController.currentPlayer = matchController.player1;
-
+                
                 playerMatches.Remove(conn);
                 openMatches.Remove(matchId);
                 matchConnections.Remove(matchId);
@@ -610,13 +608,16 @@ namespace Mirror.Examples.MultipleMatch
                     }
                 case ClientMatchOperation.Started:
                     {
+                        NetworkClient.ready = true;
                         lobbyView.SetActive(false);
                         roomView.SetActive(false);
                         break;
                     }
             }
         }
-
+        
+        
+        
         void ShowLobbyView()
         {
             lobbyView.SetActive(true);
@@ -664,4 +665,3 @@ namespace Mirror.Examples.MultipleMatch
         #endregion
 
     }
-}

@@ -40,11 +40,12 @@
                 CmdFire();
         }
         
-        [Command]
+        [Command(requiresAuthority = false)]
         private void CmdFire()
         {
-            ABullet projectile = Instantiate(bulletPrefab, projectileMount.position, transform.rotation);
-            projectile.OwnerId =  _networkIdentity.connectionToClient.connectionId;
+            var projectile = Instantiate(bulletPrefab, projectileMount.position, transform.rotation);
+            projectile.GetComponent<NetworkMatch>().matchId = MatchController.Instance.GetNetworkMath;
+            projectile.OwnerId = _networkIdentity.connectionToClient.connectionId;
             NetworkServer.Spawn(projectile.gameObject);
         }
     }

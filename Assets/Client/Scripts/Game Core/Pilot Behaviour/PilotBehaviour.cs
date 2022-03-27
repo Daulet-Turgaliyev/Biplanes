@@ -7,7 +7,7 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
 {
     private Rigidbody2D _rigidbody2D;
     private NetworkIdentity _networkIdentity;
-    
+
     [SerializeField]
     private PilotData _pilotData;
     
@@ -37,14 +37,12 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
             OnGround(true);
         }
 
-        if (other.collider.GetComponent<RespawnPoint>() == false) return;
-        
-        if (CanSendCommand(_networkIdentity) == true)
+        if (other.collider.GetComponent<RespawnPoint>() == true)
         {
-            RespawnMyPlane();
-        }
+            CmdRespawnMyPlane();
         
-        OnDie();
+            OnDie();
+        }
     }
 
     private void OnCollisionExit2D(Collision2D other)
@@ -67,31 +65,25 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
     {
         OnFixedUpdater += _pilotBase.CustomFixedUpdate;
         OnGround += _pilotBase.PilotMovement.ChangeGroundState;
-        OnDie += StartDestroyPilot;
+        OnDie += DestroyPilot;
+        OnDie += GameManager.Instance.CloseCurrentWindow;
     }
 
     protected override void GlobalSubscribe() { }
-    
-    private void StartDestroyPilot()
-    {
-        if (CanSendCommand(_networkIdentity) == false) return;
-        CmdDestroyPlane();
-    }
-    
-    private void RespawnMyPlane()
-    {
-        CmdRespawnMyPlane();
-    }
-    
+
     #endregion
 
     #region Commands
 
-    [Command]
-    private void CmdDestroyPlane() => GameManager.Instance.DestroyPilot(this);
-
-    [Command]
-    private void CmdRespawnMyPlane() => GameManager.Instance.RespawnPlaneFromHuman(_networkIdentity.connectionToClient);
+    
+    [Command(requiresAuthority = false)]
+    private void DestroyPilot() => MatchController.Instance.NetworkDestroy(gameObject);
+    
+    [Command(requiresAuthority = false)]
+    private void CmdRespawnMyPlane() {
+        GameManager.Instance.CloseCurrentWindow();
+        MatchController.Instance.RespawnPlane(_networkIdentity);
+    }
     
 
     #endregion

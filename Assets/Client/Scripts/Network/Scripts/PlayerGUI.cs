@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Mirror.Examples.MultipleMatch
-{
+
     public class PlayerGUI : MonoBehaviour
     {
         public Text playerName;
@@ -13,4 +12,3 @@ namespace Mirror.Examples.MultipleMatch
             playerName.color = info.ready ? Color.green : Color.red;
         }
     }
-}

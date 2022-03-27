@@ -1,5 +1,5 @@
+using Mirror;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 public sealed class LevelInjectInstaller : MonoInstaller
@@ -8,7 +8,7 @@ public sealed class LevelInjectInstaller : MonoInstaller
     private WindowsManager _windowsManager;
     
     [SerializeField] 
-    private NetworkSystem _networkSystem;
+    private NetworkManager _networkManager;
     
     [SerializeField] 
     private GameManager _gameManager;
@@ -24,6 +24,6 @@ public sealed class LevelInjectInstaller : MonoInstaller
         Container.Bind<WindowsManager>().FromInstance(_windowsManager).NonLazy();
         Container.Bind<LevelInitializer>().FromInstance(levelInitializer).NonLazy();
         Container.Bind<GameManager>().FromInstance(_gameManager).NonLazy();
-        Container.Bind<NetworkSystem>().FromInstance(_networkSystem).NonLazy();
+        Container.Bind<NetworkManager>().FromInstance(_networkManager).NonLazy();
     }
 }

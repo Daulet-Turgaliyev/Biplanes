@@ -2,8 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Mirror.Examples.MultipleMatch
-{
+
     public class MatchGUI : MonoBehaviour
     {
         Guid matchId;
@@ -41,4 +40,4 @@ namespace Mirror.Examples.MultipleMatch
             playerCount.text = $"{infos.players} / {infos.maxPlayers}";
         }
     }
-}
+

@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Mirror.Examples.MultipleMatch
-{
+
     public class RoomGUI : MonoBehaviour
     {
         public GameObject playerList;
@@ -45,4 +44,4 @@ namespace Mirror.Examples.MultipleMatch
             leaveButton.SetActive(!owner);
         }
     }
-}
+

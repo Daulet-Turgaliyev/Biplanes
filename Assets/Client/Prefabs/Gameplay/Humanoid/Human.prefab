@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1218187245128477496}
   - component: {fileID: 4627550246137586210}
   - component: {fileID: 3924789256304296130}
+  - component: {fileID: 2259857165060554086}
   m_Layer: 6
   m_Name: Human
   m_TagString: Untagged
@@ -147,6 +148,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _parachuteSprite: {fileID: 86360787199279927}
+--- !u!114 &2259857165060554086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86360786915502496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d17e718851449a6879986e45c458fb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!1 &86360787199279929
 GameObject:
   m_ObjectHideFlags: 0

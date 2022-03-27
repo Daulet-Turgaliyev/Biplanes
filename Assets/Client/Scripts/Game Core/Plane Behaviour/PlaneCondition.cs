@@ -11,7 +11,7 @@ public sealed class PlaneCondition : MonoBehaviour
 
     private ParticleSystem _currentParticle;
 
-    public Action OnDestroy;
+    public Action<int> OnDestroy;
     public Action OnRespawnPlane;
 
     private void Start()
@@ -19,8 +19,10 @@ public sealed class PlaneCondition : MonoBehaviour
         _currentParticle = particleCondition[0];
     }
 
-    public void TrySetCondition(int healthStatus, bool hasAuthority)
+    public void TrySetCondition(int healthStatus, bool hasAuthority, bool isNeedRespawn = true)
     {
+        if(_particleDestroy.isPlaying == true) return;
+
         if (healthStatus > particleCondition.Length - 1 || healthStatus < 0)
         {
             Debug.LogWarning($"healthStatus: {healthStatus}");
@@ -29,7 +31,10 @@ public sealed class PlaneCondition : MonoBehaviour
 
         if (healthStatus == 0)
         {
-            DiePlane(hasAuthority);
+            if (isNeedRespawn == true)
+                OnRespawnPlane?.Invoke();
+            
+            DestroyPlane(hasAuthority);
             return;
         }
 
@@ -38,25 +43,21 @@ public sealed class PlaneCondition : MonoBehaviour
         _currentParticle.Play();
     }
 
-    public void DiePlane(bool hasAuthority, bool isSystemDestroy = false)
+    private void DestroyPlane(bool hasAuthority)
     {
         _currentParticle.Stop();
         
-        DieAnimation();
+        DestroyAnimation();
 
         if (hasAuthority)
             GameManager.Instance.CloseCurrentWindow();
-
-        if (isSystemDestroy == false)
-            OnRespawnPlane?.Invoke();
-
+        
     }
 
-    private async void DieAnimation()
+    private void DestroyAnimation()
     {
         _particleDestroy.Play();
-        await Task.Delay(2000);
-        OnDestroy?.Invoke();
+        OnDestroy?.Invoke(2);
     }
 
     private void OnDisable()

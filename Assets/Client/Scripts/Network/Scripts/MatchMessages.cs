@@ -1,8 +1,8 @@
 ﻿using System;
+using Mirror;
 
-namespace Mirror.Examples.MultipleMatch
-{
-    /// <summary>
+
+/// <summary>
     /// Match message to be sent to the server
     /// </summary>
     public struct ServerMatchMessage : NetworkMessage
@@ -115,4 +115,4 @@ namespace Mirror.Examples.MultipleMatch
         // board is full (winner / draw)
         Full = TopRow + MidRow + BotRow
     }
-}
+

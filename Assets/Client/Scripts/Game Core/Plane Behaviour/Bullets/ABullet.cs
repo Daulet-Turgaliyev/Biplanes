@@ -5,6 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class ABullet : NetworkBehaviour
 {
+    [SyncVar] 
+    public int OwnerId;
+    
     private readonly float _destroyAfter = 5f;
     public readonly int Damage = 1;
 
@@ -13,9 +16,7 @@ public abstract class ABullet : NetworkBehaviour
     private NetworkIdentity _networkIdentity;
     
     private readonly float _force = 800f;
-
-
-    public int OwnerId { get;  set; }
+    
     
     
     protected void OnBulletInit()

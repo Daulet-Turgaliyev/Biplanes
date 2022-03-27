@@ -12,9 +12,7 @@ public class GameManager : MonoBehaviour
     
     [Inject] 
     private WindowsManager _windowsManager;
-
-    [Inject] 
-    private NetworkSystem _networkSystem;
+    
     
     private PlaneControllerWindow _planeControllerWindow;
     private PilotControllerWindow _pilotControllerWindow;
@@ -56,15 +54,4 @@ public class GameManager : MonoBehaviour
     }
 
     public void CloseCurrentWindow() => _windowsManager.CloseLast();
-
-
-    public void DestroyPilot(PilotBehaviour pilotBehaviour)
-    {
-        NetworkSystem.DestroyPilot(pilotBehaviour);
-    }
-
-    public void RespawnPlaneFromHuman(NetworkConnection networkConnection)
-    {
-        _networkSystem.RespawnPlane(networkConnection);
-    }
 }

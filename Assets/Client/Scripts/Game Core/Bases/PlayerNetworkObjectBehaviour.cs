@@ -1,11 +1,12 @@
 ﻿
     using System;
     using Mirror;
+    using UnityEngine;
 
     public abstract class PlayerNetworkObjectBehaviour: NetworkBehaviour
     {
         protected Action OnFixedUpdater = delegate { };
-
+        
         public override void OnStartAuthority()
         {
             base.OnStartAuthority();

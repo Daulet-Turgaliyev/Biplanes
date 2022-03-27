@@ -1,25 +1,45 @@
-﻿using Mirror;
+﻿using System;
+using System.Threading.Tasks;
+using Mirror;
 using UnityEngine;
 
 
 [RequireComponent(typeof(SpriteRenderer))]
 public sealed class PlaneSkin : MonoBehaviour
 {
+    [SerializeField] 
+    private NetworkIdentity _networkIdentity;
+    
+    [SerializeField]
     private SpriteRenderer _spriteRenderer;
 
     [SerializeField] 
     private Sprite[] planeSprite;
 
-    private void Awake() => _spriteRenderer = GetComponent<SpriteRenderer>();
-    
-    public void Initialize(bool hasAuthority)
-    {/*
-        int myId = LevelInitializer.Instance.GetSkinId();
+    private void Awake()
+    {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+    } 
 
-        if (hasAuthority == false)
-            myId = myId == 0 ? 1 : 0;
+    private void Start()
+    {
+        EnableRenderer();
+    }
+
+    private async void EnableRenderer()
+    {
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        if(ReferenceEquals(_networkIdentity, null)) return;
         
-        Debug.Log($"Skin Id {myId}");
-        _spriteRenderer.sprite = planeSprite[myId];*/
+        int myId = 0;
+        
+        if (_networkIdentity.hasAuthority == true)
+            myId = 1;
+            
+        _spriteRenderer.sprite = planeSprite[myId];
     }
 }

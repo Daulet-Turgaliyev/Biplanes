@@ -13,7 +13,6 @@
         {
             _pilotControllerWindow = pilotControllerWindow;
             _pilotBase = pilotBase;
-            
             base.Initialize();
         }
 
@@ -35,6 +34,8 @@
             {
                 OnPositionUpdated?.Invoke(newJoystickPosition);
             };
+            
+            _pilotControllerWindow.OpenParachuteButton.interactable = true;
             
             _pilotControllerWindow.OpenParachuteButton.onClick.AddListener(delegate
             {

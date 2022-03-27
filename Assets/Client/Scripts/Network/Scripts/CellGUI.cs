@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace Mirror.Examples.MultipleMatch
-{
+
     public class CellGUI : MonoBehaviour
     {
         public MatchController matchController;
@@ -20,12 +20,7 @@ namespace Mirror.Examples.MultipleMatch
         {
             matchController.MatchCells.Add(cellValue, this);
         }
-
-        public void MakePlay()
-        {
-            if (matchController.currentPlayer.isLocalPlayer)
-                matchController.CmdMakePlay(cellValue);
-        }
+        
 
         public void SetPlayer(NetworkIdentity playerIdentity)
         {
@@ -43,4 +38,3 @@ namespace Mirror.Examples.MultipleMatch
             }
         }
     }
-}

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
 
@@ -22,6 +21,9 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
     private PlaneSkin _planeSkin;
 
     [SerializeField]
+    private PlaneCollider _planeCollider;
+    
+    [SerializeField]
     private PlaneData _planeData;
 
     [Space(3)] [Header("Mirror")] [SyncVar]
@@ -29,8 +31,6 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
 
     private PlaneBase _planeBase;
 
-    public Action<PlaneBehaviour> OnDestroyPlane = delegate { };
-    
     #region UnityEvents
 
     private void Awake()
@@ -39,35 +39,9 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
-    public void Start()
-    {
-        _planeSkin.Initialize(hasAuthority);
-    }
-
     private void OnDestroy()
     {
         OnFixedUpdater = null;
-        OnDestroyPlane = null;
-    }
-    
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.collider.GetComponent<Building>())
-            FastDestroyPlane();
-
-        if (other.collider.TryGetComponent(out ABullet bullet))
-        {
-            if (_networkIdentity.connectionToClient.connectionId != bullet.OwnerId)
-                RpcChangeCondition(bullet.Damage);
-        }
-
-        if (other.collider.GetComponent<Ground>())
-        {
-            /*if(ReferenceEquals(_planeBase.VelocityLimitChecker, null)) return;
-                
-            if (_planeBase.VelocityLimitChecker.CheckLimit())
-                OnBuildingCollision2D();*/
-        }
     }
     
     #endregion
@@ -91,60 +65,59 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
 
     protected override void LocalSubscribe()
     {
-        _planeCondition.OnDestroy += StartDestroyPlane;
         OnFixedUpdater += _planeBase.CustomFixedUpdate;
-        _planeBase.OnFastDestroyPlane += FastDestroyPlane;
-        _planeCondition.OnRespawnPlane += StartRespawnPlane;
+        
+        _planeCabin.OnJumped += CmdDestroyPlane;
+        _planeCollider.OnBuildingEnter += CmdGetFatalDamage;
+        _planeCollider.OnBulletEnter += CmdGetDamage;
+        
+        _planeCondition.OnDestroy += CmdDestroyPlane;
+        _planeCondition.OnRespawnPlane += CmdRespawnPlane;
     }
     
-    private void StartDestroyPlane()
-    {
-        if (CanSendCommand(_networkIdentity) == false) return;
-        CmdDestroyPlane();
-    }
-    
-    private void FastDestroyPlane()
-    {
-        if (CanSendCommand(_networkIdentity) == false) return;
-        CmdFastDestroyPlane();
-    }
-    
-    private async void StartRespawnPlane()
-    {
-        if (CanSendCommand(_networkIdentity) == false) return;
-
-        await Task.Delay(3000);
-
-        CmdRespawnPlane();
-    }
 
     #endregion
 
     #region Commands
+    
+    [Command(requiresAuthority = false)]
+    private void CmdGetDamage(ABullet bullet)
+    {
+        MatchController.Instance.GetDamage(this, bullet.Damage);
+    }
+    
+    [Command(requiresAuthority = false)]
+    private void CmdGetFatalDamage()
+    {
+        if(_planeCabin.HasPilotInCabin == false) return;
+        MatchController.Instance.GetFatalDamage(this);
+    }
 
-    
-    [Command]
-    private void CmdFastDestroyPlane() => RpcFastDestroyPlane();
-    
-    [Command]
-    private void CmdDestroyPlane() => OnDestroyPlane(this);
-    
-    [Command]
-    private void CmdRespawnPlane() => GameManager.Instance.RespawnPlaneFromHuman(_networkIdentity.connectionToClient);
-    
+    [Command(requiresAuthority = false)]
+    private async void CmdRespawnPlane()
+    {
+        await MatchController.Instance.RespawnPlane(_networkIdentity, 5);
+    }
+
+    [Command(requiresAuthority = false)]
+    private async void CmdDestroyPlane(int destroyTime)
+    {
+        await MatchController.Instance.NetworkDestroy(gameObject, destroyTime);
+    }
     
     #endregion  
 
+    
 
     [ClientRpc]
-    private void RpcFastDestroyPlane()
+    public void RpcFastDestroyPlane()
     {
         _healPoint = 0;
-        _planeCondition.DiePlane(_networkIdentity.hasAuthority, true);
+        _planeCondition.TrySetCondition(0, _networkIdentity.hasAuthority);
     }
 
     [ClientRpc]
-    private void RpcChangeCondition(int damage)
+    public void RpcChangeCondition(int damage)
     {
         Debug.Log($"DAMAGE: {damage} Name: {gameObject.name} HP: {_healPoint} ");
         _healPoint -= damage;
