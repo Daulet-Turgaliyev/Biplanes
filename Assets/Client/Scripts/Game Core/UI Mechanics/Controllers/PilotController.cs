@@ -35,8 +35,6 @@
                 OnPositionUpdated?.Invoke(newJoystickPosition);
             };
             
-            _pilotControllerWindow.OpenParachuteButton.interactable = true;
-            
             _pilotControllerWindow.OpenParachuteButton.onClick.AddListener(delegate
             {
                 _pilotControllerWindow.OpenParachuteButton.interactable = false;

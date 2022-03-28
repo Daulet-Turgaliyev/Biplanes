@@ -6,6 +6,7 @@ using UnityEngine;
 public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
 {
     private Rigidbody2D _rigidbody2D;
+    
     private NetworkIdentity _networkIdentity;
 
     [Space(3)] [Header("Plane Parts"), SerializeField]
@@ -30,6 +31,8 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
     private int _healPoint = 3;
 
     private PlaneBase _planeBase;
+    
+    
 
     #region UnityEvents
 
@@ -69,7 +72,7 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
         
         _planeCabin.OnJumped += CmdDestroyPlane;
         _planeCollider.OnBuildingEnter += CmdGetFatalDamage;
-        _planeCollider.OnBulletEnter += CmdGetDamage;
+        _planeCollider.OnBulletEnter += TryGetDamage;
         
         _planeCondition.OnDestroy += CmdDestroyPlane;
         _planeCondition.OnRespawnPlane += CmdRespawnPlane;
@@ -79,6 +82,12 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
     #endregion
 
     #region Commands
+
+    private void TryGetDamage(ABullet bullet)
+    {
+        if(_planeWeapon.PlaneId == bullet.OwnerId) return;
+        CmdGetDamage(bullet);
+    }
     
     [Command(requiresAuthority = false)]
     private void CmdGetDamage(ABullet bullet)

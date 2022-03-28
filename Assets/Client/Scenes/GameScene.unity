@@ -1680,7 +1680,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96d050d2ffb2bfd428cff34f5870ecd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mainCanvas: {fileID: 2134331386}
+  _windows:
+  - {fileID: 5686117282478907880, guid: bcd1f3f1a4a25644bb84afb781c37b53, type: 3}
+  - {fileID: 7640074765446353943, guid: f8f8166c74170e544b92e6b0649c5c5f, type: 3}
+  _canvasTransform: {fileID: 2134331387}
 --- !u!4 &768965633
 Transform:
   m_ObjectHideFlags: 0
@@ -2250,6 +2253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <LocalPlaneBehaviour>k__BackingField: {fileID: 0}
+  _currentController: {fileID: 0}
 --- !u!4 &974490051
 Transform:
   m_ObjectHideFlags: 0

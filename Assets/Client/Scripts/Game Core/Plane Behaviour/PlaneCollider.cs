@@ -5,9 +5,6 @@
 
     public class PlaneCollider: MonoBehaviour
     {
-        [SerializeField] 
-        private NetworkIdentity _networkIdentity;
-        
         public Action OnBuildingEnter = () => { };
         public Action<ABullet> OnBulletEnter = (ABullet bullet) => { };
         public Action OnGroundEnter = () => { };
@@ -19,8 +16,7 @@
 
             if (other.collider.TryGetComponent(out ABullet bullet))
             {
-                if(_networkIdentity.connectionToClient.connectionId != bullet.OwnerId)
-                    OnBulletEnter(bullet);
+                OnBulletEnter(bullet);
             }
 
             if (other.collider.GetComponent<Ground>())

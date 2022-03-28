@@ -13,9 +13,8 @@ public class GameManager : MonoBehaviour
     [Inject] 
     private WindowsManager _windowsManager;
     
-    
-    private PlaneControllerWindow _planeControllerWindow;
-    private PilotControllerWindow _pilotControllerWindow;
+    [SerializeField]
+    private GameObject _currentController;
 
     private void Awake()
     {
@@ -38,20 +37,39 @@ public class GameManager : MonoBehaviour
     }
     
 //TODO: Let see it later
-    public void OpenGameWindow(PlaneBase planeBase)
+    public void OpenGameWindow(IBaseObject BaseEntity)
     {
-        if(ReferenceEquals(planeBase, null) == true)
-            throw new NullReferenceException($"{nameof(planeBase)} not found");
+        if(ReferenceEquals(BaseEntity, null) == true)
+            throw new NullReferenceException($"{nameof(BaseEntity)} not found");
+
+        GameEntity gameEntity;
+
+        switch (BaseEntity)
+        {
+            case PlaneBase planeBase:
+                gameEntity = GameEntity.Plane;
+                _currentController = _windowsManager.OpenWindow(gameEntity);
+                var planeControllerWindow = _currentController.GetComponent<PlaneControllerWindow>();
+                var planeController = new PlaneController(planeControllerWindow, planeBase);
+                break;
+            case PilotBase pilotBase:
+                gameEntity = GameEntity.Pilot;
+                _currentController = _windowsManager.OpenWindow(gameEntity);
+                var pilotControllerWindow = _currentController.GetComponent<PilotControllerWindow>();
+                var pilotController = new PilotController(pilotControllerWindow, pilotBase);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException($"{nameof(BaseEntity)} not found");
+        }
+    }
+
+    [Client]
+    public void CloseCurrentWindow()
+    {
+        if (ReferenceEquals(_currentController, null))
+            throw new NullReferenceException($"{nameof(_currentController)} is null");
         
-        _planeControllerWindow = _windowsManager.OpenWindow<PlaneControllerWindow>();
-        var planeController = new PlaneController(_planeControllerWindow, planeBase);
+        Debug.Log(_currentController);
+        Destroy(_currentController);
     }
-
-    public void OpenGameWindow(PilotBase pilotBase)
-    {
-        _pilotControllerWindow = _windowsManager.OpenWindow<PilotControllerWindow>();
-        var planeController = new PilotController(_pilotControllerWindow, pilotBase);
-    }
-
-    public void CloseCurrentWindow() => _windowsManager.CloseLast();
 }
