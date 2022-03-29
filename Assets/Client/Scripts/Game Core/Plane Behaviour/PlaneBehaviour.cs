@@ -27,7 +27,8 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
     [SerializeField]
     private PlaneData _planeData;
 
-    [Space(3)] [Header("Mirror")] [SyncVar]
+    [Space(3)] [Header("Mirror")] [SerializeField] 
+    [SyncVar]
     private int _healPoint = 3;
 
     private PlaneBase _planeBase;
@@ -77,7 +78,6 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
         _planeCondition.OnDestroy += CmdDestroyPlane;
         _planeCondition.OnRespawnPlane += CmdRespawnPlane;
     }
-    
 
     #endregion
 

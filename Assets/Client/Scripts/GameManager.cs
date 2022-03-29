@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject _currentController;
 
+    [Inject] 
+    private NetworkManager _networkManager;
+    
     private void Awake()
     {
         // Singlton как временное решение
@@ -62,8 +65,7 @@ public class GameManager : MonoBehaviour
                 throw new ArgumentOutOfRangeException($"{nameof(BaseEntity)} not found");
         }
     }
-
-    [Client]
+    
     public void CloseCurrentWindow()
     {
         if (ReferenceEquals(_currentController, null))

@@ -68,6 +68,7 @@ public class PlaneController : AController
         
         _planeControllerWindow.FireButton.interactable = false;
         await Task.Delay(_planeData.CoolDown);
+        if (_planeControllerWindow.FireButton == null) return;
         _planeControllerWindow.FireButton.interactable = true;
     }
 

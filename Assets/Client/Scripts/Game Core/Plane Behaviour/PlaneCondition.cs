@@ -35,14 +35,21 @@ public sealed class PlaneCondition : MonoBehaviour
                 OnRespawnPlane?.Invoke();
             
             DestroyPlane(hasAuthority);
-            return;
         }
 
-        _currentParticle.Stop();
-        _currentParticle = particleCondition[healthStatus];
-        _currentParticle.Play();
+        ChangeConditionEffect(healthStatus);
     }
 
+    public void ChangeConditionEffect(int effectIndex)
+    {
+        
+        if (effectIndex > particleCondition.Length - 1 || effectIndex < 0)
+            throw new ArgumentOutOfRangeException($"{nameof(effectIndex)}");
+        _currentParticle.Stop();
+        _currentParticle = particleCondition[effectIndex];
+        _currentParticle.Play();
+    }
+    
     private void DestroyPlane(bool hasAuthority)
     {
         _currentParticle.Stop();
