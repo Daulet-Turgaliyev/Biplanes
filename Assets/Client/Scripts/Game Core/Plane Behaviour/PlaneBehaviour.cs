@@ -1,136 +1,95 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
+public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
 {
     private Rigidbody2D _rigidbody2D;
-    
-    private NetworkIdentity _networkIdentity;
 
     [Space(3)] [Header("Plane Parts"), SerializeField]
     private PlaneWeapon _planeWeapon;
-
-    [SerializeField]
-    private PlaneCabin _planeCabin;
-
-    [SerializeField]
-    private PlaneCondition _planeCondition;
-
-    [SerializeField]
-    private PlaneSkin _planeSkin;
-
-    [SerializeField]
-    private PlaneCollider _planeCollider;
     
-    [SerializeField]
-    private PlaneData _planeData;
+    [SerializeField] NetworkIdentity _networkIdentity;
+    
+    [SerializeField] private PlaneCabin _planeCabin;
 
-    [Space(3)] [Header("Mirror")] [SerializeField] 
-    [SyncVar]
-    private int _healPoint = 3;
+    [SerializeField] private PlaneCondition _planeCondition;
+
+    [SerializeField] private PlaneSkin _planeSkin;
+
+    [SerializeField] private PlaneCollider _planeCollider;
+
+    [SerializeField] private PlaneData _planeData;
+
+    [Space(3)] [Header("Mirror")] [SyncVar(hook = nameof(OnUpdateHP))]
+    public int HealPoint;
 
     private PlaneBase _planeBase;
-    
-    
+
+    public Action<NetworkIdentity, bool> OnPlaneDie;
 
     #region UnityEvents
 
     private void Awake()
     {
-        _networkIdentity = GetComponent<NetworkIdentity>();
+        HealPoint = 4;
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
-    private void OnDestroy()
-    {
-        OnFixedUpdater = null;
+
+    private void OnDestroy() { OnFixedUpdater = null;
+        OnPlaneDie = null;
     }
-    
+
+    private void OnUpdateHP(int oldHp, int newHp)
+    {
+        Debug.Log("New HP: " + newHp);
+        if (newHp > 0)
+        {
+            _planeCondition.TrySetCondition(newHp, hasAuthority);
+        }
+        else
+        {
+            if(_networkIdentity.hasAuthority)
+            {
+                CmdDestroyPlane();
+                GameManager.Instance.CloseCurrentWindow();
+            }
+            _planeCondition.DestroyAnimation();
+        }
+    }
+
+    [Command]
+    private void CmdDestroyPlane()
+    {
+        OnPlaneDie?.Invoke(_networkIdentity, true);
+    }
+
     #endregion
 
     #region Methods
 
     protected override void Initialize()
     {
-        var gameManager = GameManager.Instance;
-
         _planeBase = new PlaneBase(_rigidbody2D, _planeWeapon, _planeCabin, _planeData);
 
-        gameManager.OpenGameWindow(_planeBase);
-        gameManager.SetPlaneBehaviour(this);
+        GameManager.Instance.OpenGameWindow(_planeBase);
 
         base.Initialize();
     }
-    
+
 
     protected override void GlobalSubscribe() { }
 
-    protected override void LocalSubscribe()
-    {
-        OnFixedUpdater += _planeBase.CustomFixedUpdate;
-        
-        _planeCabin.OnJumped += CmdDestroyPlane;
-        _planeCollider.OnBuildingEnter += CmdGetFatalDamage;
-        _planeCollider.OnBulletEnter += TryGetDamage;
-        
-        _planeCondition.OnDestroy += CmdDestroyPlane;
-        _planeCondition.OnRespawnPlane += CmdRespawnPlane;
-    }
+    protected override void LocalSubscribe() { OnFixedUpdater += _planeBase.CustomFixedUpdate; }
 
     #endregion
 
     #region Commands
 
-    private void TryGetDamage(ABullet bullet)
-    {
-        if(_planeWeapon.PlaneId == bullet.OwnerId) return;
-        CmdGetDamage(bullet);
-    }
-    
-    [Command(requiresAuthority = false)]
-    private void CmdGetDamage(ABullet bullet)
-    {
-        MatchController.Instance.GetDamage(this, bullet.Damage);
-    }
-    
-    [Command(requiresAuthority = false)]
-    private void CmdGetFatalDamage()
-    {
-        if(_planeCabin.HasPilotInCabin == false) return;
-        MatchController.Instance.GetFatalDamage(this);
-    }
 
-    [Command(requiresAuthority = false)]
-    private async void CmdRespawnPlane()
-    {
-        await MatchController.Instance.RespawnPlane(_networkIdentity, 5);
-    }
+    #endregion
 
-    [Command(requiresAuthority = false)]
-    private async void CmdDestroyPlane(int destroyTime)
-    {
-        await MatchController.Instance.NetworkDestroy(gameObject, destroyTime);
-    }
-    
-    #endregion  
-
-    
-
-    [ClientRpc]
-    public void RpcFastDestroyPlane()
-    {
-        _healPoint = 0;
-        _planeCondition.TrySetCondition(0, _networkIdentity.hasAuthority);
-    }
-
-    [ClientRpc]
-    public void RpcChangeCondition(int damage)
-    {
-        Debug.Log($"DAMAGE: {damage} Name: {gameObject.name} HP: {_healPoint} ");
-        _healPoint -= damage;
-
-        _planeCondition.TrySetCondition(_healPoint, _networkIdentity.hasAuthority);
-    }
 }

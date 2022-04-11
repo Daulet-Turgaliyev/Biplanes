@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 [RequireComponent(typeof(NetworkMatch))]
@@ -28,7 +25,6 @@ using UnityEngine.UI;
         public CanvasController canvasController;
         public NetworkIdentity player1;
         public NetworkIdentity player2;
-        
         
         [SyncVar(hook = nameof(OnUpdateScoreText))]
         public int FirstPlayerScore;
@@ -59,65 +55,45 @@ using UnityEngine.UI;
         }
 
         [Server]
-        public PlaneBehaviour PlaneInstantiate(NetworkIdentity conn)
+        public void PlaneInstantiate(NetworkIdentity conn)
         {
-
             var spawnPosition = GetSpawnPosition();
             
             var planeBehaviour = Instantiate(_planeData.PlanePrefab, 
                 spawnPosition.position, spawnPosition.rotation);
 
             planeBehaviour.GetComponent<NetworkMatch>().matchId = _networkMatch.matchId;
+            planeBehaviour.OnPlaneDie += NetworkDestroy;
             NetworkServer.Spawn(planeBehaviour.gameObject,conn.connectionToClient);
-            return planeBehaviour;
         }
 
-
-         [Server]
-         public void GetDamage(PlaneBehaviour planeBehaviour, int damage)
-         {
-             planeBehaviour.RpcChangeCondition(damage);
-         }
-         
-         [Server]
-         public void GetFatalDamage(PlaneBehaviour planeBehaviour)
-         {
-             planeBehaviour.RpcFastDestroyPlane();
-         }
-         
         [Server]
-        public async void DestroyAndRespawnPlane(NetworkIdentity conn, int respawnTime = 0, int destroyTime = 0)
+        private IEnumerator RespawnTimer(NetworkIdentity networkIdentity)
         {
-            var networkIdentity = conn;
-            await NetworkDestroy(conn.gameObject, destroyTime);
-            
-            await RespawnPlane(networkIdentity, respawnTime);
-        }
-        
-        [Server]
-        public async Task RespawnPlane(NetworkIdentity conn, int respawnTimeToSecond = 0)
-        {
-            var respawnTimeToMillisecondsDelay = respawnTimeToSecond * 1000;
-            var networkIdentity = conn;
-            await Task.Delay(respawnTimeToMillisecondsDelay);
+            yield return new WaitForSeconds(4);
             PlaneInstantiate(networkIdentity);
         }
         
         [Server]
-        public async Task NetworkDestroy(GameObject networkObject, int destroyTimeToSecond = 0)
+        public async void NetworkDestroy(NetworkIdentity networkIdentity, bool isRespawn)
         {
-            int destroyTimeToMillisecondsDelay = destroyTimeToSecond * 1000;
-
-            var netIdentety = networkObject.GetComponent<NetworkIdentity>();
-
-            if (player1.connectionToClient.connectionId == netIdentety.connectionToClient.connectionId)
+            int destroyTimeToMillisecondsDelay = 2 * 1000;
+            
+            int connectionId = networkIdentity.connectionToClient.connectionId;
+            
+            if (player1.connectionToClient.connectionId == connectionId)
                 FirstPlayerScore++;
             else
                 SecondPlayerScore++;
+
+            if (isRespawn == true)
+            {
+                StartCoroutine(RespawnTimer(networkIdentity));
+            }
             
             await Task.Delay(destroyTimeToMillisecondsDelay);
-            
-            NetworkServer.Destroy(networkObject);
+
+            NetworkServer.Destroy(networkIdentity.gameObject);
         }
         
         private SpawnPlanePoint GetSpawnPosition()
@@ -126,7 +102,7 @@ using UnityEngine.UI;
             _spawnPoint = spawnPoint;
             return spawnPosition[spawnPoint];
         }
-        
+
         [Command(requiresAuthority = false)]
         public void CmdRequestExitGame(NetworkConnectionToClient sender = null)
         {

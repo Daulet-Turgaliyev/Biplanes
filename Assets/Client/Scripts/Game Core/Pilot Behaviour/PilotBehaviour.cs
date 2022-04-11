@@ -36,13 +36,6 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
             _pilotBase?.OnCloseParachute();
             OnGround(true);
         }
-
-        if (other.collider.GetComponent<RespawnPoint>() == true)
-        {
-            CmdRespawnMyPlane();
-        
-            OnDie();
-        }
     }
 
     private void OnCollisionExit2D(Collision2D other)
@@ -59,13 +52,11 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
         _pilotBase = new PilotBase(_rigidbody2D, _pilotData, _pilotParachute);
         base.Initialize();
     }
-    
-    
+
     protected override void LocalSubscribe()
     {
         OnFixedUpdater += _pilotBase.CustomFixedUpdate;
         OnGround += _pilotBase.PilotMovement.ChangeGroundState;
-        OnDie += DestroyPilot;
         OnDie += GameManager.Instance.CloseCurrentWindow;
     }
 
@@ -74,16 +65,7 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
     #endregion
 
     #region Commands
-
     
-    [Command(requiresAuthority = false)]
-    private void DestroyPilot() => MatchController.Instance.NetworkDestroy(gameObject);
-    
-    [Command(requiresAuthority = false)]
-    private void CmdRespawnMyPlane() {
-        GameManager.Instance.CloseCurrentWindow();
-        MatchController.Instance.RespawnPlane(_networkIdentity);
-    }
     
 
     #endregion

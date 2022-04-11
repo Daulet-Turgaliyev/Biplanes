@@ -31,7 +31,15 @@ public abstract class ABullet : NetworkBehaviour
     
     [Server]
     private void ServerDestroySelf() =>  NetworkServer.Destroy(gameObject);
-    
-   /*[ServerCallback]
-    private void OnCollisionEnter2D(Collision2D col) => NetworkServer.Destroy(gameObject);*/
+
+	[ServerCallback]
+	private void OnCollisionEnter2D(Collision2D col)
+	{
+		if (col.transform.TryGetComponent(out PlaneBehaviour planeBehaviour))
+		{
+			planeBehaviour.HealPoint -= Damage;
+			Debug.Log(planeBehaviour.HealPoint);
+		}
+		NetworkServer.Destroy(gameObject);
+	}
 }

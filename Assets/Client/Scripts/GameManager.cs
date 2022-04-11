@@ -7,9 +7,6 @@ using Zenject;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-
-    [field:SerializeField]
-    public PlaneBehaviour LocalPlaneBehaviour { get; private set; }
     
     [Inject] 
     private WindowsManager _windowsManager;
@@ -26,22 +23,8 @@ public class GameManager : MonoBehaviour
         // Singlton как временное решение
         Instance = this;
     }
-    
-    public PlaneBehaviour SetPlaneBehaviour(PlaneBehaviour planeBehaviour, bool isCurrentDestroy = false)
-    {
-        if (isCurrentDestroy)
-        {
-            if(ReferenceEquals(planeBehaviour, null) == true)
-                throw new NullReferenceException($"{nameof(planeBehaviour)} not found");
-            
-            Destroy(LocalPlaneBehaviour.gameObject);
-        }
-        
-        LocalPlaneBehaviour = planeBehaviour;
-        return LocalPlaneBehaviour;
-    }
-    
-//TODO: Let see it later
+
+    //TODO: Let see it later
     public void OpenGameWindow(IBaseObject BaseEntity)
     {
         if(ReferenceEquals(BaseEntity, null) == true)

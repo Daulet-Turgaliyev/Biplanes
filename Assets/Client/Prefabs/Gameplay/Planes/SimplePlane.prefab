@@ -76,7 +76,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6956eb9cc29343948c9f38e262ca007e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _networkIdentity: {fileID: 6005099902961853298}
 --- !u!1 &5671295279350831936
 GameObject:
   m_ObjectHideFlags: 0
@@ -101,7 +100,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5671295279350831936}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.65, y: 0, z: 0}
+  m_LocalPosition: {x: 0.8, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5938949295099985366}
@@ -201,11 +200,13 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.01
   _planeWeapon: {fileID: 4157940993958591829}
+  _networkIdentity: {fileID: 6005099902961853298}
   _planeCabin: {fileID: 6922046985358519778}
   _planeCondition: {fileID: 4484608499105626729}
   _planeSkin: {fileID: 6051254206263255500}
   _planeCollider: {fileID: 303232441347595079}
   _planeData: {fileID: 11400000, guid: 8886e13696e81794c931c467bb27ac8b, type: 2}
+  HealPoint: 0
 --- !u!114 &3333230984411882509
 MonoBehaviour:
   m_ObjectHideFlags: 0
