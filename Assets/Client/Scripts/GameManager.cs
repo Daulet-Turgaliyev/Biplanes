@@ -1,6 +1,7 @@
 ﻿using System;
 using Mirror;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 public class GameManager : MonoBehaviour
@@ -16,8 +17,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject _currentController;
 
-    [Inject] 
-    private NetworkManager _networkManager;
+    
+    [field:SerializeField] 
+    public Text ScoreText { get; private set; }
     
     private void Awake()
     {

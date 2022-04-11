@@ -16,11 +16,6 @@ using UnityEngine.UI;
         public NetworkIdentity playerIdentity;
 
 
-        public void Awake()
-        {
-            matchController.MatchCells.Add(cellValue, this);
-        }
-        
 
         public void SetPlayer(NetworkIdentity playerIdentity)
         {

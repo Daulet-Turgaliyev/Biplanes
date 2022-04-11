@@ -5,23 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
+using UnityEngine.UI;
 
 
-    [RequireComponent(typeof(NetworkMatch))]
+[RequireComponent(typeof(NetworkMatch))]
     public class MatchController : NetworkBehaviour
     {
         public static MatchController Instance;
 
-        
         private NetworkMatch _networkMatch;
         public Guid GetNetworkMath => _networkMatch.matchId;
         
         internal readonly SyncDictionary<NetworkIdentity, MatchPlayerData> matchPlayerData = new SyncDictionary<NetworkIdentity, MatchPlayerData>();
-        internal readonly Dictionary<CellValue, CellGUI> MatchCells = new Dictionary<CellValue, CellGUI>();
 
-        CellValue boardScore = CellValue.None;
-        bool playAgain = false;
-        
         [SerializeField]
         private SpawnPlanePoint[] spawnPosition;
         private int _spawnPoint;
@@ -32,7 +28,14 @@ using UnityEngine;
         public CanvasController canvasController;
         public NetworkIdentity player1;
         public NetworkIdentity player2;
-
+        
+        
+        [SyncVar(hook = nameof(OnUpdateScoreText))]
+        public int FirstPlayerScore;
+        
+        [SyncVar(hook = nameof(OnUpdateScoreText))]
+        public int SecondPlayerScore;
+        
         private void Awake()
         {
             Instance = this;
@@ -103,7 +106,14 @@ using UnityEngine;
         [Server]
         public async Task NetworkDestroy(GameObject networkObject, int destroyTimeToSecond = 0)
         {
-            var destroyTimeToMillisecondsDelay = destroyTimeToSecond * 1000;
+            int destroyTimeToMillisecondsDelay = destroyTimeToSecond * 1000;
+
+            var netIdentety = networkObject.GetComponent<NetworkIdentity>();
+
+            if (player1.connectionToClient.connectionId == netIdentety.connectionToClient.connectionId)
+                FirstPlayerScore++;
+            else
+                SecondPlayerScore++;
             
             await Task.Delay(destroyTimeToMillisecondsDelay);
             
@@ -122,7 +132,12 @@ using UnityEngine;
         {
             StartCoroutine(ServerEndMatch(sender, false));
         }
-        
+
+        private void OnUpdateScoreText(int oldScore, int newScore)
+        {
+            Debug.Log("Updated");
+            GameManager.Instance.ScoreText.text = $"{FirstPlayerScore} : {SecondPlayerScore}";
+        }
 
         public void OnPlayerDisconnected(NetworkConnection conn)
         {
