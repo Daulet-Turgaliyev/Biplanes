@@ -6,9 +6,14 @@
     public sealed class PilotParachute: NetworkBehaviour
     {
         private Rigidbody2D _rigidbody2D;
+
+        public bool IsParachuteActive => _parachuteSprite.enabled;
         
         [SerializeField]
         private SpriteRenderer _parachuteSprite;
+
+        [SerializeField]
+        private CircleCollider2D _parachuteCollider;
 
         private NetworkIdentity _networkIdentity;
         
@@ -41,6 +46,7 @@
         private void RpcSetEnableParachute(bool isActive)
         {
             _parachuteSprite.enabled = isActive;
+            _parachuteCollider.enabled = isActive;
         }
         
         public void CloseParachute()

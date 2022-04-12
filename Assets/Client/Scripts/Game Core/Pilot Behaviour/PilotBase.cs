@@ -41,7 +41,7 @@
         private void PilotMovementInit()
         {
             var pilotSettings = new PilotSettings(_pilotData);
-            PilotMovement = new PilotMovement(pilotSettings, _planeRigidbodyPlane);
+            PilotMovement = new PilotMovement(pilotSettings, _planeRigidbodyPlane, PilotParachute);
             OnCloseParachute += PilotParachute.CloseParachute;
             GameManager.Instance.OpenGameWindow(this);
         }

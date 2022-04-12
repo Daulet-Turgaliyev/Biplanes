@@ -57,42 +57,75 @@ using UnityEngine;
         [Server]
         public void PlaneInstantiate(NetworkIdentity conn)
         {
+            Debug.Log("Start init");
             var spawnPosition = GetSpawnPosition();
             
             var planeBehaviour = Instantiate(_planeData.PlanePrefab, 
                 spawnPosition.position, spawnPosition.rotation);
 
             planeBehaviour.GetComponent<NetworkMatch>().matchId = _networkMatch.matchId;
-            planeBehaviour.OnPlaneDie += NetworkDestroy;
+            planeBehaviour.OnDie += NetworkDestroy;
             NetworkServer.Spawn(planeBehaviour.gameObject,conn.connectionToClient);
+        }
+        
+        [Server]
+        public void PilotInstantiate(NetworkIdentity conn, PilotBehaviour pilotBehaviour)
+        {
+            pilotBehaviour.GetComponent<NetworkMatch>().matchId = _networkMatch.matchId;
+            pilotBehaviour.OnDie += NetworkDestroyPilot;
+            NetworkServer.Spawn(pilotBehaviour.gameObject,conn.connectionToClient);
         }
 
         [Server]
-        private IEnumerator RespawnTimer(NetworkIdentity networkIdentity)
+        private IEnumerator RespawnTimer(NetworkIdentity networkIdentity, int respawnDelay)
         {
-            yield return new WaitForSeconds(4);
+            yield return new WaitForSeconds(respawnDelay);
             PlaneInstantiate(networkIdentity);
         }
         
         [Server]
-        public async void NetworkDestroy(NetworkIdentity networkIdentity, bool isRespawn)
+        public async void NetworkDestroy(NetworkIdentity networkIdentity, bool isRespawn, bool isAddScore)
         {
             int destroyTimeToMillisecondsDelay = 2 * 1000;
             
             int connectionId = networkIdentity.connectionToClient.connectionId;
-            
-            if (player1.connectionToClient.connectionId == connectionId)
-                FirstPlayerScore++;
-            else
-                SecondPlayerScore++;
+
+            if (isAddScore == true)
+            {
+                if (player1.connectionToClient.connectionId == connectionId)
+                    FirstPlayerScore++;
+                else
+                    SecondPlayerScore++;
+            }
 
             if (isRespawn == true)
             {
-                StartCoroutine(RespawnTimer(networkIdentity));
+                StartCoroutine(RespawnTimer(networkIdentity, 6));
             }
             
             await Task.Delay(destroyTimeToMillisecondsDelay);
 
+            NetworkServer.Destroy(networkIdentity.gameObject);
+        }
+        
+        [Server]
+        public void NetworkDestroyPilot(NetworkIdentity networkIdentity, bool isRespawn, bool isAddScore)
+        {
+            int connectionId = networkIdentity.connectionToClient.connectionId;
+
+            if (isAddScore == true)
+            {
+                if (player1.connectionToClient.connectionId == connectionId)
+                    FirstPlayerScore++;
+                else
+                    SecondPlayerScore++;
+            }
+
+            if (isRespawn == true)
+            {
+                StartCoroutine(RespawnTimer(networkIdentity, 0));
+            }
+            
             NetworkServer.Destroy(networkIdentity.gameObject);
         }
         
@@ -117,6 +150,7 @@ using UnityEngine;
 
         public void OnPlayerDisconnected(NetworkConnection conn)
         {
+            GameManager.Instance.CloseCurrentWindow();
             // Check that the disconnecting client is a player in this match
             if (player1 == conn.identity || player2 == conn.identity)
             {

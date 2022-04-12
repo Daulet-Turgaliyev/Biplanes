@@ -12,11 +12,15 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
     private PilotData _pilotData;
     
     private PilotParachute _pilotParachute;
-
-    private PilotBase _pilotBase;
     
-    private Action OnDie = delegate { };
+    [SerializeField]
+    private ParachuteDamageble _parachuteDamageble;
+    
+    private PilotBase _pilotBase;
 
+    [SerializeField]
+    private VelocityLimitChecker _velocityLimitChecker;
+    
     private Action<bool> OnGround = b => { };
 
     #region Unity Events
@@ -50,6 +54,8 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
     protected override void Initialize()
     {
         _pilotBase = new PilotBase(_rigidbody2D, _pilotData, _pilotParachute);
+        _velocityLimitChecker.VelocityLimitCheckerInit(_pilotData.FallSpeedLimit.y);
+        _velocityLimitChecker.OnOverLimit += KillPilot;
         base.Initialize();
     }
 
@@ -57,7 +63,7 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
     {
         OnFixedUpdater += _pilotBase.CustomFixedUpdate;
         OnGround += _pilotBase.PilotMovement.ChangeGroundState;
-        OnDie += GameManager.Instance.CloseCurrentWindow;
+        _parachuteDamageble.OnParachuteHit += _pilotBase?.OnCloseParachute;
     }
 
     protected override void GlobalSubscribe() { }
@@ -66,7 +72,16 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
 
     #region Commands
     
+    public void KillPilot()
+    {
+        OnDie?.Invoke(_networkIdentity, true, true);
+    }
     
+    [Command]
+    public void CmdRespawnPlane()
+    {
+        OnDie?.Invoke(_networkIdentity, true, false);
+    }
 
     #endregion
     

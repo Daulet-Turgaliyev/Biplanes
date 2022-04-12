@@ -25,7 +25,6 @@ public class PlaneController : AController
 
     protected override void SubscriptionToAction()
     {
-        OnJump += GameManager.Instance.CloseCurrentWindow;
         OnSpeedUpdated += _planeBase.PlaneEngine.ChangeSpeed;
         OnPositionUpdated += _planeBase.PlaneElevator.ChangeJoystickVector;
         OnJump += _planeBase.PlaneCabin.OnJumpUp;

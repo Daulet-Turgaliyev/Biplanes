@@ -49,7 +49,6 @@
         {
             var projectile = Instantiate(bulletPrefab, projectileMount.position, transform.rotation);
             projectile.GetComponent<NetworkMatch>().matchId = MatchController.Instance.GetNetworkMath;
-            projectile.OwnerId = planeId;
             NetworkServer.Spawn(projectile.gameObject);
         }
     }

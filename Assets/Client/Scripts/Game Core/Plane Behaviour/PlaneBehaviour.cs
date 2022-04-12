@@ -27,9 +27,7 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     public int HealPoint;
 
     private PlaneBase _planeBase;
-
-    public Action<NetworkIdentity, bool> OnPlaneDie;
-
+    
     #region UnityEvents
 
     private void Awake()
@@ -39,8 +37,8 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     }
 
 
-    private void OnDestroy() { OnFixedUpdater = null;
-        OnPlaneDie = null;
+    private void OnDestroy() { 
+        OnFixedUpdater = null;
     }
 
     private void OnUpdateHP(int oldHp, int newHp)
@@ -52,19 +50,24 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
         }
         else
         {
-            if(_networkIdentity.hasAuthority)
-            {
-                CmdDestroyPlane();
-                GameManager.Instance.CloseCurrentWindow();
-            }
-            _planeCondition.DestroyAnimation();
+            DestroyPlane();
         }
     }
 
-    [Command]
-    private void CmdDestroyPlane()
+    public void DestroyPlane(int destroyTimer = 0)
     {
-        OnPlaneDie?.Invoke(_networkIdentity, true);
+        if(_networkIdentity.hasAuthority)
+            CmdDelayedDestroyPlane(destroyTimer);
+            
+        _planeCondition.DestroyAnimation();
+    }
+    
+    [Command]
+    private async void CmdDelayedDestroyPlane(int destroyDelay)
+    {
+        int destroyMillisecondsDelay = destroyDelay * 1000;
+        await Task.Delay(destroyMillisecondsDelay);
+        OnDie?.Invoke(_networkIdentity, _planeCabin.HasPilotInCabin, _planeCabin.HasPilotInCabin);
     }
 
     #endregion
@@ -83,7 +86,11 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
 
     protected override void GlobalSubscribe() { }
 
-    protected override void LocalSubscribe() { OnFixedUpdater += _planeBase.CustomFixedUpdate; }
+    protected override void LocalSubscribe()
+    {
+        OnFixedUpdater += _planeBase.CustomFixedUpdate;
+        _planeCabin.OnJumped += DestroyPlane;
+    }
 
     #endregion
 

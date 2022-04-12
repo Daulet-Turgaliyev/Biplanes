@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
-    //TODO: Let see it later
+    
     public void OpenGameWindow(IBaseObject BaseEntity)
     {
         if(ReferenceEquals(BaseEntity, null) == true)
@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
 
         GameEntity gameEntity;
 
+        if(ReferenceEquals(_currentController, null) == false)
+            Destroy(_currentController);
+        
         switch (BaseEntity)
         {
             case PlaneBase planeBase:
@@ -53,9 +56,8 @@ public class GameManager : MonoBehaviour
     
     public void CloseCurrentWindow()
     {
-        if (ReferenceEquals(_currentController, null))
-            throw new NullReferenceException($"{nameof(_currentController)} is null");
-        
+        if (ReferenceEquals(_currentController, null)) return;
+
         Debug.Log(_currentController);
         Destroy(_currentController);
     }

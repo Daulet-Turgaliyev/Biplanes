@@ -6,6 +6,8 @@
     public abstract class PlayerNetworkObjectBehaviour: NetworkBehaviour
     {
         protected Action OnFixedUpdater = delegate { };
+        public Action<NetworkIdentity, bool, bool> OnDie;
+
         
         public override void OnStartAuthority()
         {
@@ -36,5 +38,6 @@
         private void OnDestroy()
         {
             OnFixedUpdater = null;
+            OnDie = null;
         }
     }

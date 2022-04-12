@@ -5,10 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class ABullet : NetworkBehaviour
 {
-    [SyncVar] 
-    public int OwnerId;
-    
-    private readonly float _destroyAfter = 5f;
+	private readonly float _destroyAfter = 5f;
     public readonly int Damage = 1;
 
     private Rigidbody2D _rigidBody2D;
@@ -16,10 +13,8 @@ public abstract class ABullet : NetworkBehaviour
     private NetworkIdentity _networkIdentity;
     
     private readonly float _force = 800f;
-    
-    
-    
-    protected void OnBulletInit()
+
+	protected void OnBulletInit()
     {
         _rigidBody2D = GetComponent<Rigidbody2D>();
         
@@ -40,6 +35,19 @@ public abstract class ABullet : NetworkBehaviour
 			planeBehaviour.HealPoint -= Damage;
 			Debug.Log(planeBehaviour.HealPoint);
 		}
+		
+		if (col.transform.TryGetComponent(out PilotBehaviour pilotBehaviour))
+		{
+			pilotBehaviour.KillPilot();
+		}
 		NetworkServer.Destroy(gameObject);
+	}
+
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.transform.TryGetComponent(out ParachuteDamageble parachuteDamageble))
+		{
+			parachuteDamageble.OnParachuteHit?.Invoke();
+		}
 	}
 }

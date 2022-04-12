@@ -37,9 +37,7 @@
 		{
 			HasPilotInCabin = false;
 			PilotBehaviour pilot = Instantiate(_pilotPrefab, transform.position, Quaternion.identity);
-			var conn = _networkIdentity.connectionToClient;
-			pilot.GetComponent<NetworkMatch>().matchId = MatchController.Instance.GetNetworkMath;
-			NetworkServer.Spawn(pilot.gameObject, conn);
+			MatchController.Instance.PilotInstantiate(_networkIdentity, pilot);
 		}
 		
 	}
