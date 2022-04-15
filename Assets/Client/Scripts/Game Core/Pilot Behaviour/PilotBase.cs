@@ -9,11 +9,15 @@
         private readonly PilotData _pilotData;
 
         public readonly PilotParachute PilotParachute;
+
+        private bool _isFlipX;
         
         public PilotMovement PilotMovement { get; private set; }
 
         public Action OnCloseParachute = () => {};
 
+        public Action<bool> OnUpdateFlipX = (bool b) => { };
+        
         public PilotBase(Rigidbody2D planeRigidbody2D, PilotData pilotData, PilotParachute pilotParachute)
         {
             _planeRigidbodyPlane = planeRigidbody2D;
@@ -24,6 +28,7 @@
 
         ~PilotBase()
         {
+            OnUpdateFlipX = null;
             OnCloseParachute = null;
         }
         
@@ -35,6 +40,14 @@
         private void Initialize()
         {
             PilotMovementInit();
+        }
+
+        public void DirectionSpriteUpdate(Vector2 direction)
+        {
+            bool oldFlip = _isFlipX;
+            _isFlipX = direction.x > .1f;
+            Debug.Log($"{oldFlip} {_isFlipX}");
+            if(oldFlip != _isFlipX) OnUpdateFlipX?.Invoke(_isFlipX);
         }
         
         //TODO: Возможна ошибка последовательности подключени с Pilot Controller

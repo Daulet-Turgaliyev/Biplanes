@@ -72,7 +72,7 @@ using UnityEngine;
         public void PilotInstantiate(NetworkIdentity conn, PilotBehaviour pilotBehaviour)
         {
             pilotBehaviour.GetComponent<NetworkMatch>().matchId = _networkMatch.matchId;
-            pilotBehaviour.OnDie += NetworkDestroyPilot;
+            pilotBehaviour.OnDie += NetworkDestroy;
             NetworkServer.Spawn(pilotBehaviour.gameObject,conn.connectionToClient);
         }
 
@@ -84,9 +84,9 @@ using UnityEngine;
         }
         
         [Server]
-        public async void NetworkDestroy(NetworkIdentity networkIdentity, bool isRespawn, bool isAddScore)
+        public async void NetworkDestroy(NetworkIdentity networkIdentity, bool isRespawn, bool isAddScore, int destroyDelay)
         {
-            int destroyTimeToMillisecondsDelay = 2 * 1000;
+            int destroyTimeToMillisecondsDelay = destroyDelay * 1000;
             
             int connectionId = networkIdentity.connectionToClient.connectionId;
 
@@ -107,28 +107,7 @@ using UnityEngine;
 
             NetworkServer.Destroy(networkIdentity.gameObject);
         }
-        
-        [Server]
-        public void NetworkDestroyPilot(NetworkIdentity networkIdentity, bool isRespawn, bool isAddScore)
-        {
-            int connectionId = networkIdentity.connectionToClient.connectionId;
 
-            if (isAddScore == true)
-            {
-                if (player1.connectionToClient.connectionId == connectionId)
-                    FirstPlayerScore++;
-                else
-                    SecondPlayerScore++;
-            }
-
-            if (isRespawn == true)
-            {
-                StartCoroutine(RespawnTimer(networkIdentity, 0));
-            }
-            
-            NetworkServer.Destroy(networkIdentity.gameObject);
-        }
-        
         private SpawnPlanePoint GetSpawnPosition()
         {
             int spawnPoint = _spawnPoint == 1 ? 0 : 1;

@@ -1,5 +1,6 @@
 ﻿
 	using System;
+	using Mirror;
 	using UnityEngine;
 
 	public sealed class VelocityLimitChecker: MonoBehaviour
@@ -8,6 +9,9 @@
 		private  Rigidbody2D _rigidbody2D;
 		private  float _velocityLimit;
 
+		[SerializeField] 
+		private NetworkIdentity _networkIdentity;
+		
 		public Action OnOverLimit = () => { };
 		
 		public void VelocityLimitCheckerInit(float velocityLimit)
@@ -22,6 +26,8 @@
 
 		private void OnTriggerEnter2D(Collider2D other)
 		{
+			if (_networkIdentity.isLocalPlayer == false) return;
+			
 			if (other.GetComponent<Ground>())
 			{
 				Debug.Log($"{_rigidbody2D.velocity.y} < {_velocityLimit}");

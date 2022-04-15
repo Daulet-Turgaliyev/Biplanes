@@ -10,9 +10,9 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
 
     [Space(3)] [Header("Plane Parts"), SerializeField]
     private PlaneWeapon _planeWeapon;
-    
+
     [SerializeField] NetworkIdentity _networkIdentity;
-    
+
     [SerializeField] private PlaneCabin _planeCabin;
 
     [SerializeField] private PlaneCondition _planeCondition;
@@ -25,9 +25,10 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
 
     [Space(3)] [Header("Mirror")] [SyncVar(hook = nameof(OnUpdateHP))]
     public int HealPoint;
+    
 
     private PlaneBase _planeBase;
-    
+
     #region UnityEvents
 
     private void Awake()
@@ -37,9 +38,7 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     }
 
 
-    private void OnDestroy() { 
-        OnFixedUpdater = null;
-    }
+    private void OnDestroy() { OnFixedUpdater = null; }
 
     private void OnUpdateHP(int oldHp, int newHp)
     {
@@ -67,7 +66,7 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     {
         int destroyMillisecondsDelay = destroyDelay * 1000;
         await Task.Delay(destroyMillisecondsDelay);
-        OnDie?.Invoke(_networkIdentity, _planeCabin.HasPilotInCabin, _planeCabin.HasPilotInCabin);
+        OnDie?.Invoke(_networkIdentity, _planeCabin.HasPilotInCabin, _planeCabin.HasPilotInCabin, 2);
     }
 
     #endregion
@@ -97,6 +96,7 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     #region Commands
 
 
+    
     #endregion
 
 }

@@ -6,8 +6,9 @@
     public abstract class PlayerNetworkObjectBehaviour: NetworkBehaviour
     {
         protected Action OnFixedUpdater = delegate { };
-        public Action<NetworkIdentity, bool, bool> OnDie;
-
+        public Action<NetworkIdentity, bool, bool, int> OnDie;
+        
+        protected Action<bool> OnGround = b => { };
         
         public override void OnStartAuthority()
         {
@@ -23,13 +24,7 @@
         
         protected abstract void LocalSubscribe();
         protected abstract void GlobalSubscribe();
-        
-        protected bool CanSendCommand(NetworkIdentity networkIdentity)
-        {
-            // != false
-            return networkIdentity.hasAuthority && isClient;
-        }
-        
+
         private void FixedUpdate()
         {
             OnFixedUpdater?.Invoke();
@@ -38,6 +33,7 @@
         private void OnDestroy()
         {
             OnFixedUpdater = null;
+            OnGround = null;
             OnDie = null;
         }
     }

@@ -1,4 +1,5 @@
 ﻿
+    using System;
     using Mirror;
     using UnityEngine;
 
@@ -26,7 +27,6 @@
             _currentGravityScale = _rigidbody2D.gravityScale;
         }
 
-        
         public void OpenParachute()
         {
             if (_networkIdentity.hasAuthority == false) return;
