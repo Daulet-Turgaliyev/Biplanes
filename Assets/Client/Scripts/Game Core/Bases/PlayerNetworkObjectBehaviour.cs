@@ -1,12 +1,10 @@
-﻿
-    using System;
+﻿    using System;
     using Mirror;
-    using UnityEngine;
 
     public abstract class PlayerNetworkObjectBehaviour: NetworkBehaviour
     {
         protected Action OnFixedUpdater = delegate { };
-        public Action<NetworkIdentity, bool, bool, int> OnDie;
+        public Action<NetworkIdentity, bool, bool, int, int> OnDie;
         
         protected Action<bool> OnGround = b => { };
         

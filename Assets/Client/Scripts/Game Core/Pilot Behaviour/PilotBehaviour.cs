@@ -21,8 +21,11 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
     private PilotBase _pilotBase;
 
     [SyncVar(hook = nameof(OnUpdateFlipX))] 
-    public bool FlipX;
-
+    public bool PilotDirection;
+    
+    [SyncVar] 
+    public Vector2 Velocity;
+    
     [SerializeField]
     private VelocityLimitChecker _velocityLimitChecker;
     
@@ -44,7 +47,14 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
             OnGround(true);
         }
     }
-    
+
+    [ClientCallback]
+    private void Update()
+    {
+        if (hasAuthority == false) return;
+        Velocity = _rigidbody2D.velocity;
+        CmdSendCurrentVelocity(Velocity);
+    }
 
     private void OnCollisionExit2D(Collision2D other)
     {
@@ -88,32 +98,35 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
     
     public void KillPilot()
     {
-        RpcCallDieAcnimation();
-        OnDie?.Invoke(_networkIdentity, true, true, 1);
+        RpcCallDieAnimation();
+        OnDie?.Invoke(_networkIdentity, true, true, 1, 4);
     }
 
     [Command]
-    public void FallingDie()
+    private void FallingDie()
     {
-        RpcCallDieAcnimation();
-        OnDie?.Invoke(_networkIdentity, true, true, 1);
+        RpcCallDieAnimation();
+        OnDie?.Invoke(_networkIdentity, true, true, 1, 3);
     }
     
     [Command]
     public void CmdRespawnPlane()
     {
-        OnDie?.Invoke(_networkIdentity, true, false, 0);
+        OnDie?.Invoke(_networkIdentity, true, false, 0, 0);
     }
     
     [Command]
     private void CmdChangeFlipDirection(bool newFlipX)
     {
-        Debug.Log(newFlipX);
-        FlipX = newFlipX;
+        PilotDirection = newFlipX;
     }
 
+    [Command]
+    private void CmdSendCurrentVelocity(Vector2 newVelocity) => Velocity = newVelocity;
+    
+
     [ClientRpc]
-    private void RpcCallDieAcnimation()
+    private void RpcCallDieAnimation()
     {
         GetComponentInChildren<Animator>().Play("vanish");
     }

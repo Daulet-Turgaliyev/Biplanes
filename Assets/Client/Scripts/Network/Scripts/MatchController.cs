@@ -13,8 +13,6 @@ using UnityEngine;
         private NetworkMatch _networkMatch;
         public Guid GetNetworkMath => _networkMatch.matchId;
         
-        internal readonly SyncDictionary<NetworkIdentity, MatchPlayerData> matchPlayerData = new SyncDictionary<NetworkIdentity, MatchPlayerData>();
-
         [SerializeField]
         private SpawnPlanePoint[] spawnPosition;
         private int _spawnPoint;
@@ -31,6 +29,8 @@ using UnityEngine;
         
         [SyncVar(hook = nameof(OnUpdateScoreText))]
         public int SecondPlayerScore;
+
+        public bool IsMasterClient;
         
         private void Awake()
         {
@@ -38,26 +38,10 @@ using UnityEngine;
             _networkMatch = GetComponent<NetworkMatch>();
             canvasController = FindObjectOfType<CanvasController>();
         }
-
-        public override void OnStartServer()
-        {
-            StartCoroutine(AddPlayersToMatchController());
-        }
-
-        // For the SyncDictionary to properly fire the update callback, we must
-        // wait a frame before adding the players to the already spawned MatchController
-        IEnumerator AddPlayersToMatchController()
-        {
-            yield return null;
-
-            matchPlayerData.Add(player1, new MatchPlayerData { playerIndex = CanvasController.playerInfos[player1.connectionToClient].playerIndex });
-            matchPlayerData.Add(player2, new MatchPlayerData { playerIndex = CanvasController.playerInfos[player2.connectionToClient].playerIndex });
-        }
-
+        
         [Server]
         public void PlaneInstantiate(NetworkIdentity conn)
         {
-            Debug.Log("Start init");
             var spawnPosition = GetSpawnPosition();
             
             var planeBehaviour = Instantiate(_planeData.PlanePrefab, 
@@ -84,7 +68,7 @@ using UnityEngine;
         }
         
         [Server]
-        public async void NetworkDestroy(NetworkIdentity networkIdentity, bool isRespawn, bool isAddScore, int destroyDelay)
+        private async void NetworkDestroy(NetworkIdentity networkIdentity, bool isRespawn, bool isAddScore, int destroyDelay, int respawnDelay)
         {
             int destroyTimeToMillisecondsDelay = destroyDelay * 1000;
             
@@ -100,7 +84,7 @@ using UnityEngine;
 
             if (isRespawn == true)
             {
-                StartCoroutine(RespawnTimer(networkIdentity, 6));
+                StartCoroutine(RespawnTimer(networkIdentity, respawnDelay));
             }
             
             await Task.Delay(destroyTimeToMillisecondsDelay);
@@ -110,7 +94,7 @@ using UnityEngine;
 
         private SpawnPlanePoint GetSpawnPosition()
         {
-            int spawnPoint = _spawnPoint == 1 ? 0 : 1;
+            var spawnPoint = _spawnPoint == 1 ? 0 : 1;
             _spawnPoint = spawnPoint;
             return spawnPosition[spawnPoint];
         }
@@ -123,7 +107,6 @@ using UnityEngine;
 
         private void OnUpdateScoreText(int oldScore, int newScore)
         {
-            Debug.Log("Updated");
             GameManager.Instance.ScoreText.text = $"{FirstPlayerScore} : {SecondPlayerScore}";
         }
 
@@ -137,7 +120,7 @@ using UnityEngine;
             }
         }
 
-        public IEnumerator ServerEndMatch(NetworkConnection conn, bool disconnected)
+        private IEnumerator ServerEndMatch(NetworkConnection conn, bool disconnected)
         {
             canvasController.OnPlayerDisconnected -= OnPlayerDisconnected;
 
@@ -180,7 +163,7 @@ using UnityEngine;
         }
 
         [ClientRpc]
-        public void RpcExitGame()
+        private void RpcExitGame()
         {
             canvasController.OnMatchEnded();
         }

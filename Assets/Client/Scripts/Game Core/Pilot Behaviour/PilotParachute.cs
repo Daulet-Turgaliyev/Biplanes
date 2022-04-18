@@ -31,7 +31,6 @@
         {
             if (_networkIdentity.hasAuthority == false) return;
             
-            _rigidbody2D.velocity = Vector2.zero;
             _rigidbody2D.gravityScale = .2f;
             CmdSetEnableParachute(true);
         }

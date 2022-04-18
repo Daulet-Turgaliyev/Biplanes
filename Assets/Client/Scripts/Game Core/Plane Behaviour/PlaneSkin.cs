@@ -1,15 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Mirror;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 [RequireComponent(typeof(SpriteRenderer))]
 public sealed class PlaneSkin : MonoBehaviour
 {
-    [SerializeField] 
-    private NetworkIdentity _networkIdentity;
-    
     [SerializeField]
     private SpriteRenderer _spriteRenderer;
 
@@ -20,26 +14,11 @@ public sealed class PlaneSkin : MonoBehaviour
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
     } 
-
-    private void Start()
+    
+    public void Start()
     {
-        EnableRenderer();
-    }
+        var myId = 0;
 
-    private async void EnableRenderer()
-    {
-        Initialize();
-    }
-
-    private void Initialize()
-    {
-        if(ReferenceEquals(_networkIdentity, null)) return;
-        
-        int myId = 0;
-        
-        if (_networkIdentity.hasAuthority == true)
-            myId = 1;
-            
         _spriteRenderer.sprite = planeSprite[myId];
     }
 }

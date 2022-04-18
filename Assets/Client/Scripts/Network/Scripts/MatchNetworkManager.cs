@@ -12,7 +12,7 @@ using UnityEngine;
         [Header("Match GUI")]
         public GameObject canvas;
         public CanvasController canvasController;
-
+        
         #region Unity Callbacks
 
         /// <summary>
@@ -63,6 +63,7 @@ using UnityEngine;
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
+            
             canvasController.OnClientConnect(conn);
         }
 

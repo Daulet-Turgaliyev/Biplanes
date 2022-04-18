@@ -44,9 +44,8 @@
 
         public void DirectionSpriteUpdate(Vector2 direction)
         {
-            bool oldFlip = _isFlipX;
+            var oldFlip = _isFlipX;
             _isFlipX = direction.x > .1f;
-            Debug.Log($"{oldFlip} {_isFlipX}");
             if(oldFlip != _isFlipX) OnUpdateFlipX?.Invoke(_isFlipX);
         }
         

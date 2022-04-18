@@ -6,9 +6,10 @@
 	public sealed class VelocityLimitChecker: MonoBehaviour
 	{
 		[SerializeField]
-		private  Rigidbody2D _rigidbody2D;
-		private  float _velocityLimit;
-
+		private PilotBehaviour _pilotBehaviour;
+		private float _velocityLimit;
+		private static float OFFSET_VELOCITY = -0.1f;
+		
 		[SerializeField] 
 		private NetworkIdentity _networkIdentity;
 		
@@ -16,7 +17,7 @@
 		
 		public void VelocityLimitCheckerInit(float velocityLimit)
 		{
-			_velocityLimit = velocityLimit;
+			_velocityLimit = velocityLimit + OFFSET_VELOCITY;
 		}
 
 		~VelocityLimitChecker()
@@ -24,14 +25,14 @@
 			OnOverLimit = null;
 		}
 
-		private void OnTriggerEnter2D(Collider2D other)
+		[ClientCallback]
+		private void OnTriggerEnter2D(Collider2D col)
 		{
-			if (_networkIdentity.isLocalPlayer == false) return;
+			if (_networkIdentity.hasAuthority == false) return;
 			
-			if (other.GetComponent<Ground>())
-			{
-				Debug.Log($"{_rigidbody2D.velocity.y} < {_velocityLimit}");
-				if (_rigidbody2D.velocity.y < _velocityLimit) OnOverLimit?.Invoke();
-			}
+			if (col.GetComponent<Ground>() == false) return;
+			
+			if (_pilotBehaviour.Velocity.y < _velocityLimit)
+				OnOverLimit?.Invoke();
 		}
 	}

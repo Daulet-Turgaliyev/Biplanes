@@ -125,7 +125,8 @@ MonoBehaviour:
   _pilotData: {fileID: 11400000, guid: 0316b15bc426d9e4d8932420ef61ff5e, type: 2}
   _spriteRenderer: {fileID: 7901192353389652440}
   _parachuteDamageble: {fileID: 3290814695924575731}
-  FlipX: 0
+  PilotDirection: 0
+  Velocity: {x: 0, y: 0}
   _velocityLimitChecker: {fileID: 3269946505058648692}
 --- !u!114 &4627550246137586210
 MonoBehaviour:
@@ -486,5 +487,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c31cb085cdb6401eb193d04c7cb7557f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rigidbody2D: {fileID: 86360786915502559}
+  _pilotBehaviour: {fileID: 1218187245128477496}
   _networkIdentity: {fileID: 5332569055017833722}

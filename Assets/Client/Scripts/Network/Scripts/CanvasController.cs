@@ -55,6 +55,8 @@ public class CanvasController : MonoBehaviour
         // Used in UI for "Player #"
         int playerIndex = 1;
 
+        private bool _isMasterClient;
+        
         [Header("GUI References")]
         public GameObject matchList;
         public GameObject matchPrefab;
@@ -432,7 +434,7 @@ public class CanvasController : MonoBehaviour
         void OnServerCreateMatch(NetworkConnection conn)
         {
             if (!NetworkServer.active || playerMatches.ContainsKey(conn)) return;
-
+            
             Guid newMatchId = Guid.NewGuid();
             matchConnections.Add(newMatchId, new HashSet<NetworkConnection>());
             matchConnections[newMatchId].Add(conn);
@@ -488,7 +490,7 @@ public class CanvasController : MonoBehaviour
                 NetworkServer.Spawn(matchControllerObject);
 
                 MatchController matchController = matchControllerObject.GetComponent<MatchController>();
-
+                
                 foreach (NetworkConnection playerConn in matchConnections[matchId])
                 {
                     playerConn.Send(new ClientMatchMessage { clientMatchOperation = ClientMatchOperation.Started });
@@ -510,6 +512,7 @@ public class CanvasController : MonoBehaviour
 
                     /* Reset ready state for after the match. */
                     PlayerInfo playerInfo = playerInfos[playerConn];
+                    playerInfo.isMasterClient = _isMasterClient;
                     playerInfo.ready = false;
                     playerInfos[playerConn] = playerInfo;
                 }
@@ -579,6 +582,7 @@ public class CanvasController : MonoBehaviour
                         ShowRoomView();
                         roomGUI.RefreshRoomPlayers(msg.playerInfos);
                         roomGUI.SetOwner(true);
+                        _isMasterClient = true;
                         break;
                     }
                 case ClientMatchOperation.Cancelled:
@@ -593,6 +597,7 @@ public class CanvasController : MonoBehaviour
                         ShowRoomView();
                         roomGUI.RefreshRoomPlayers(msg.playerInfos);
                         roomGUI.SetOwner(false);
+                        _isMasterClient = false;
                         break;
                     }
                 case ClientMatchOperation.Departed:

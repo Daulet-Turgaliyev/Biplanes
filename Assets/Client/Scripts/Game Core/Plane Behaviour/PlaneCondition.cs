@@ -10,15 +10,17 @@ public sealed class PlaneCondition : MonoBehaviour
     [SerializeField] private ParticleSystem _particleDestroy;
 
     private ParticleSystem _currentParticle;
+
+    public bool IsDestroying => _particleDestroy.isPlaying;
     
     private void Start()
     {
         _currentParticle = particleCondition[0];
     }
 
-    public void TrySetCondition(int healthStatus, bool hasAuthority, bool isNeedRespawn = true)
+    public void TrySetCondition(int healthStatus)
     {
-        if(_particleDestroy.isPlaying == true) return;
+        if(IsDestroying == true) return;
 
         if (healthStatus > particleCondition.Length - 1 || healthStatus < 0)
         {
@@ -29,7 +31,7 @@ public sealed class PlaneCondition : MonoBehaviour
         ChangeConditionEffect(healthStatus);
     }
 
-    public void ChangeConditionEffect(int effectIndex)
+    private void ChangeConditionEffect(int effectIndex)
     {
         
         if (effectIndex > particleCondition.Length || effectIndex < 0)
