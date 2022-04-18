@@ -2,7 +2,6 @@
 	using System;
 	using Mirror;
 	using UnityEngine;
-	using UnityEngine.Serialization;
 
 	public sealed class PlaneCabin: NetworkBehaviour
 	{
@@ -10,12 +9,16 @@
 		private PilotBehaviour _pilotPrefab;
 		
 		public Action OnJumpUp = () => { };
-
+		public Action<int> OnJumped = (int t) => { };
+		
 		private NetworkIdentity _networkIdentity;
 
+		public bool HasPilotInCabin { get; private set; }
+		
 		private void Awake()
 		{
 			_networkIdentity = GetComponent<NetworkIdentity>();
+			HasPilotInCabin = true;
 		}
 
 		private void OnEnable() => OnJumpUp += JumpOut;
@@ -25,14 +28,16 @@
 		{
 			if (_networkIdentity.hasAuthority)
 				CmdJumpOutPlane();
+
+			OnJumped?.Invoke(3);
 		}
 	
 		[Command]
 		private void CmdJumpOutPlane()
 		{
+			HasPilotInCabin = false;
 			PilotBehaviour pilot = Instantiate(_pilotPrefab, transform.position, Quaternion.identity);
-			var conn = _networkIdentity.connectionToClient;
-			NetworkServer.Spawn(pilot.gameObject, conn);
+			MatchController.Instance.PilotInstantiate(_networkIdentity, pilot);
 		}
 		
 	}

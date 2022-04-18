@@ -13,7 +13,6 @@
         {
             _pilotControllerWindow = pilotControllerWindow;
             _pilotBase = pilotBase;
-            
             base.Initialize();
         }
 
@@ -26,6 +25,7 @@
         protected override void SubscriptionToAction()
         {
             OnPositionUpdated += _pilotBase.PilotMovement.ChangeJoystickVector;
+            OnPositionUpdated += _pilotBase.DirectionSpriteUpdate;
             OnOpenParachute += _pilotBase.PilotParachute.OpenParachute;
         }
 

@@ -1,25 +1,24 @@
-﻿using Mirror;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 [RequireComponent(typeof(SpriteRenderer))]
 public sealed class PlaneSkin : MonoBehaviour
 {
+    [SerializeField]
     private SpriteRenderer _spriteRenderer;
 
     [SerializeField] 
     private Sprite[] planeSprite;
 
-    private void Awake() => _spriteRenderer = GetComponent<SpriteRenderer>();
+    private void Awake()
+    {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+    } 
     
-    public void Initialize(bool hasAuthority)
-    {/*
-        int myId = LevelInitializer.Instance.GetSkinId();
+    public void Start()
+    {
+        var myId = 0;
 
-        if (hasAuthority == false)
-            myId = myId == 0 ? 1 : 0;
-        
-        Debug.Log($"Skin Id {myId}");
-        _spriteRenderer.sprite = planeSprite[myId];*/
+        _spriteRenderer.sprite = planeSprite[myId];
     }
 }

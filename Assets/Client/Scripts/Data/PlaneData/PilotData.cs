@@ -15,8 +15,11 @@
         public float SpeedRun { get; private set; }
 
         [field: SerializeField] 
-        public float SpeedFly { get; private set; }
+        public Vector2 FallSpeedLimit { get; private set; }
 
+        [field: SerializeField] 
+        public float FlightControlSpeed { get; private set; }
+        
         private void OnValidate()
         {
             if (string.IsNullOrEmpty(PilotName))
@@ -31,9 +34,15 @@
                 throw new ArgumentOutOfRangeException($"{SpeedRun} less zero");
             }
             
-            if (SpeedFly < 0)
+            if (FallSpeedLimit.magnitude < 0)
             {
-                SpeedFly = 0;
+                FallSpeedLimit = Vector2.zero;
+                throw new ArgumentOutOfRangeException($"{SpeedRun} less zero");
+            }
+            
+            if (FlightControlSpeed < 0)
+            {
+                FlightControlSpeed = 0;
                 throw new ArgumentOutOfRangeException($"{SpeedRun} less zero");
             }
         }

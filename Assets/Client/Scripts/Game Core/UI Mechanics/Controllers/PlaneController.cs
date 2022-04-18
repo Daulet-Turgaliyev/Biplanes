@@ -25,7 +25,6 @@ public class PlaneController : AController
 
     protected override void SubscriptionToAction()
     {
-        OnJump += GameManager.Instance.CloseCurrentWindow;
         OnSpeedUpdated += _planeBase.PlaneEngine.ChangeSpeed;
         OnPositionUpdated += _planeBase.PlaneElevator.ChangeJoystickVector;
         OnJump += _planeBase.PlaneCabin.OnJumpUp;
@@ -68,6 +67,7 @@ public class PlaneController : AController
         
         _planeControllerWindow.FireButton.interactable = false;
         await Task.Delay(_planeData.CoolDown);
+        if (_planeControllerWindow.FireButton == null) return;
         _planeControllerWindow.FireButton.interactable = true;
     }
 

@@ -17,6 +17,6 @@ MonoBehaviour:
   <SpeedRotation>k__BackingField: 4
   <MinSpeed>k__BackingField: 1.5
   <MaxSpeed>k__BackingField: 8
-  <VelocityLimit>k__BackingField: 5
-  <CoolDown>k__BackingField: 2000
+  <VelocityLimit>k__BackingField: 3
+  <CoolDown>k__BackingField: 1100
   <BulletAcceleration>k__BackingField: 600

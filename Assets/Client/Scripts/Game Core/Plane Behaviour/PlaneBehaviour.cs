@@ -4,71 +4,79 @@ using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
+public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
 {
     private Rigidbody2D _rigidbody2D;
-    private NetworkIdentity _networkIdentity;
 
     [Space(3)] [Header("Plane Parts"), SerializeField]
     private PlaneWeapon _planeWeapon;
 
-    [SerializeField]
+    [SerializeField] 
+    private NetworkIdentity _networkIdentity;
+
+    [SerializeField] 
     private PlaneCabin _planeCabin;
 
-    [SerializeField]
+    [SerializeField] 
     private PlaneCondition _planeCondition;
 
-    [SerializeField]
+    [SerializeField] 
     private PlaneSkin _planeSkin;
 
-    [SerializeField]
+    [SerializeField] 
+    private PlaneCollider _planeCollider;
+
+    [SerializeField] 
     private PlaneData _planeData;
 
-    [Space(3)] [Header("Mirror")] [SyncVar]
-    private int _healPoint = 3;
+    [Space(3)] [Header("Mirror")] [SyncVar(hook = nameof(OnUpdateHP))]
+    public int HealPoint;
 
     private PlaneBase _planeBase;
 
-    public Action<PlaneBehaviour> OnDestroyPlane = delegate { };
-    
     #region UnityEvents
 
     private void Awake()
     {
-        _networkIdentity = GetComponent<NetworkIdentity>();
+        HealPoint = 4;
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
-
-    public void Start()
+    
+    private void OnDestroy() { OnFixedUpdater = null; }
+    
+    private void OnUpdateHP(int oldHp, int newHp)
     {
-        _planeSkin.Initialize(hasAuthority);
+        Debug.Log("New HP: " + newHp);
+        if (newHp > 0)
+        {
+            _planeCondition.TrySetCondition(newHp);
+        }
+        else
+        {
+            DestroyPlane();
+        }
     }
 
-    private void OnDestroy()
+    private void DestroyPlane(int destroyTimer = 0)
     {
-        OnFixedUpdater = null;
-        OnDestroyPlane = null;
+        if(_networkIdentity.hasAuthority)
+            CmdDelayedDestroyPlane(destroyTimer);
+            
+        _planeCondition.DestroyAnimation();
+    }
+
+    private void FastDestroy()
+    {
+        DestroyPlane(0);
     }
     
-    private void OnCollisionEnter2D(Collision2D other)
+    private void CheckVelocity()
     {
-        if (other.collider.GetComponent<Building>())
-            FastDestroyPlane();
-
-        if (other.collider.TryGetComponent(out ABullet bullet))
-        {
-            if (_networkIdentity.connectionToClient.connectionId != bullet.OwnerId)
-                RpcChangeCondition(bullet.Damage);
-        }
-
-        if (other.collider.GetComponent<Ground>())
-        {
-            /*if(ReferenceEquals(_planeBase.VelocityLimitChecker, null)) return;
-                
-            if (_planeBase.VelocityLimitChecker.CheckLimit())
-                OnBuildingCollision2D();*/
-        }
+        var velocity = Mathf.Abs(_rigidbody2D.velocity.x);
+        if(velocity > _planeData.VelocityLimit)
+            DestroyPlane();
     }
+    
     
     #endregion
 
@@ -76,79 +84,37 @@ public sealed class PlaneBehaviour : PlayerNetworkObjectBehaviour
 
     protected override void Initialize()
     {
-        var gameManager = GameManager.Instance;
-
         _planeBase = new PlaneBase(_rigidbody2D, _planeWeapon, _planeCabin, _planeData);
-
-        gameManager.OpenGameWindow(_planeBase);
-        gameManager.SetPlaneBehaviour(this);
+        GameManager.Instance.OpenGameWindow(_planeBase);
 
         base.Initialize();
     }
-    
+
 
     protected override void GlobalSubscribe() { }
 
     protected override void LocalSubscribe()
     {
-        _planeCondition.OnDestroy += StartDestroyPlane;
         OnFixedUpdater += _planeBase.CustomFixedUpdate;
-        _planeBase.OnFastDestroyPlane += FastDestroyPlane;
-        _planeCondition.OnRespawnPlane += StartRespawnPlane;
-    }
-    
-    private void StartDestroyPlane()
-    {
-        if (CanSendCommand(_networkIdentity) == false) return;
-        CmdDestroyPlane();
-    }
-    
-    private void FastDestroyPlane()
-    {
-        if (CanSendCommand(_networkIdentity) == false) return;
-        CmdFastDestroyPlane();
-    }
-    
-    private async void StartRespawnPlane()
-    {
-        if (CanSendCommand(_networkIdentity) == false) return;
-
-        await Task.Delay(3000);
-
-        CmdRespawnPlane();
+        _planeCollider.OnBuildingEnter += FastDestroy;
+        _planeCollider.OnGroundEnter += CheckVelocity;
+        _planeCabin.OnJumped += DestroyPlane;
     }
 
     #endregion
 
     #region Commands
 
-    
     [Command]
-    private void CmdFastDestroyPlane() => RpcFastDestroyPlane();
-    
-    [Command]
-    private void CmdDestroyPlane() => OnDestroyPlane(this);
-    
-    [Command]
-    private void CmdRespawnPlane() => GameManager.Instance.RespawnPlaneFromHuman(_networkIdentity.connectionToClient);
-    
-    
-    #endregion  
-
-
-    [ClientRpc]
-    private void RpcFastDestroyPlane()
+    private async void CmdDelayedDestroyPlane(int destroyDelay)
     {
-        _healPoint = 0;
-        _planeCondition.DiePlane(_networkIdentity.hasAuthority, true);
+        if(_planeCondition.IsDestroying) return;
+        
+        int destroyMillisecondsDelay = destroyDelay * 1000;
+        await Task.Delay(destroyMillisecondsDelay);
+        OnDie?.Invoke(_networkIdentity, _planeCabin.HasPilotInCabin, _planeCabin.HasPilotInCabin, 2, 6);
     }
+    
+    #endregion
 
-    [ClientRpc]
-    private void RpcChangeCondition(int damage)
-    {
-        Debug.Log($"DAMAGE: {damage} Name: {gameObject.name} HP: {_healPoint} ");
-        _healPoint -= damage;
-
-        _planeCondition.TrySetCondition(_healPoint, _networkIdentity.hasAuthority);
-    }
 }

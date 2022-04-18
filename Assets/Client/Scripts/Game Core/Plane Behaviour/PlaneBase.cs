@@ -32,8 +32,6 @@ public sealed class PlaneBase: IBaseObject
     }
 
     public PlaneWeapon PlaneWeapon { get; }
-
-    private VelocityLimitChecker _velocityLimitChecker;
     
     public PlaneCabin PlaneCabin { get; }
     public PlaneData PlaneData { get; }
@@ -58,7 +56,6 @@ public sealed class PlaneBase: IBaseObject
         PlaneEngineInit();
         PlaneElevatorInit();
         PlaneWeaponInit();
-        PlaneVelocityLimiterInit();
     }
     
     ~PlaneBase()
@@ -89,10 +86,5 @@ public sealed class PlaneBase: IBaseObject
     {
         var planeWeaponSettings = new PlaneWeaponSettings(PlaneData.CoolDown, PlaneData.BulletAcceleration);
         PlaneWeapon.Init(planeWeaponSettings); 
-    }
-
-    private void PlaneVelocityLimiterInit()
-    {
-        _velocityLimitChecker = new VelocityLimitChecker(PlaneRigidbody, PlaneData.VelocityLimit);
     }
 }

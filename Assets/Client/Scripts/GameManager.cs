@@ -1,70 +1,69 @@
 ﻿using System;
 using Mirror;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
-public class GameManager : MonoBehaviour
+public class GameManager: MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [field:SerializeField]
-    public PlaneBehaviour LocalPlaneBehaviour { get; private set; }
-    
-    [Inject] 
-    private WindowsManager _windowsManager;
+    [Inject] private WindowsManager _windowsManager;
 
-    [Inject] 
-    private NetworkSystem _networkSystem;
-    
-    private PlaneControllerWindow _planeControllerWindow;
-    private PilotControllerWindow _pilotControllerWindow;
+    [SerializeField] private GameObject _currentController;
+
+    public Action OnStartGame;
+    public Action OnStopGame;
+
+    [field: SerializeField] public Text ScoreText { get; private set; }
 
     private void Awake()
     {
         // Singlton как временное решение
         Instance = this;
     }
-    
-    public PlaneBehaviour SetPlaneBehaviour(PlaneBehaviour planeBehaviour, bool isCurrentDestroy = false)
+
+
+    public void OpenGameWindow(IBaseObject BaseEntity)
     {
-        if (isCurrentDestroy)
+        if (ReferenceEquals(BaseEntity, null) == true)
+            throw new NullReferenceException($"{nameof(BaseEntity)} not found");
+
+        GameEntity gameEntity;
+
+        if (ReferenceEquals(_currentController, null) == false)
+            Destroy(_currentController);
+
+        switch (BaseEntity)
         {
-            if(ReferenceEquals(planeBehaviour, null) == true)
-                throw new NullReferenceException($"{nameof(planeBehaviour)} not found");
-            
-            Destroy(LocalPlaneBehaviour.gameObject);
+            case PlaneBase planeBase:
+                gameEntity = GameEntity.Plane;
+                _currentController = _windowsManager.OpenWindow(gameEntity);
+                var planeControllerWindow = _currentController.GetComponent<PlaneControllerWindow>();
+                var planeController = new PlaneController(planeControllerWindow, planeBase);
+                break;
+            case PilotBase pilotBase:
+                gameEntity = GameEntity.Pilot;
+                _currentController = _windowsManager.OpenWindow(gameEntity);
+                var pilotControllerWindow = _currentController.GetComponent<PilotControllerWindow>();
+                var pilotController = new PilotController(pilotControllerWindow, pilotBase);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException($"{nameof(BaseEntity)} not found");
         }
-        
-        LocalPlaneBehaviour = planeBehaviour;
-        return LocalPlaneBehaviour;
-    }
-    
-//TODO: Let see it later
-    public void OpenGameWindow(PlaneBase planeBase)
-    {
-        if(ReferenceEquals(planeBase, null) == true)
-            throw new NullReferenceException($"{nameof(planeBase)} not found");
-        
-        _planeControllerWindow = _windowsManager.OpenWindow<PlaneControllerWindow>();
-        var planeController = new PlaneController(_planeControllerWindow, planeBase);
     }
 
-    public void OpenGameWindow(PilotBase pilotBase)
+    public void CloseCurrentWindow()
     {
-        _pilotControllerWindow = _windowsManager.OpenWindow<PilotControllerWindow>();
-        var planeController = new PilotController(_pilotControllerWindow, pilotBase);
+        if (ReferenceEquals(_currentController, null)) return;
+
+        Debug.Log(_currentController);
+        Destroy(_currentController);
     }
 
-    public void CloseCurrentWindow() => _windowsManager.CloseLast();
-
-
-    public void DestroyPilot(PilotBehaviour pilotBehaviour)
+    private void OnDestroy()
     {
-        NetworkSystem.DestroyPilot(pilotBehaviour);
-    }
-
-    public void RespawnPlaneFromHuman(NetworkConnection networkConnection)
-    {
-        _networkSystem.RespawnPlane(networkConnection);
+        OnStartGame = null;
+        OnStopGame = null;
     }
 }
