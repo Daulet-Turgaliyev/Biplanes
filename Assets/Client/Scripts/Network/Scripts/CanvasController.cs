@@ -512,7 +512,6 @@ public class CanvasController : MonoBehaviour
 
                     /* Reset ready state for after the match. */
                     PlayerInfo playerInfo = playerInfos[playerConn];
-                    playerInfo.isMasterClient = _isMasterClient;
                     playerInfo.ready = false;
                     playerInfos[playerConn] = playerInfo;
                 }
@@ -614,6 +613,7 @@ public class CanvasController : MonoBehaviour
                 case ClientMatchOperation.Started:
                     {
                         NetworkClient.ready = true;
+                        GameManager.Instance.OnStartGame?.Invoke();
                         lobbyView.SetActive(false);
                         roomView.SetActive(false);
                         break;

@@ -4,37 +4,36 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-public class GameManager : MonoBehaviour
+public class GameManager: MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    
-    [Inject] 
-    private WindowsManager _windowsManager;
-    
-    [SerializeField]
-    private GameObject _currentController;
 
-    
-    [field:SerializeField] 
-    public Text ScoreText { get; private set; }
-    
+    [Inject] private WindowsManager _windowsManager;
+
+    [SerializeField] private GameObject _currentController;
+
+    public Action OnStartGame;
+    public Action OnStopGame;
+
+    [field: SerializeField] public Text ScoreText { get; private set; }
+
     private void Awake()
     {
         // Singlton как временное решение
         Instance = this;
     }
 
-    
+
     public void OpenGameWindow(IBaseObject BaseEntity)
     {
-        if(ReferenceEquals(BaseEntity, null) == true)
+        if (ReferenceEquals(BaseEntity, null) == true)
             throw new NullReferenceException($"{nameof(BaseEntity)} not found");
 
         GameEntity gameEntity;
 
-        if(ReferenceEquals(_currentController, null) == false)
+        if (ReferenceEquals(_currentController, null) == false)
             Destroy(_currentController);
-        
+
         switch (BaseEntity)
         {
             case PlaneBase planeBase:
@@ -53,12 +52,18 @@ public class GameManager : MonoBehaviour
                 throw new ArgumentOutOfRangeException($"{nameof(BaseEntity)} not found");
         }
     }
-    
+
     public void CloseCurrentWindow()
     {
         if (ReferenceEquals(_currentController, null)) return;
 
         Debug.Log(_currentController);
         Destroy(_currentController);
+    }
+
+    private void OnDestroy()
+    {
+        OnStartGame = null;
+        OnStopGame = null;
     }
 }

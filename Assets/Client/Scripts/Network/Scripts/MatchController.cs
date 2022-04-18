@@ -10,6 +10,8 @@ using UnityEngine;
     {
         public static MatchController Instance;
 
+        private MatchTimer _matchTimer;
+        
         private NetworkMatch _networkMatch;
         public Guid GetNetworkMath => _networkMatch.matchId;
         
@@ -29,16 +31,26 @@ using UnityEngine;
         
         [SyncVar(hook = nameof(OnUpdateScoreText))]
         public int SecondPlayerScore;
-
-        public bool IsMasterClient;
         
         private void Awake()
         {
             Instance = this;
+            _matchTimer = new MatchTimer();
             _networkMatch = GetComponent<NetworkMatch>();
             canvasController = FindObjectOfType<CanvasController>();
         }
+
+        private void Start()
+        {
+            _matchTimer.StartTimer(300f);
+            _matchTimer.OnTimeOver += GameManager.Instance.OnStopGame;
+        }
         
+        private void Update()
+        {
+            _matchTimer.Update();
+        }
+
         [Server]
         public void PlaneInstantiate(NetworkIdentity conn)
         {
