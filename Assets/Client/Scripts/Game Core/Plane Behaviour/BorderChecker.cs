@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public sealed class BorderChecker : MonoBehaviour
@@ -6,8 +7,10 @@ public sealed class BorderChecker : MonoBehaviour
     
     private float _xBorder;
     private float _currentHorizontalPosition;
-
-    private const float BORDER_OFFSET = .5f; 
+    
+    public float Telepor_OFFSET;
+    
+    public const float BORDER_OFFSET = .5f; 
     
     private void Start()
     {
@@ -29,14 +32,12 @@ public sealed class BorderChecker : MonoBehaviour
         
         Vector3 teleportToNewPosition = _currentHorizontalPosition > 0 ? new Vector2(-_currentHorizontalPosition + BORDER_OFFSET, transform.position.y) : 
                                                                          new Vector2(Mathf.Abs(_currentHorizontalPosition) - BORDER_OFFSET, transform.position.y);
-        
-        
         transform.position = teleportToNewPosition;
     }
 
     private bool IsWithinBorder()
     {
-        if (_currentHorizontalPosition < _xBorder && _currentHorizontalPosition > -_xBorder)
+        if (_currentHorizontalPosition - Telepor_OFFSET < _xBorder && _currentHorizontalPosition + Telepor_OFFSET > -_xBorder)
             return true;
 
         return false;

@@ -54,8 +54,6 @@ public class CanvasController : MonoBehaviour
 
         // Used in UI for "Player #"
         int playerIndex = 1;
-
-        private bool _isMasterClient;
         
         [Header("GUI References")]
         public GameObject matchList;
@@ -65,6 +63,7 @@ public class CanvasController : MonoBehaviour
         public Button joinButton;
         public GameObject lobbyView;
         public GameObject roomView;
+        public GameObject gameView;
         public RoomGUI roomGUI;
         public ToggleGroup toggleGroup;
 
@@ -92,7 +91,7 @@ public class CanvasController : MonoBehaviour
             InitializeData();
             lobbyView.SetActive(false);
             roomView.SetActive(false);
-            gameObject.SetActive(false);
+            gameView.SetActive(false);
         }
 
         #endregion
@@ -250,6 +249,8 @@ public class CanvasController : MonoBehaviour
         {
             if (!NetworkServer.active) return;
 
+            gameView.SetActive(false);
+            
             // Invoke OnPlayerDisconnected on all instances of MatchController
             OnPlayerDisconnected?.Invoke(conn);
 
@@ -581,7 +582,6 @@ public class CanvasController : MonoBehaviour
                         ShowRoomView();
                         roomGUI.RefreshRoomPlayers(msg.playerInfos);
                         roomGUI.SetOwner(true);
-                        _isMasterClient = true;
                         break;
                     }
                 case ClientMatchOperation.Cancelled:
@@ -596,7 +596,6 @@ public class CanvasController : MonoBehaviour
                         ShowRoomView();
                         roomGUI.RefreshRoomPlayers(msg.playerInfos);
                         roomGUI.SetOwner(false);
-                        _isMasterClient = false;
                         break;
                     }
                 case ClientMatchOperation.Departed:
@@ -616,8 +615,11 @@ public class CanvasController : MonoBehaviour
                         GameManager.Instance.OnStartGame?.Invoke();
                         lobbyView.SetActive(false);
                         roomView.SetActive(false);
+                        gameView.SetActive(true);
                         break;
                     }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
         
@@ -627,7 +629,8 @@ public class CanvasController : MonoBehaviour
         {
             lobbyView.SetActive(true);
             roomView.SetActive(false);
-
+            gameView.SetActive(false);
+            
             foreach (Transform child in matchList.transform)
             {
                 if (child.gameObject.GetComponent<MatchGUI>().GetMatchId() == selectedMatch)

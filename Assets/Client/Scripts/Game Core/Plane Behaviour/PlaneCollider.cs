@@ -8,11 +8,20 @@
         public Action OnBuildingEnter = () => { };
         public Action<ABullet> OnBulletEnter = (ABullet bullet) => { };
         public Action OnGroundEnter = () => { };
+
+        private bool _isDestroy;
+        
         
         private void OnCollisionEnter2D(Collision2D other)
         {
             if (other.collider.GetComponent<Building>())
-                OnBuildingEnter?.Invoke();
+            {
+                if (_isDestroy == false)
+                {
+                    OnBuildingEnter?.Invoke();
+                    _isDestroy = true;
+                }
+            }
 
             if (other.collider.TryGetComponent(out ABullet bullet))
             {

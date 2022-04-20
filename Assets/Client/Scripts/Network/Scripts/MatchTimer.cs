@@ -4,29 +4,30 @@
 
 	public class MatchTimer
 	{
-		private float _timeLeft;
+		public float TimeLeft { get; private set; }
 		private bool _timerOn;
 
+		public Action OnUpdatedTimer;
 		public Action OnTimeOver;
 		
 
 		public float GetTimeLeftMinutes {
 			get {
-				if (_timeLeft <= 0) return 0;
-				return Mathf.FloorToInt(_timeLeft / 60f);
+				if (TimeLeft <= 0) return 0;
+				return Mathf.FloorToInt(TimeLeft / 60f);
 			}
 		}
 
 		public float GetTimeLeftSeconds {
 			get {
-				if (_timeLeft <= 0) return 0;
-				return Mathf.FloorToInt(_timeLeft % 60f);
+				if (TimeLeft <= 0) return 0;
+				return Mathf.FloorToInt(TimeLeft % 60f);
 			}
 		}
 
 		public void StartTimer(float timeToCount)
 		{
-			_timeLeft = timeToCount;
+			TimeLeft = timeToCount;
 			_timerOn = true;
 		}
 
@@ -34,9 +35,10 @@
 		{
 			if (_timerOn == false) return;
 
-			if (_timeLeft > 0)
+			if (TimeLeft > 0)
 			{
-				_timeLeft -= Time.deltaTime;
+				TimeLeft -= Time.deltaTime;
+				OnUpdatedTimer?.Invoke();
 				Debug.Log($"{GetTimeLeftMinutes}:{GetTimeLeftSeconds}");
 			}
 			else
@@ -44,5 +46,11 @@
 				OnTimeOver?.Invoke();
 				_timerOn = false;
 			}
+		}
+
+		~MatchTimer()
+		{
+			OnUpdatedTimer = null;
+			OnTimeOver = null;
 		}
 	}

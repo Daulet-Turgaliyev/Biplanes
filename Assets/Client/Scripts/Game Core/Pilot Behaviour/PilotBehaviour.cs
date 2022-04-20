@@ -99,6 +99,7 @@ public sealed class PilotBehaviour : PlayerNetworkObjectBehaviour
     public void KillPilot()
     {
         RpcCallDieAnimation();
+        GameManager.Instance.CloseCurrentWindow();
         OnDie?.Invoke(_networkIdentity, true, true, 1, 4);
     }
 

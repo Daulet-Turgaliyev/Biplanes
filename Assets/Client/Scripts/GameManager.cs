@@ -1,7 +1,6 @@
 ﻿using System;
 using Mirror;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 
 public class GameManager: MonoBehaviour
@@ -9,13 +8,11 @@ public class GameManager: MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Inject] private WindowsManager _windowsManager;
-
     [SerializeField] private GameObject _currentController;
 
     public Action OnStartGame;
     public Action OnStopGame;
-
-    [field: SerializeField] public Text ScoreText { get; private set; }
+    
 
     private void Awake()
     {
@@ -31,19 +28,20 @@ public class GameManager: MonoBehaviour
 
         GameEntity gameEntity;
 
-        if (ReferenceEquals(_currentController, null) == false)
-            Destroy(_currentController);
-
         switch (BaseEntity)
         {
             case PlaneBase planeBase:
-                gameEntity = GameEntity.Plane;
-                _currentController = _windowsManager.OpenWindow(gameEntity);
+                 gameEntity = GameEntity.Plane;
+                 CloseCurrentWindow();
+
+                 _currentController = _windowsManager.OpenWindow(gameEntity);
                 var planeControllerWindow = _currentController.GetComponent<PlaneControllerWindow>();
                 var planeController = new PlaneController(planeControllerWindow, planeBase);
                 break;
             case PilotBase pilotBase:
                 gameEntity = GameEntity.Pilot;
+                CloseCurrentWindow();
+                
                 _currentController = _windowsManager.OpenWindow(gameEntity);
                 var pilotControllerWindow = _currentController.GetComponent<PilotControllerWindow>();
                 var pilotController = new PilotController(pilotControllerWindow, pilotBase);
@@ -55,9 +53,8 @@ public class GameManager: MonoBehaviour
 
     public void CloseCurrentWindow()
     {
-        if (ReferenceEquals(_currentController, null)) return;
+        if (_currentController == null) return;
 
-        Debug.Log(_currentController);
         Destroy(_currentController);
     }
 

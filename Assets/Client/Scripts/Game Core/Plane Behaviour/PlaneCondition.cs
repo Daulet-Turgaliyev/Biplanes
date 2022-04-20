@@ -10,8 +10,6 @@ public sealed class PlaneCondition : MonoBehaviour
     [SerializeField] private ParticleSystem _particleDestroy;
 
     private ParticleSystem _currentParticle;
-
-    public bool IsDestroying => _particleDestroy.isPlaying;
     
     private void Start()
     {
@@ -20,8 +18,6 @@ public sealed class PlaneCondition : MonoBehaviour
 
     public void TrySetCondition(int healthStatus)
     {
-        if(IsDestroying == true) return;
-
         if (healthStatus > particleCondition.Length - 1 || healthStatus < 0)
         {
             Debug.LogWarning($"healthStatus: {healthStatus}");

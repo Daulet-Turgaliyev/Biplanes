@@ -41,7 +41,15 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
         HealPoint = 4;
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
-    
+
+    private void Start()
+    {
+        if (hasAuthority == false)
+        {
+            Destroy(_planeCollider);
+        }
+    }
+
     private void OnDestroy() { OnFixedUpdater = null; }
     
     private void OnUpdateHP(int oldHp, int newHp)
@@ -60,9 +68,10 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     private void DestroyPlane(int destroyTimer = 0)
     {
         if(_networkIdentity.hasAuthority)
+        {
+            GameManager.Instance.CloseCurrentWindow();
             CmdDelayedDestroyPlane(destroyTimer);
-            
-        _planeCondition.DestroyAnimation();
+        }
     }
 
     private void FastDestroy()
@@ -108,11 +117,17 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     [Command]
     private async void CmdDelayedDestroyPlane(int destroyDelay)
     {
-        if(_planeCondition.IsDestroying) return;
+        RpcDestroyAnimation();
         
         int destroyMillisecondsDelay = destroyDelay * 1000;
         await Task.Delay(destroyMillisecondsDelay);
         OnDie?.Invoke(_networkIdentity, _planeCabin.HasPilotInCabin, _planeCabin.HasPilotInCabin, 2, 6);
+    }
+
+    [ClientRpc]
+    private void RpcDestroyAnimation()
+    {
+        _planeCondition.DestroyAnimation();
     }
     
     #endregion

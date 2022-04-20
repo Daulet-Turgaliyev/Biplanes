@@ -23,5 +23,6 @@ public class WindowsManager: MonoBehaviour
 public enum GameEntity
 {
 	Plane,
-	Pilot
+	Pilot,
+	All
 }

@@ -13,14 +13,11 @@ public sealed class LevelInjectInstaller : MonoInstaller
     [SerializeField] 
     private GameManager _gameManager;
     
-    [SerializeField] 
-    private LevelInitializer levelInitializer;
     
     
     public override void InstallBindings()
     {
         Container.Bind<WindowsManager>().FromInstance(_windowsManager).NonLazy();
-        Container.Bind<LevelInitializer>().FromInstance(levelInitializer).NonLazy();
         Container.Bind<GameManager>().FromInstance(_gameManager).NonLazy();
         Container.Bind<NetworkManager>().FromInstance(_networkManager).NonLazy();
     }

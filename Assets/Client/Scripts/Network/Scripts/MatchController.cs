@@ -26,26 +26,39 @@ using UnityEngine;
         public NetworkIdentity player1;
         public NetworkIdentity player2;
         
-        [SyncVar(hook = nameof(OnUpdateScoreText))]
+        [SyncVar(hook = nameof(OnUpdateScoreOnClient))]
         public int FirstPlayerScore;
         
-        [SyncVar(hook = nameof(OnUpdateScoreText))]
+        [SyncVar(hook = nameof(OnUpdateScoreOnClient))]
         public int SecondPlayerScore;
+
+        [SyncVar(hook = nameof(MatchTimeUpdateOnClient))] 
+        public float MatchTimeSeconds;
+
+        public Action<int, int> OnUpdateMatchScore = (int p1, int p2) => { };
+        public Action<float> OnUpdateClientTimer = (float f) => { };
         
         private void Awake()
         {
             Instance = this;
-            _matchTimer = new MatchTimer();
             _networkMatch = GetComponent<NetworkMatch>();
             canvasController = FindObjectOfType<CanvasController>();
         }
-
-        private void Start()
-        {
-            _matchTimer.StartTimer(300f);
-            _matchTimer.OnTimeOver += GameManager.Instance.OnStopGame;
-        }
         
+
+        public override void OnStartServer()
+        {
+            _matchTimer = new MatchTimer();
+
+            _matchTimer.StartTimer(300f);
+
+            _matchTimer.OnUpdatedTimer += MatchTimeUpdateOnServer;
+            _matchTimer.OnTimeOver += GameManager.Instance.OnStopGame;
+            
+            base.OnStartServer();
+        }
+
+        [ServerCallback]
         private void Update()
         {
             _matchTimer.Update();
@@ -104,6 +117,22 @@ using UnityEngine;
             NetworkServer.Destroy(networkIdentity.gameObject);
         }
 
+        [Server]
+        private void MatchTimeUpdateOnServer()
+        {
+            MatchTimeSeconds = _matchTimer.TimeLeft;
+        }
+        
+        private void OnUpdateScoreOnClient(int oldScore, int newScore)
+        {
+            OnUpdateMatchScore?.Invoke(FirstPlayerScore, SecondPlayerScore);
+        }
+        
+        private void MatchTimeUpdateOnClient(float oldTime, float newTime)
+        {
+            OnUpdateClientTimer?.Invoke(newTime);
+        }
+        
         private SpawnPlanePoint GetSpawnPosition()
         {
             var spawnPoint = _spawnPoint == 1 ? 0 : 1;
@@ -117,14 +146,8 @@ using UnityEngine;
             StartCoroutine(ServerEndMatch(sender, false));
         }
 
-        private void OnUpdateScoreText(int oldScore, int newScore)
-        {
-            GameManager.Instance.ScoreText.text = $"{FirstPlayerScore} : {SecondPlayerScore}";
-        }
-
         public void OnPlayerDisconnected(NetworkConnection conn)
         {
-            GameManager.Instance.CloseCurrentWindow();
             // Check that the disconnecting client is a player in this match
             if (player1 == conn.identity || player2 == conn.identity)
             {
