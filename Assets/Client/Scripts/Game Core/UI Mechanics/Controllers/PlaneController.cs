@@ -8,6 +8,7 @@ public class PlaneController : AController
     
     private Action OnShoot;
     private Action OnJump;
+    
     public Action<float> OnReload;
 
     private readonly PlaneControllerWindow _planeControllerWindow;
@@ -19,6 +20,8 @@ public class PlaneController : AController
         _planeControllerWindow = planeControllerWindow;
         _planeBase = planeBase;
         _planeData = planeBase.PlaneData;
+        
+        planeControllerWindow.OnDestroyController += Dispose;
         
         base.Initialize();
     }
@@ -72,6 +75,11 @@ public class PlaneController : AController
     }
 
     ~PlaneController()
+    {
+        Dispose();
+    }
+    
+    private void Dispose()
     {
         OnSpeedUpdated = null;
         OnPositionUpdated = null;
