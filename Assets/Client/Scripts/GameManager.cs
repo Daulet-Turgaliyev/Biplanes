@@ -3,7 +3,7 @@ using Tools.Singletons;
 using UnityEngine;
 using Zenject;
  
-class GameManager: SingletoneMonoBehaviour<GameManager>
+class GameManager: MonoBehaviour
 {
     [Inject] private WindowsManager _windowsManager;
 
@@ -21,7 +21,16 @@ class GameManager: SingletoneMonoBehaviour<GameManager>
     
     public Action OnStartGame;
     public Action OnStopGame;
+
+    public bool IsOwner;
     
+    public static GameManager Instance;
+    
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     public void OpenGameWindow(IBaseObject BaseEntity)
     {
         if (ReferenceEquals(BaseEntity, null) == true)

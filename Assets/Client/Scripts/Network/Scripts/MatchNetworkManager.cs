@@ -72,5 +72,7 @@ using UnityEngine;
             _networkHandler.OnStopClient();
         }
 
+        
+        
         #endregion
     }

@@ -405,6 +405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e78d315cfec4794b04cf1c84b52f0b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _networkIdentity: {fileID: 6005099902961853298}
   _spriteRenderer: {fileID: 5938949296050439237}
   planeSprite:
   - {fileID: 7951042550781856400, guid: 315690f86e65d6f40afa818e8242918c, type: 3}

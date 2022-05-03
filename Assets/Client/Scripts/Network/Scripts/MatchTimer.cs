@@ -39,7 +39,6 @@
 			{
 				TimeLeft -= Time.deltaTime;
 				OnUpdatedTimer?.Invoke();
-				Debug.Log($"{GetTimeLeftMinutes}:{GetTimeLeftSeconds}");
 			}
 			else
 			{

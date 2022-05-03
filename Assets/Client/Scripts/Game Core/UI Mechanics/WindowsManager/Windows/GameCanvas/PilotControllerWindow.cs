@@ -3,7 +3,7 @@
     using UnityEngine;
     using UnityEngine.UI;
 
-    public sealed class PilotControllerWindow : BaseWindow, IAutoInjectable
+    public sealed class PilotControllerWindow : MonoBehaviour
     {
         [field:SerializeField] 
         public Joystick Joystick { get; private set; }

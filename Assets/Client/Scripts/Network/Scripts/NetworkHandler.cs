@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 public class NetworkHandler : MonoBehaviour
@@ -53,7 +54,6 @@ public class NetworkHandler : MonoBehaviour
 
         public void AllDisconnect()
         {
-            // stop host if host mode
             if (NetworkServer.active && NetworkClient.isConnected)
             {
                 _networkManager.StopHost();
@@ -64,12 +64,6 @@ public class NetworkHandler : MonoBehaviour
             {
                 _networkManager.StopClient();
             }
-        }
-
-        // Called from OnStopServer and OnStopClient when shutting down
-        private void ResetCanvas()
-        {
-            InitializeData();
         }
 
         #endregion
@@ -183,7 +177,7 @@ public class NetworkHandler : MonoBehaviour
 
         public void OnStopServer()
         {
-            ResetCanvas();
+            InitializeData();
         }
 
         public void OnClientConnect(NetworkConnection conn)
@@ -211,16 +205,13 @@ public class NetworkHandler : MonoBehaviour
 
         private void DisconnectClient()
         {
-            _windowsManager.DestroyAll();
-            GameManager.Instance.CloseCurrentWindow();
-                        
-            _roomViewWindow.LocalPlayerMatch = Guid.Empty;
-            _windowsManager.OpenWindow<ErrorViewWindow>().ViewError("Потеряно подключение к серверу");
+            SceneManager.LoadScene(0);
         }
 
         public void OnStopClient()
         {
-            ResetCanvas();
+            InitializeData();
+            OnClientDisconnect();
         }
 
         #endregion
@@ -471,6 +462,7 @@ public class NetworkHandler : MonoBehaviour
                         _roomViewWindow.LocalPlayerMatch = msg.matchId;
                         _roomViewWindow.RefreshRoomPlayers(msg.playerInfos);
                         _roomViewWindow.SetOwner(true);
+                        GameManager.Instance.IsOwner = true;
                         break;
                     }
                 case ClientMatchOperation.Cancelled:
@@ -485,6 +477,7 @@ public class NetworkHandler : MonoBehaviour
                         _roomViewWindow.LocalPlayerMatch = msg.matchId;
                         _roomViewWindow.RefreshRoomPlayers(msg.playerInfos);
                         _roomViewWindow.SetOwner(false);
+                        GameManager.Instance.IsOwner = false;
                         break;
                     }
                 case ClientMatchOperation.Departed:

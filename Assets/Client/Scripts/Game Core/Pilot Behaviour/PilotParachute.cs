@@ -2,14 +2,15 @@
     using System;
     using Mirror;
     using UnityEngine;
+    using UnityEngine.PlayerLoop;
 
     [RequireComponent(typeof(Rigidbody2D))]
     public sealed class PilotParachute: NetworkBehaviour
     {
         private Rigidbody2D _rigidbody2D;
 
-        public bool IsParachuteActive => _parachuteSprite.enabled;
-        
+        public bool IsParachuteActive { get; private set; }
+
         [SerializeField]
         private SpriteRenderer _parachuteSprite;
 
@@ -25,6 +26,12 @@
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _networkIdentity = GetComponent<NetworkIdentity>();
             _currentGravityScale = _rigidbody2D.gravityScale;
+        }
+        
+        //TODO: Найди причину включения парашёюта
+        private void Update()
+        {
+            _parachuteSprite.enabled = IsParachuteActive;
         }
 
         public void OpenParachute()
@@ -46,6 +53,7 @@
         {
             _parachuteSprite.enabled = isActive;
             _parachuteCollider.enabled = isActive;
+            IsParachuteActive = isActive;
         }
         
         public void CloseParachute()

@@ -116,7 +116,7 @@ using Zenject;
             }
             
             await Task.Delay(destroyTimeToMillisecondsDelay);
-
+            if (networkIdentity == null) return;
             NetworkServer.Destroy(networkIdentity.gameObject);
         }
 

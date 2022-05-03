@@ -29,9 +29,11 @@ public sealed class PlaneCondition : MonoBehaviour
 
     private void ChangeConditionEffect(int effectIndex)
     {
-        
         if (effectIndex > particleCondition.Length || effectIndex < 0)
             throw new ArgumentOutOfRangeException($"{nameof(effectIndex)}");
+        
+        if(_currentParticle == null) return;
+        
         _currentParticle.Stop();
         _currentParticle = particleCondition[effectIndex];
         _currentParticle.Play();
