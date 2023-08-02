@@ -13,13 +13,19 @@
         {
             _pilotControllerWindow = pilotControllerWindow;
             _pilotBase = pilotBase;
+            pilotControllerWindow.OnDestroyController += Dispose;
             base.Initialize();
         }
 
-        ~PilotController()
+        private void Dispose()
         {
             OnPositionUpdated = null;
             OnOpenParachute = null;
+        }
+        
+        ~PilotController()
+        {
+            Dispose();
         }
 
         protected override void SubscriptionToAction()

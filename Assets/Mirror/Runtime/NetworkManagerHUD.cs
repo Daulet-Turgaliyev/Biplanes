@@ -127,8 +127,7 @@ namespace Mirror
                     manager.StopHost();
                 }
             }
-            // stop client if client-only
-            else if (NetworkClient.isConnected)
+             if (NetworkClient.isConnected)
             {
                 if (GUILayout.Button("Stop Client"))
                 {
@@ -136,7 +135,7 @@ namespace Mirror
                 }
             }
             // stop server if server-only
-            else if (NetworkServer.active)
+             if (NetworkServer.active)
             {
                 if (GUILayout.Button("Stop Server"))
                 {
