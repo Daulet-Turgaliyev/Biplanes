@@ -1,49 +1,53 @@
 ﻿using System;
-using Mirror;
+using Tools.Singletons;
 using UnityEngine;
 using Zenject;
-
-public class GameManager: MonoBehaviour
+ 
+class GameManager: MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
-
     [Inject] private WindowsManager _windowsManager;
-    [SerializeField] private GameObject _currentController;
 
+    [SerializeField] 
+    private Transform _gameViewCanvas;
+
+    [SerializeField]
+    private PilotControllerWindow _pilotControllerWindow;
+
+    [SerializeField] 
+    private PlaneControllerWindow _planeControllerWindow;
+    
+    [SerializeField] 
+    private GameObject _currentController;
+    
     public Action OnStartGame;
     public Action OnStopGame;
-    
 
+    public bool IsOwner;
+    
+    public static GameManager Instance;
+    
     private void Awake()
     {
-        // Singlton как временное решение
         Instance = this;
     }
-
 
     public void OpenGameWindow(IBaseObject BaseEntity)
     {
         if (ReferenceEquals(BaseEntity, null) == true)
             throw new NullReferenceException($"{nameof(BaseEntity)} not found");
 
-        GameEntity gameEntity;
-
+        CloseCurrentWindow();
+        
         switch (BaseEntity)
         {
             case PlaneBase planeBase:
-                 gameEntity = GameEntity.Plane;
-                 CloseCurrentWindow();
-
-                 _currentController = _windowsManager.OpenWindow(gameEntity);
-                var planeControllerWindow = _currentController.GetComponent<PlaneControllerWindow>();
+                var planeControllerWindow = Instantiate(_planeControllerWindow, parent: _gameViewCanvas);
+                _currentController = planeControllerWindow.gameObject;
                 var planeController = new PlaneController(planeControllerWindow, planeBase);
                 break;
             case PilotBase pilotBase:
-                gameEntity = GameEntity.Pilot;
-                CloseCurrentWindow();
-                
-                _currentController = _windowsManager.OpenWindow(gameEntity);
-                var pilotControllerWindow = _currentController.GetComponent<PilotControllerWindow>();
+                var pilotControllerWindow = Instantiate(_pilotControllerWindow, parent: _gameViewCanvas);
+                _currentController = pilotControllerWindow.gameObject;
                 var pilotController = new PilotController(pilotControllerWindow, pilotBase);
                 break;
             default:

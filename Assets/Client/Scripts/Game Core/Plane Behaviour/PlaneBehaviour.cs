@@ -32,6 +32,8 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     [Space(3)] [Header("Mirror")] [SyncVar(hook = nameof(OnUpdateHP))]
     public int HealPoint;
 
+    private bool _isDie;
+    
     private PlaneBase _planeBase;
 
     #region UnityEvents
@@ -69,7 +71,7 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     {
         if(_networkIdentity.hasAuthority)
         {
-            GameManager.Instance.CloseCurrentWindow();
+            _planeCondition.DestroyAnimation();
             CmdDelayedDestroyPlane(destroyTimer);
         }
     }
@@ -117,8 +119,9 @@ public sealed class PlaneBehaviour: PlayerNetworkObjectBehaviour
     [Command]
     private async void CmdDelayedDestroyPlane(int destroyDelay)
     {
+        if(_isDie == true) return;
         RpcDestroyAnimation();
-        
+        _isDie = true;
         int destroyMillisecondsDelay = destroyDelay * 1000;
         await Task.Delay(destroyMillisecondsDelay);
         OnDie?.Invoke(_networkIdentity, _planeCabin.HasPilotInCabin, _planeCabin.HasPilotInCabin, 2, 6);

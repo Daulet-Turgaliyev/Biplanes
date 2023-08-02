@@ -3,11 +3,15 @@ using System.Collections;
 using System.Threading.Tasks;
 using Mirror;
 using UnityEngine;
+using Zenject;
 
 
 [RequireComponent(typeof(NetworkMatch))]
     public class MatchController : NetworkBehaviour
     {
+        [Inject] 
+        private NetworkHandler _networkHandler;
+        
         public static MatchController Instance;
 
         private MatchTimer _matchTimer;
@@ -22,7 +26,6 @@ using UnityEngine;
         private PlaneData _planeData;
         
         [Header("Diagnostics - Do Not Modify")]
-        public CanvasController canvasController;
         public NetworkIdentity player1;
         public NetworkIdentity player2;
         
@@ -42,7 +45,7 @@ using UnityEngine;
         {
             Instance = this;
             _networkMatch = GetComponent<NetworkMatch>();
-            canvasController = FindObjectOfType<CanvasController>();
+            _networkHandler = FindObjectOfType<NetworkHandler>();
         }
         
 
@@ -113,7 +116,7 @@ using UnityEngine;
             }
             
             await Task.Delay(destroyTimeToMillisecondsDelay);
-
+            if (networkIdentity == null) return;
             NetworkServer.Destroy(networkIdentity.gameObject);
         }
 
@@ -157,7 +160,7 @@ using UnityEngine;
 
         private IEnumerator ServerEndMatch(NetworkConnection conn, bool disconnected)
         {
-            canvasController.OnPlayerDisconnected -= OnPlayerDisconnected;
+            _networkHandler.OnPlayerDisconnected -= OnPlayerDisconnected;
 
             RpcExitGame();
 
@@ -170,29 +173,29 @@ using UnityEngine;
             if (!disconnected)
             {
                 NetworkServer.RemovePlayerForConnection(player1.connectionToClient, true);
-                CanvasController.waitingConnections.Add(player1.connectionToClient);
+                _networkHandler.WaitingConnections.Add(player1.connectionToClient);
 
                 NetworkServer.RemovePlayerForConnection(player2.connectionToClient, true);
-                CanvasController.waitingConnections.Add(player2.connectionToClient);
+                _networkHandler.WaitingConnections.Add(player2.connectionToClient);
             }
             else if (conn == player1.connectionToClient)
             {
                 // player1 has disconnected - send player2 back to Lobby
                 NetworkServer.RemovePlayerForConnection(player2.connectionToClient, true);
-                CanvasController.waitingConnections.Add(player2.connectionToClient);
+                _networkHandler.WaitingConnections.Add(player2.connectionToClient);
             }
             else if (conn == player2.connectionToClient)
             {
                 // player2 has disconnected - send player1 back to Lobby
                 NetworkServer.RemovePlayerForConnection(player1.connectionToClient, true);
-                CanvasController.waitingConnections.Add(player1.connectionToClient);
+                _networkHandler.WaitingConnections.Add(player1.connectionToClient);
             }
 
             // Skip a frame to allow the Removal(s) to complete
             yield return null;
 
             // Send latest match list
-            canvasController.SendMatchList();
+            _networkHandler.SendMatchList();
 
             NetworkServer.Destroy(gameObject);
         }
@@ -200,7 +203,7 @@ using UnityEngine;
         [ClientRpc]
         private void RpcExitGame()
         {
-            canvasController.OnMatchEnded();
+            _networkHandler.OnMatchEnded();
         }
     }
 [Serializable]
